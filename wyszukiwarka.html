@@ -925,6 +925,110 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
 }
 .lang-arrow { font-size: 0.6rem; }
 
+/* INFO BUTTON */
+.info-btn-wrap { position: relative; }
+.info-btn {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  border: 1px solid rgba(232,93,38,0.45);
+  background: rgba(232,93,38,0.08);
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 1rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  position: relative;
+}
+.info-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.info-btn::after {
+  content: '';
+  position: absolute; inset: -4px;
+  border-radius: 12px;
+  border: 2px solid var(--accent);
+  opacity: 0;
+  animation: infoPulse 2.2s ease-in-out infinite;
+}
+@keyframes infoPulse {
+  0%   { opacity: 0; transform: scale(0.92); }
+  40%  { opacity: 0.45; transform: scale(1.08); }
+  100% { opacity: 0; transform: scale(1.22); }
+}
+.info-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 320px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+  z-index: 300;
+  animation: modalIn 0.18s ease;
+  overflow: hidden;
+}
+.info-panel.open { display: block; }
+.info-panel-header {
+  padding: 16px 20px 12px;
+  background: linear-gradient(135deg, rgba(232,93,38,0.1) 0%, transparent 100%);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.info-panel-title {
+  font-size: 0.88rem; font-weight: 800; color: var(--text);
+  display: flex; align-items: center; gap: 7px;
+}
+.info-panel-close {
+  background: none; border: none; cursor: pointer;
+  font-size: 1rem; color: var(--text-dim); padding: 2px 5px;
+  border-radius: 4px; transition: color 0.12s;
+  line-height: 1;
+}
+.info-panel-close:hover { color: var(--text); }
+.info-panel-body { padding: 16px 20px; }
+.info-row {
+  display: flex; gap: 10px; align-items: baseline;
+  margin-bottom: 8px; font-size: 0.82rem;
+}
+.info-row:last-child { margin-bottom: 0; }
+.info-label {
+  font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--text-dim);
+  white-space: nowrap; min-width: 52px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.info-val { color: var(--text-mid); line-height: 1.5; }
+.info-val a { color: var(--accent); text-decoration: none; }
+.info-val a:hover { text-decoration: underline; }
+.info-divider { height: 1px; background: var(--border); margin: 12px 0; }
+.info-donation {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.78rem;
+}
+.info-donation-title {
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--accent); margin-bottom: 8px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.info-donation-row { color: var(--text-mid); margin-bottom: 4px; font-size: 0.78rem; }
+.info-donation-iban {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem; color: var(--text); font-weight: 600;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 5px; padding: 5px 9px; margin-top: 6px;
+  letter-spacing: 0.04em; cursor: pointer; transition: border-color 0.15s;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.info-donation-iban:hover { border-color: var(--accent); }
+.info-donation-iban .copy-hint { font-size: 0.58rem; color: var(--text-dim); font-weight: 400; white-space: nowrap; }
+.info-note {
+  font-size: 0.74rem; color: var(--text-dim);
+  text-align: center; margin-top: 12px; line-height: 1.5;
+}
+
 /* STATS STRIP */
 .stats-strip {
   display: flex;
@@ -1386,6 +1490,45 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
       <div class="page-subtitle" id="page-subtitle">Przeszukuj fora i serwisy społecznościowe</div>
     </div>
     <div class="topbar-controls">
+      <div class="info-btn-wrap">
+        <button class="info-btn" onclick="toggleInfoPanel(event)" id="info-btn" title="Informacje o autorze">ℹ</button>
+        <div class="info-panel" id="info-panel">
+          <div class="info-panel-header">
+            <div class="info-panel-title">👤 Autor &amp; Kontakt</div>
+            <button class="info-panel-close" onclick="closeInfoPanel()">✕</button>
+          </div>
+          <div class="info-panel-body">
+            <div class="info-row">
+              <span class="info-label">Autor</span>
+              <span class="info-val">Michał Stankiewicz</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Tel</span>
+              <span class="info-val"><a href="tel:+48797486355">+48 797 486 355</a></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Mail</span>
+              <span class="info-val"><a href="mailto:michalstankiewicz@onet.eu">michalstankiewicz@onet.eu</a></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Info</span>
+              <span class="info-val">Aplikację można dostosować na życzenie. Program jest darmowy — free to use.</span>
+            </div>
+            <div class="info-divider"></div>
+            <div class="info-donation">
+              <div class="info-donation-title">☕ Wesprzyj jeśli chcesz</div>
+              <div class="info-donation-row">Nie czuj się zobowiązany ❤️ 🙂</div>
+              <div class="info-donation-row" style="margin-top:8px">Michał Stankiewicz<br>02-585 Warszawa · PKO BP</div>
+              <div class="info-donation-row" style="margin-top:6px; font-size:0.72rem; color:var(--text-dim)">Tytuł przelewu: <strong style="color:var(--text)">"Wyszukiwarka klientów"</strong></div>
+              <div class="info-donation-iban" onclick="copyIban(this)" title="Kliknij aby skopiować">
+                <span>PL55 1020 1097 0000 7902 0226 5353</span>
+                <span class="copy-hint">📋 kopiuj</span>
+              </div>
+            </div>
+            <div class="info-note">Jeżeli wspierasz moją pracę — dziękuję! 🙏</div>
+          </div>
+        </div>
+      </div>
       <div class="lang-switcher" title="Zmiana języka – wkrótce dostępna">
         <span>🌐</span>
         <span>PL</span>
@@ -3517,6 +3660,32 @@ function doLogout() {
   updateCredsBadge();
   closeLoginModal();
 }
+
+// =====================
+// INFO PANEL
+// =====================
+function toggleInfoPanel(e) {
+  e.stopPropagation();
+  const panel = document.getElementById('info-panel');
+  panel.classList.toggle('open');
+}
+function closeInfoPanel() {
+  document.getElementById('info-panel').classList.remove('open');
+}
+function copyIban(el) {
+  const iban = el.querySelector('span').textContent.replace(/\s/g, '');
+  navigator.clipboard.writeText(iban).then(() => {
+    const hint = el.querySelector('.copy-hint');
+    hint.textContent = '✅ skopiowano';
+    setTimeout(() => { hint.textContent = '📋 kopiuj'; }, 2000);
+  });
+}
+document.addEventListener('click', function(e) {
+  const panel = document.getElementById('info-panel');
+  if (panel && panel.classList.contains('open') && !document.getElementById('info-btn').contains(e.target) && !panel.contains(e.target)) {
+    panel.classList.remove('open');
+  }
+});
 
 // =====================
 // THEME
