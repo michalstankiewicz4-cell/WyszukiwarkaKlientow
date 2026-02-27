@@ -2063,10 +2063,11 @@ function renderSourcesManage() {
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12V4M3 6.5L6.5 3 10 6.5M1 1h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Import
         </button>
+        <button class="search-source-btn" onclick="openSrcSearchModal()">🔍 Szukaj źródeł</button>
         <button class="add-source-btn" onclick="openAddModal()">+ Dodaj źródło</button>
       </div>`;
   }
-  
+
   if (manageView === 'grid') {
     let html = '';
     
