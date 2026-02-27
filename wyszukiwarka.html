@@ -1,0 +1,2283 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lead Hunter</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f3ee;
+  --surface: #ffffff;
+  --surface2: #f0ede6;
+  --border: #e2ddd4;
+  --border2: #ccc7bc;
+  --accent: #e85d26;
+  --accent2: #c44d1a;
+  --accent-light: rgba(232,93,38,0.1);
+  --text: #1a1714;
+  --text-mid: #5a5448;
+  --text-dim: #9a9082;
+  --green: #1a7a4a;
+  --green-bg: #e8f5ee;
+  --yellow: #b07800;
+  --yellow-bg: #fef3e2;
+  --red: #c0392b;
+  --red-bg: #fdecea;
+  --blue: #2563a8;
+  --blue-bg: #e8f0fc;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+}
+
+/* LAYOUT */
+.app { display: flex; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  background: var(--text);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow-y: auto;
+  z-index: 200;
+}
+
+.sidebar-logo {
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar-logo .brand {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+.sidebar-logo .brand span { color: var(--accent); }
+.sidebar-logo .tagline {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.4);
+  margin-top: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
+}
+
+.sidebar-nav {
+  padding: 12px 0;
+  flex: 1;
+}
+.nav-section-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.3);
+  padding: 12px 24px 6px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 24px;
+  cursor: pointer;
+  transition: background 0.12s;
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.7);
+  font-weight: 500;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+.nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+.nav-item.active { background: rgba(232,93,38,0.18); color: #fff; }
+.nav-item.active .nav-icon { color: var(--accent); }
+.nav-icon { font-size: 1rem; width: 18px; text-align: center; opacity: 0.9; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.6rem;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+/* MAIN */
+.main {
+  margin-left: 300px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 36px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.page-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.page-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-left: 2px;
+}
+
+.content { padding: 32px 36px; flex: 1; }
+
+/* SEARCH BAR */
+.search-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow);
+}
+.search-box-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+.search-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.search-input {
+  flex: 1;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.search-input:focus { border-color: var(--accent); }
+.search-input::placeholder { color: var(--text-dim); font-weight: 400; }
+.search-btn {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 12px 28px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.search-btn:hover { background: var(--accent2); transform: translateY(-1px); }
+.search-btn:active { transform: none; }
+.search-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.search-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  align-items: center;
+}
+.search-tag-label { font-size: 0.72rem; color: var(--text-dim); }
+.preset-tag {
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  background: var(--surface2);
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: all 0.12s;
+  font-family: 'Outfit', sans-serif;
+}
+.preset-tag:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+/* SOURCES GRID */
+.sources-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.sources-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+}
+.add-source-btn {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text-mid);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.add-source-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.sources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.source-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+.source-card:hover { box-shadow: var(--shadow-lg); border-color: var(--border2); }
+
+.source-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 10px;
+}
+.source-icon {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.source-info { flex: 1; min-width: 0; }
+.source-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.source-type-badge {
+  font-size: 0.6rem;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 1px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+  display: inline-block;
+}
+.badge-forum { background: #e8f0fc; color: #2563a8; }
+.badge-social { background: #fde8f0; color: #a8254f; }
+.badge-portal { background: #e8f5ee; color: #1a7a4a; }
+.badge-ogloszenia { background: #fef3e2; color: #b07800; }
+.badge-it { background: #f0e8fc; color: #6a25a8; }
+.badge-biznes { background: #e8f5f5; color: #1a7a7a; }
+
+.source-toggle {
+  position: relative;
+  width: 36px; height: 20px;
+  flex-shrink: 0;
+}
+.source-toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0;
+  background: var(--border2);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 14px; height: 14px;
+  left: 3px; top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+input:checked + .toggle-slider { background: var(--accent); }
+input:checked + .toggle-slider::before { transform: translateX(16px); }
+
+.source-card-body {
+  padding: 0 16px 14px;
+  border-top: 1px solid var(--border);
+  display: none;
+}
+.source-card-body.open { display: block; padding-top: 12px; }
+
+.field-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 5px;
+  margin-top: 10px;
+}
+.field-label:first-child { margin-top: 0; }
+
+.field-input {
+  width: 100%;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.field-input:focus { border-color: var(--accent); }
+.field-input::placeholder { color: var(--text-dim); }
+
+.keywords-input {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  min-height: 60px;
+  resize: vertical;
+}
+
+.settings-toggle-btn {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.12s;
+  width: 100%;
+  padding: 8px 16px 4px;
+}
+.settings-toggle-btn:hover { color: var(--accent); }
+.settings-toggle-btn .chevron { transition: transform 0.2s; display: inline-block; }
+.settings-toggle-btn.open .chevron { transform: rotate(180deg); }
+
+/* CHECKBOX */
+.result-checkbox-wrap {
+  flex-shrink: 0;
+  width: 20px;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 3px;
+}
+.result-checkbox {
+  width: 17px; height: 17px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.result-item.selected {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, #fff 0%, rgba(232,93,38,0.04) 100%);
+  box-shadow: 0 0 0 2px rgba(232,93,38,0.15), var(--shadow);
+}
+
+/* BULK ACTION BAR */
+.bulk-bar {
+  position: sticky;
+  bottom: 24px;
+  left: 0; right: 0;
+  margin: 16px 0 0;
+  background: var(--text);
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px 20px;
+  display: none;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  animation: barIn 0.2s ease;
+  z-index: 50;
+}
+.bulk-bar.visible { display: flex; }
+@keyframes barIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: none; } }
+.bulk-bar-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.6);
+  white-space: nowrap;
+}
+.bulk-bar-count strong { color: var(--accent); font-size: 1rem; }
+.bulk-btn {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.12s;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  white-space: nowrap;
+}
+.bulk-btn:hover { background: rgba(255,255,255,0.18); }
+.bulk-btn.accent { background: var(--accent); border-color: var(--accent); }
+.bulk-btn.accent:hover { background: var(--accent2); }
+.bulk-btn.danger { color: #ff8a7a; border-color: rgba(255,138,122,0.3); }
+.bulk-btn.danger:hover { background: rgba(255,59,59,0.15); }
+.bulk-bar-sep { width: 1px; height: 24px; background: rgba(255,255,255,0.12); }
+.bulk-deselect {
+  margin-left: auto;
+  background: none; border: none;
+  color: rgba(255,255,255,0.4);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 2px 4px;
+  line-height: 1;
+  transition: color 0.12s;
+}
+.bulk-deselect:hover { color: #fff; }
+
+/* select-all row */
+.select-all-row {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0 10px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+.select-all-row.visible { display: flex; }
+.select-all-cb { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
+.select-all-label { cursor: pointer; }
+
+/* RESULTS */
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  margin-top: 8px;
+}
+.results-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+}
+.results-meta {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.result-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.15s;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  animation: slideIn 0.25s ease forwards;
+}
+@keyframes slideIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: none; } }
+.result-item:hover { box-shadow: var(--shadow-lg); }
+
+.result-source-icon {
+  width: 38px; height: 38px;
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.result-body { flex: 1; min-width: 0; }
+.result-source-label {
+  font-size: 0.65rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 3px;
+}
+.result-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-bottom: 5px;
+  line-height: 1.35;
+}
+.result-title a { color: inherit; text-decoration: none; }
+.result-title a:hover { color: var(--accent); }
+.result-snippet {
+  font-size: 0.82rem;
+  color: var(--text-mid);
+  line-height: 1.55;
+  margin-bottom: 8px;
+}
+.result-snippet mark {
+  background: rgba(232,93,38,0.15);
+  color: var(--accent2);
+  border-radius: 2px;
+  padding: 0 2px;
+  font-weight: 600;
+}
+.result-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.result-date {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  font-family: 'JetBrains Mono', monospace;
+}
+.result-keyword-tag {
+  font-size: 0.62rem;
+  padding: 2px 8px;
+  background: var(--accent-light);
+  color: var(--accent2);
+  border-radius: 10px;
+  font-weight: 600;
+  border: 1px solid rgba(232,93,38,0.2);
+}
+.result-actions { margin-left: auto; display: flex; gap: 6px; }
+.result-btn {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.12s;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text-mid);
+}
+.result-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.result-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.result-btn.primary:hover { background: var(--accent2); border-color: var(--accent2); }
+
+.relevance-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.relevance-label { font-size: 0.62rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+.relevance-track {
+  width: 50px; height: 5px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.relevance-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #f59e0b, var(--accent));
+}
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-dim);
+}
+.empty-state .icon { font-size: 3rem; margin-bottom: 14px; opacity: 0.4; }
+.empty-state h3 { font-size: 1rem; font-weight: 700; color: var(--text-mid); margin-bottom: 6px; }
+.empty-state p { font-size: 0.82rem; line-height: 1.6; }
+
+/* PROGRESS */
+.progress-bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  display: none;
+}
+.progress-bar.active { display: block; }
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #f59e0b);
+  border-radius: 2px;
+  animation: progressAnim 2s ease-in-out infinite;
+}
+@keyframes progressAnim {
+  0% { width: 5%; margin-left: 0; }
+  50% { width: 40%; margin-left: 30%; }
+  100% { width: 5%; margin-left: 95%; }
+}
+
+/* MODAL / OVERLAY */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 28px 32px;
+  width: 480px;
+  max-width: 95vw;
+  box-shadow: var(--shadow-lg);
+  animation: modalIn 0.2s ease;
+}
+@keyframes modalIn { from { opacity:0; transform: scale(0.96); } to { opacity:1; transform: none; } }
+.modal-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+.modal-sub { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 20px; }
+.modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+.btn-cancel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem; font-weight: 600;
+  padding: 9px 18px;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text-mid);
+  border-radius: 7px; cursor: pointer;
+  transition: all 0.12s;
+}
+.btn-cancel:hover { border-color: var(--text); color: var(--text); }
+.btn-save {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem; font-weight: 700;
+  padding: 9px 22px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 7px; cursor: pointer;
+  transition: background 0.12s;
+}
+.btn-save:hover { background: var(--accent2); }
+
+.form-row { margin-bottom: 14px; }
+.form-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 6px; display: block; }
+.form-input {
+  width: 100%;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.form-input:focus { border-color: var(--accent); }
+.form-select {
+  width: 100%;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+}
+
+/* SUBFORUM LIST */
+.subforum-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
+.subforum-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  animation: slideIn 0.18s ease;
+}
+.subforum-row .field-input {
+  flex: 1;
+  margin: 0;
+  font-size: 0.7rem;
+  padding: 6px 9px;
+}
+.subforum-remove {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  border-radius: 5px;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s;
+}
+.subforum-remove:hover { background: var(--red-bg); border-color: rgba(192,57,43,0.3); color: var(--red); }
+.subforum-add-btn {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-light);
+  border: 1px dashed rgba(232,93,38,0.35);
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all 0.12s;
+  width: 100%;
+  text-align: left;
+  margin-top: 2px;
+}
+.subforum-add-btn:hover { background: rgba(232,93,38,0.15); border-color: var(--accent); }
+.subforum-count {
+  font-size: 0.6rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-dim);
+  margin-left: 4px;
+}
+
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* STATS STRIP */
+.stats-strip {
+  display: flex;
+  gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow);
+}
+.stat-item {
+  flex: 1;
+  padding: 14px 18px;
+  border-right: 1px solid var(--border);
+  text-align: center;
+}
+.stat-item:last-child { border-right: none; }
+.stat-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.stat-val.orange { color: var(--accent); }
+.stat-lbl { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+
+/* SAVED */
+.saved-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.62rem;
+  padding: 2px 7px;
+  background: var(--green-bg);
+  color: var(--green);
+  border-radius: 10px;
+  font-weight: 600;
+  border: 1px solid rgba(26,122,74,0.2);
+}
+
+/* SOURCES MANAGE VIEW TOGGLE */
+.manage-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px; gap: 12px; flex-wrap: wrap;
+}
+.manage-topbar-left { display: flex; align-items: center; gap: 10px; }
+.manage-count {
+  font-size: 0.72rem; font-family: 'JetBrains Mono', monospace;
+  color: var(--text-dim); background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 5px; padding: 3px 10px;
+}
+.manage-view-toggle {
+  display: flex; border: 1px solid var(--border2); border-radius: 6px; overflow: hidden;
+}
+.manage-view-btn {
+  font-family: 'Outfit', sans-serif; font-size: 0.7rem; font-weight: 600;
+  padding: 6px 13px; background: transparent; border: none;
+  color: var(--text-dim); cursor: pointer; transition: all 0.12s;
+  display: flex; align-items: center; gap: 5px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.manage-view-btn + .manage-view-btn { border-left: 1px solid var(--border2); }
+.manage-view-btn:hover { color: var(--text); background: var(--surface2); }
+.manage-view-btn.active { color: var(--accent); background: var(--accent-light); }
+
+/* SOURCES LIST TABLE */
+.sources-list-table {
+  width: 100%; border-collapse: collapse;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden; box-shadow: var(--shadow);
+}
+.sources-list-table thead tr { background: var(--surface2); border-bottom: 1px solid var(--border); }
+.sources-list-table th {
+  text-align: left; padding: 10px 14px;
+  font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--text-dim); font-weight: 600; white-space: nowrap;
+}
+.sources-list-table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+.sources-list-table tbody tr:last-child { border-bottom: none; }
+.sources-list-table tbody tr:hover { background: var(--bg); }
+.sources-list-table td { padding: 10px 14px; vertical-align: middle; font-size: 0.82rem; }
+.slt-icon { width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+.slt-name { font-weight: 700; color: var(--text); }
+.slt-url-chip {
+  font-size: 0.62rem; font-family: 'JetBrains Mono', monospace;
+  color: var(--blue); background: var(--blue-bg); border-radius: 3px;
+  padding: 2px 7px; display: inline-block;
+  max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.slt-url-empty { font-size: 0.65rem; color: var(--text-dim); font-style: italic; }
+.slt-url-more { font-size: 0.6rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; margin-left: 4px; }
+.slt-keywords { font-size: 0.7rem; color: var(--text-mid); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.slt-edit-btn {
+  font-family: 'Outfit', sans-serif; font-size: 0.68rem; font-weight: 600;
+  padding: 4px 11px; border: 1px solid var(--border2); border-radius: 5px;
+  background: var(--surface2); color: var(--text-mid); cursor: pointer; transition: all 0.12s;
+}
+.slt-edit-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.source-base-url {
+  font-size: 0.6rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--blue);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 3px;
+  opacity: 0.8;
+  transition: opacity 0.12s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
+}
+.source-base-url:hover { opacity: 1; text-decoration: underline; }
+
+.slt-settings-inner { padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; max-width: 640px; }
+
+/* CARD SUBFORUM CHIPS */
+.card-subforums {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 6px 14px 10px;
+  border-top: 1px solid var(--border);
+}
+.card-subforum-chip {
+  font-size: 0.62rem; font-family: 'JetBrains Mono', monospace;
+  color: var(--blue); background: var(--blue-bg); border-radius: 4px;
+  padding: 3px 8px; text-decoration: none; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
+  transition: background 0.12s, color 0.12s; display: block;
+}
+.card-subforum-chip:hover { background: #d0e4fb; color: #1a4fa8; }
+
+/* ENGINE SELECT */
+.engine-select {
+  width: 100%; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+  padding: 6px 9px; border: 1px solid var(--border); border-radius: 6px;
+  background: var(--bg); color: var(--text); outline: none; cursor: pointer;
+  transition: border-color 0.15s;
+}
+.engine-select:focus { border-color: var(--accent); }
+.engine-badge {
+  font-size: 0.58rem; font-family: 'JetBrains Mono', monospace;
+  padding: 1px 6px; border-radius: 3px; text-transform: uppercase;
+  letter-spacing: 0.05em; margin-left: 4px; vertical-align: middle;
+  background: rgba(0,0,0,0.06); color: var(--text-dim);
+}
+
+/* LOGIN BUTTON */
+.login-btn {
+  display: flex; align-items: center; gap: 7px;
+  font-family: 'Outfit', sans-serif; font-size: 0.75rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 7px; cursor: pointer;
+  border: 1px solid var(--border2); background: var(--surface);
+  color: var(--text-mid); transition: all 0.15s; white-space: nowrap;
+}
+.login-btn:hover { border-color: var(--accent); color: var(--accent); }
+.login-lamp {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  position: relative;
+}
+.login-lamp::after {
+  content: ''; position: absolute; inset: -3px; border-radius: 50%;
+  opacity: 0.35; animation: lpulse 2s ease-in-out infinite;
+}
+@keyframes lpulse { 0%,100%{transform:scale(1);opacity:0.35} 50%{transform:scale(1.7);opacity:0.1} }
+.lamp-logged-out { background: var(--red); box-shadow: 0 0 6px var(--red); }
+.lamp-logged-out::after { background: var(--red); }
+.lamp-logged-in  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.lamp-logged-in::after  { background: var(--green); }
+
+/* LOGIN MODAL */
+.login-modal { width: 400px; }
+.login-user-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; background: var(--green-bg);
+  border: 1px solid rgba(26,122,74,0.2); border-radius: 8px; margin-bottom: 4px;
+}
+.login-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--green); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.9rem; flex-shrink: 0;
+}
+.login-user-name { font-weight: 700; font-size: 0.88rem; color: var(--text); }
+.login-user-email { font-size: 0.7rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+
+/* SOURCE LOGIN BUTTON */
+.src-login-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: 'Outfit', sans-serif; font-size: 0.65rem; font-weight: 600;
+  padding: 3px 9px; border-radius: 5px; cursor: pointer;
+  border: 1px solid var(--border2); background: var(--surface2);
+  color: var(--text-dim); transition: all 0.12s; white-space: nowrap;
+}
+.src-login-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.src-login-btn.logged-in { border-color: rgba(26,122,74,0.35); background: var(--green-bg); color: var(--green); }
+.src-login-btn.logged-in:hover { border-color: var(--red); background: var(--red-bg); color: var(--red); }
+.src-lamp { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.src-lamp.on  { background: var(--green); box-shadow: 0 0 4px var(--green); }
+.src-lamp.off { background: var(--text-dim); }
+
+/* CREDENTIALS PAGE */
+.creds-table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow); }
+.creds-table thead tr { background: var(--surface2); border-bottom: 1px solid var(--border); }
+.creds-table th { text-align: left; padding: 10px 14px; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-dim); font-weight: 600; }
+.creds-table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+.creds-table tbody tr:last-child { border-bottom: none; }
+.creds-table tbody tr:hover { background: var(--bg); }
+.creds-table td { padding: 10px 14px; vertical-align: middle; font-size: 0.82rem; }
+.creds-source-name { font-weight: 700; color: var(--text); }
+.creds-login-val { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-mid); }
+.creds-pass-val { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.1em; }
+.creds-empty { color: var(--text-dim); font-style: italic; font-size: 0.72rem; }
+.creds-status { display: inline-flex; align-items: center; gap: 5px; font-size: 0.7rem; font-weight: 600; }
+.creds-status.set { color: var(--green); }
+.creds-status.unset { color: var(--text-dim); }
+.creds-edit-btn { font-family: 'Outfit', sans-serif; font-size: 0.68rem; font-weight: 600; padding: 4px 10px; border: 1px solid var(--border2); border-radius: 5px; background: var(--surface2); color: var(--text-mid); cursor: pointer; transition: all 0.12s; }
+.creds-edit-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.creds-clear-btn { font-family: 'Outfit', sans-serif; font-size: 0.68rem; font-weight: 600; padding: 4px 10px; border: 1px solid transparent; border-radius: 5px; background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.12s; }
+.creds-clear-btn:hover { border-color: rgba(192,57,43,0.3); color: var(--red); background: var(--red-bg); }
+.creds-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.creds-notice { background: var(--yellow-bg); border: 1px solid rgba(176,120,0,0.25); border-radius: 8px; padding: 10px 14px; font-size: 0.75rem; color: var(--yellow); margin-bottom: 16px; display: flex; align-items: flex-start; gap: 8px; }
+.creds-notice-icon { flex-shrink: 0; font-size: 0.9rem; margin-top: 1px; }
+
+/* SOURCE CRED MODAL */
+.src-cred-modal { width: 420px; }
+.src-cred-source-info { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--surface2); border-radius: 8px; margin-bottom: 16px; }
+.src-cred-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+.src-cred-name { font-weight: 700; font-size: 0.9rem; }
+.src-cred-url  { font-size: 0.65rem; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); }
+.pass-toggle-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-dim); font-size: 0.75rem; padding: 2px 4px; }
+.pass-input-wrap { position: relative; }
+.pass-input-wrap .form-input { padding-right: 40px; }
+</style>
+
+</head>
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand">LEAD<span>●</span>HUNTER</div>
+    <div class="tagline">client discovery engine</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Nawigacja</div>
+    <button class="nav-item active" onclick="showPage('search')">
+      <span class="nav-icon">🔍</span> Szukaj klientów
+    </button>
+    <button class="nav-item" onclick="showPage('saved')">
+      <span class="nav-icon">🔖</span> Zapisane leady
+      <span class="nav-badge" id="saved-count">0</span>
+    </button>
+    <button class="nav-item" onclick="showPage('sources')">
+      <span class="nav-icon">⚙️</span> Zarządzaj źródłami
+    </button>
+    <button class="nav-item" onclick="showPage('credentials')">
+      <span class="nav-icon">🔐</span> Loginy do źródeł
+      <span class="nav-badge" id="creds-count" style="display:none">0</span>
+    </button>
+
+    <div class="nav-section-label" style="margin-top:8px">Szybkie zapytania</div>
+    <button class="nav-item" onclick="quickSearch('szukam szkoleń')">
+      <span class="nav-icon">📚</span> Szkolenia
+    </button>
+    <button class="nav-item" onclick="quickSearch('szukam dostawcy artykułów biurowych')">
+      <span class="nav-icon">🖊️</span> Art. biurowe
+    </button>
+    <button class="nav-item" onclick="quickSearch('szukam programisty freelancer')">
+      <span class="nav-icon">💻</span> IT / Dev
+    </button>
+    <button class="nav-item" onclick="quickSearch('polecacie agencję marketingową')">
+      <span class="nav-icon">📣</span> Marketing
+    </button>
+    <button class="nav-item" onclick="quickSearch('szukam ksiegowej rachunkowość')">
+      <span class="nav-icon">📊</span> Księgowość
+    </button>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title" id="page-title">Szukaj klientów</div>
+      <div class="page-subtitle" id="page-subtitle">Przeszukuj fora i serwisy społecznościowe</div>
+    </div>
+    <button class="login-btn" id="login-btn" onclick="openLoginModal()">
+      <div class="login-lamp lamp-logged-out" id="login-lamp"></div>
+      <span id="login-btn-label">Zaloguj się</span>
+    </button>
+  </div>
+
+  <div class="content">
+
+    <!-- PAGE: SEARCH -->
+    <div id="page-search">
+      <!-- Search box -->
+      <div class="search-box">
+        <div class="search-box-label">Czego szukają Twoi klienci?</div>
+        <div class="search-row">
+          <input type="text" class="search-input" id="main-query"
+            placeholder="np. szukam szkoleń z Excela, potrzebuję dostawcy papieru..."
+            onkeydown="if(event.key==='Enter') doSearch()" />
+          <button class="search-btn" onclick="doSearch()" id="search-btn">
+            <span id="search-btn-icon">🔍</span> Szukaj
+          </button>
+        </div>
+        <div class="search-tags">
+          <span class="search-tag-label">Przykłady:</span>
+          <span class="preset-tag" onclick="setQuery('szukam szkoleń z Excela')">Szkolenia Excel</span>
+          <span class="preset-tag" onclick="setQuery('potrzebuję artykułów biurowych hurt')">Art. biurowe</span>
+          <span class="preset-tag" onclick="setQuery('polecacie programistę PHP freelancer')">PHP dev</span>
+          <span class="preset-tag" onclick="setQuery('szukam agencji SEO dla firmy')">Agencja SEO</span>
+          <span class="preset-tag" onclick="setQuery('potrzebuję tłumacza angielski')">Tłumacz</span>
+          <span class="preset-tag" onclick="setQuery('szukam dostawcy kawy do biura')">Kawa do biura</span>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-strip" id="stats-strip" style="display:none">
+        <div class="stat-item">
+          <div class="stat-val orange" id="stat-results">0</div>
+          <div class="stat-lbl">Wyników</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" id="stat-sources">0</div>
+          <div class="stat-lbl">Źródeł</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" id="stat-hot">0</div>
+          <div class="stat-lbl">Hot leads</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" id="stat-saved">0</div>
+          <div class="stat-lbl">Zapisanych</div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-bar" id="progress-bar"><div class="progress-fill"></div></div>
+
+      <!-- Sources quick toggle -->
+      <div class="sources-header">
+        <div class="sources-title">Aktywne źródła</div>
+      </div>
+      <div class="sources-grid" id="sources-grid"></div>
+
+      <!-- Results -->
+      <div id="results-section" style="display:none">
+        <div class="results-header">
+          <div class="results-title" id="results-title">Wyniki</div>
+          <div class="results-meta" id="results-meta"></div>
+        </div>
+        <div class="select-all-row" id="select-all-row">
+          <input type="checkbox" class="select-all-cb" id="select-all-cb" onchange="toggleSelectAll(this.checked)">
+          <label class="select-all-label" for="select-all-cb">Zaznacz wszystkie</label>
+        </div>
+        <div id="results-list"></div>
+        <div class="bulk-bar" id="bulk-bar">
+          <div class="bulk-bar-count">Zaznaczono: <strong id="bulk-count">0</strong></div>
+          <div class="bulk-bar-sep"></div>
+          <button class="bulk-btn accent" onclick="bulkSave()">🔖 Zapisz zaznaczone</button>
+          <button class="bulk-btn" onclick="bulkCopy()">📋 Kopiuj linki</button>
+          <button class="bulk-btn danger" onclick="bulkDeselect()">✕ Odznacz</button>
+          <button class="bulk-deselect" onclick="bulkDeselect()" title="Zamknij">✕</button>
+        </div>
+      </div>
+
+      <div id="empty-state" class="empty-state">
+        <div class="icon">🎯</div>
+        <h3>Gotowy do polowania na leady?</h3>
+        <p>Wpisz zapytanie, włącz interesujące źródła i kliknij Szukaj.<br>
+        Narzędzie przeszuka fora i serwisy społecznościowe w poszukiwaniu<br>potencjalnych klientów.</p>
+      </div>
+    </div>
+
+    <!-- PAGE: SAVED -->
+    <div id="page-saved" style="display:none">
+      <div id="saved-list"></div>
+      <div id="saved-empty" class="empty-state" style="display:none">
+        <div class="icon">🔖</div>
+        <h3>Brak zapisanych leadów</h3>
+        <p>Wyszukaj klientów i zapisuj obiecujące wyniki klikając<br>przycisk "Zapisz lead".</p>
+      </div>
+    </div>
+
+    <!-- PAGE: SOURCES MANAGEMENT -->
+    <div id="page-sources" style="display:none">
+      <div class="manage-topbar">
+        <div class="manage-topbar-left">
+          <div class="sources-title">Wszystkie źródła</div>
+          <div class="manage-count" id="manage-count">15 źródeł</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div class="manage-view-toggle">
+            <button class="manage-view-btn active" id="mgbtn-grid" onclick="setManageView('grid',this)">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="0" y="0" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="7.5" y="0" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="0" y="7.5" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1" fill="currentColor"/></svg>
+              Kafelki
+            </button>
+            <button class="manage-view-btn" id="mgbtn-list" onclick="setManageView('list',this)">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="0" y="1" width="13" height="2" rx="1" fill="currentColor"/><rect x="0" y="5.5" width="13" height="2" rx="1" fill="currentColor"/><rect x="0" y="10" width="13" height="2" rx="1" fill="currentColor"/></svg>
+              Lista
+            </button>
+          </div>
+          <button class="add-source-btn" onclick="openAddModal()">+ Dodaj źródło</button>
+        </div>
+      </div>
+      <div id="sources-manage-content"></div>
+    </div>
+
+    <!-- PAGE: CREDENTIALS -->
+    <div id="page-credentials" style="display:none">
+      <div class="creds-topbar">
+        <div>
+          <div class="sources-title">Loginy do źródeł</div>
+        </div>
+      </div>
+      <div class="creds-notice" id="creds-notice">
+        <span class="creds-notice-icon">🔒</span>
+        <span>Hasła są przechowywane lokalnie w przeglądarce i powiązane z Twoim kontem użytkownika. Zaloguj się do systemu, aby zarządzać swoimi loginami.</span>
+      </div>
+      <div id="creds-content"></div>
+    </div>
+
+  </div>
+</main>
+</div>
+
+<!-- ADD SOURCE MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Dodaj nowe źródło</div>
+    <div class="modal-sub">Skonfiguruj nowe miejsce przeszukiwania</div>
+    <div class="form-row">
+      <label class="form-label">Nazwa źródła</label>
+      <input class="form-input" id="new-name" placeholder="np. Forum Moje Forum" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Typ</label>
+      <select class="form-select" id="new-type">
+        <option value="forum">Forum</option>
+        <option value="social">Social media</option>
+        <option value="portal">Portal informacyjny</option>
+        <option value="ogloszenia">Serwis ogłoszeniowy</option>
+        <option value="it">Forum IT</option>
+        <option value="biznes">Forum biznesowe</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Silnik wyszukiwania</label>
+      <select class="form-select" id="new-engine">
+        <option value="internal">Wewnętrzna wyszukiwarka</option>
+        <option value="google">Google</option>
+        <option value="google_site">Google (site:)</option>
+        <option value="bing">Bing</option>
+        <option value="duckduckgo">DuckDuckGo</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Główny URL serwisu</label>
+      <input class="form-input" id="new-baseurl" placeholder="https://forum.example.com" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">URL podforum / sekcji (opcjonalnie)</label>
+      <input class="form-input" id="new-url" placeholder="https://forum.example.com/kategoria/" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Ikona (emoji)</label>
+      <input class="form-input" id="new-icon" placeholder="🌐" maxlength="2" style="width:80px" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Anuluj</button>
+      <button class="btn-save" onclick="saveNewSource()">Dodaj źródło</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="login-modal-overlay">
+  <div class="modal login-modal">
+    <div id="login-form-view">
+      <div class="modal-title">Logowanie</div>
+      <div class="modal-sub">Zaloguj się aby korzystać z pełnych możliwości</div>
+      <div class="form-row">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="login-email" type="email" placeholder="jan@firma.pl" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">Hasło</label>
+        <input class="form-input" id="login-password" type="password" placeholder="••••••••"
+          onkeydown="if(event.key==='Enter') doLogin()" />
+      </div>
+      <div id="login-error" style="display:none;color:var(--red);font-size:0.75rem;margin-top:-6px;margin-bottom:8px"></div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeLoginModal()">Anuluj</button>
+        <button class="btn-save" onclick="doLogin()">Zaloguj</button>
+      </div>
+    </div>
+    <div id="login-logged-view" style="display:none">
+      <div class="modal-title">Konto</div>
+      <div class="modal-sub" style="margin-bottom:16px">Jesteś zalogowany</div>
+      <div class="login-user-row">
+        <div class="login-avatar" id="login-avatar">?</div>
+        <div>
+          <div class="login-user-name" id="login-user-name">—</div>
+          <div class="login-user-email" id="login-user-email">—</div>
+        </div>
+      </div>
+      <div class="modal-footer" style="margin-top:16px">
+        <button class="btn-cancel" onclick="closeLoginModal()">Zamknij</button>
+        <button class="btn-save" style="background:var(--red)" onclick="doLogout()">Wyloguj</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SOURCE CREDENTIALS MODAL -->
+<div class="modal-overlay" id="src-cred-modal-overlay">
+  <div class="modal src-cred-modal">
+    <div class="modal-title" id="src-cred-title">Logowanie do źródła</div>
+    <div class="modal-sub" id="src-cred-sub">Podaj dane dostępowe</div>
+    <div class="src-cred-source-info" id="src-cred-info"></div>
+    <div class="form-row">
+      <label class="form-label">Login / Email</label>
+      <input class="form-input" id="src-cred-login" type="text" placeholder="twój login lub email" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Hasło</label>
+      <div class="pass-input-wrap">
+        <input class="form-input" id="src-cred-pass" type="password" placeholder="••••••••" />
+        <button class="pass-toggle-btn" type="button" onclick="togglePassVis()" id="pass-toggle-btn">👁</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeSrcCredModal()">Anuluj</button>
+      <button class="btn-save" onclick="saveSrcCred()">Zapisz</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================
+// DATA
+// =====================
+let savedLeads = JSON.parse(localStorage.getItem('lh_saved') || '[]');
+
+const ENGINES = [
+  { value: 'internal', label: 'Wewnętrzna wyszukiwarka' },
+  { value: 'google',   label: 'Google' },
+  { value: 'google_site', label: 'Google (site:)' },
+  { value: 'bing',     label: 'Bing' },
+  { value: 'duckduckgo', label: 'DuckDuckGo' },
+];
+
+const SOURCES = [
+  { id: 1, name: 'Elektroda.pl', type: 'forum', icon: '⚡', color: '#e8f0fc', enabled: true,
+    baseUrl: 'https://www.elektroda.pl', engine: 'internal',
+    subforums: [''], keywords: 'szukam, polecacie, potrzebuję, pomożecie',
+    desc: 'Forum techniczne i elektroniczne' },
+  { id: 2, name: '4programmers.net', type: 'it', icon: '👨‍💻', color: '#f0e8fc', enabled: true,
+    baseUrl: 'https://4programmers.net', engine: 'internal',
+    subforums: ['https://4programmers.net/Forum/Praca', 'https://4programmers.net/Forum/Oferty'],
+    keywords: 'szukam, potrzebuję, pomoc, oferta',
+    desc: 'Forum programistyczne' },
+  { id: 3, name: 'Forum.net.pl', type: 'forum', icon: '💬', color: '#e8f0fc', enabled: true,
+    baseUrl: 'https://forum.net.pl', engine: 'google_site',
+    subforums: [''], keywords: 'szukam, potrzebuję, polecacie',
+    desc: 'Forum ogólne' },
+  { id: 4, name: 'Bankier.pl Forum', type: 'biznes', icon: '🏦', color: '#e8f5f5', enabled: true,
+    baseUrl: 'https://forum.bankier.pl', engine: 'internal',
+    subforums: ['https://forum.bankier.pl/'], keywords: 'szukam dostawcy, polecacie firmę, potrzebuję usługi',
+    desc: 'Forum finansowe i biznesowe' },
+  { id: 5, name: 'GoldenLine', type: 'social', icon: '🟡', color: '#fde8f0', enabled: false,
+    baseUrl: 'https://www.goldenline.pl', engine: 'internal',
+    subforums: [''], keywords: 'szukam, hiring, rekrutacja, oferta',
+    desc: 'Polska sieć profesjonalistów' },
+  { id: 6, name: 'LinkedIn PL', type: 'social', icon: '💼', color: '#fde8f0', enabled: true,
+    baseUrl: 'https://www.linkedin.com', engine: 'google',
+    subforums: [''], keywords: 'looking for, szukam, need vendor, potrzebuję',
+    desc: 'Sieć profesjonalistów' },
+  { id: 7, name: 'Onet Wiadomości', type: 'portal', icon: '🔴', color: '#e8f5ee', enabled: false,
+    baseUrl: 'https://www.onet.pl', engine: 'internal',
+    subforums: ['https://wiadomosci.onet.pl/'], keywords: '',
+    desc: 'Portal informacyjny Onet' },
+  { id: 8, name: 'WP.pl Finanse', type: 'portal', icon: '🌐', color: '#e8f5ee', enabled: false,
+    baseUrl: 'https://www.wp.pl', engine: 'internal',
+    subforums: ['https://finanse.wp.pl/'], keywords: '',
+    desc: 'Dział finansowy WP' },
+  { id: 9, name: 'OLX – Usługi', type: 'ogloszenia', icon: '📋', color: '#fef3e2', enabled: true,
+    baseUrl: 'https://www.olx.pl', engine: 'internal',
+    subforums: ['https://www.olx.pl/uslugi/', 'https://www.olx.pl/elektronika/'],
+    keywords: 'szukam, poszukuję, potrzebuję',
+    desc: 'Ogłoszenia OLX – dział usług' },
+  { id: 10, name: 'Oferteo.pl', type: 'ogloszenia', icon: '📝', color: '#fef3e2', enabled: true,
+    baseUrl: 'https://oferteo.pl', engine: 'internal',
+    subforums: ['https://oferteo.pl/'], keywords: '',
+    desc: 'Platforma zleceń i usług' },
+  { id: 11, name: 'Reddit r/Polska', type: 'social', icon: '🤖', color: '#fde8f0', enabled: true,
+    baseUrl: 'https://www.reddit.com', engine: 'google_site',
+    subforums: ['https://reddit.com/r/Polska/', 'https://reddit.com/r/PracaIT/'],
+    keywords: 'szukam, potrzebuję, polecacie',
+    desc: 'Reddit – polska społeczność' },
+  { id: 12, name: 'Wykop.pl', type: 'social', icon: '🔺', color: '#fde8f0', enabled: true,
+    baseUrl: 'https://www.wykop.pl', engine: 'internal',
+    subforums: [''], keywords: 'szukam, potrzebuję, polecacie',
+    desc: 'Społeczność Wykop.pl' },
+  { id: 13, name: 'Freelancer.pl', type: 'ogloszenia', icon: '🎯', color: '#fef3e2', enabled: true,
+    baseUrl: 'https://freelancer.pl', engine: 'internal',
+    subforums: ['https://freelancer.pl/zlecenia/'], keywords: 'szukam wykonawcy, potrzebuję, zlecę',
+    desc: 'Platforma zleceń dla freelancerów' },
+  { id: 14, name: 'inEDU.pl Forum', type: 'forum', icon: '🎓', color: '#e8f0fc', enabled: false,
+    baseUrl: 'https://www.inedu.pl', engine: 'google',
+    subforums: [''], keywords: 'szukam szkolenia, potrzebuję kursu',
+    desc: 'Forum edukacyjne' },
+  { id: 15, name: 'Forum GazetaPrawna', type: 'biznes', icon: '⚖️', color: '#e8f5f5', enabled: false,
+    baseUrl: 'https://forum.gazetaprawna.pl', engine: 'google_site',
+    subforums: [''], keywords: 'szukam prawnika, potrzebuję porady, firma',
+    desc: 'Forum biznesowe Gazeta Prawna' },
+];
+
+let nextId = 16;
+
+// =====================
+// PAGES
+// =====================
+function showPage(page) {
+  ['search','saved','sources','credentials'].forEach(p => {
+    document.getElementById(`page-${p}`).style.display = p === page ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  const titles = {
+    search: ['Szukaj klientów', 'Przeszukuj fora i serwisy społecznościowe'],
+    saved: ['Zapisane leady', 'Twoja lista potencjalnych klientów'],
+    sources: ['Zarządzaj źródłami', 'Konfiguruj i edytuj źródła danych'],
+    credentials: ['Loginy do źródeł', 'Zarządzaj danymi dostępowymi do każdego źródła']
+  };
+  document.getElementById('page-title').textContent = titles[page][0];
+  document.getElementById('page-subtitle').textContent = titles[page][1];
+
+  if (page === 'saved') renderSaved();
+  if (page === 'sources') renderSourcesManage();
+  if (page === 'credentials') renderCredentials();
+}
+
+// =====================
+// RENDER SOURCES
+// =====================
+function typeBadge(t) {
+  const map = { forum:'badge-forum', social:'badge-social', portal:'badge-portal', ogloszenia:'badge-ogloszenia', it:'badge-it', biznes:'badge-biznes' };
+  const labels = { forum:'Forum', social:'Social', portal:'Portal', ogloszenia:'Ogłoszenia', it:'IT', biznes:'Biznes' };
+  return `<span class="source-type-badge ${map[t]||'badge-forum'}">${labels[t]||t}</span>`;
+}
+
+function renderSources() {
+  const grid = document.getElementById('sources-grid');
+  const enabled = SOURCES.filter(s => s.enabled);
+  grid.innerHTML = enabled.length
+    ? enabled.map(s => sourceCardHTML(s)).join('')
+    : `<div style="color:var(--text-dim);font-size:0.78rem;padding:12px 0">Brak włączonych źródeł. Włącz je w <a href="#" onclick="document.querySelectorAll('.nav-item')[2].click();return false;" style="color:var(--accent)">Zarządzaj źródłami</a>.</div>`;
+}
+
+function toggleSource(id, val) {
+  const s = SOURCES.find(x => x.id === id);
+  if (s) s.enabled = val;
+  renderSources(); // refresh search page grid
+}
+
+function sourceCardHTML(s, fullSettings = false) {
+  if (!s.subforums) s.subforums = s.subforum ? [s.subforum] : [''];
+  const iconBg = s.color || '#e8f0fc';
+  const filledCount = s.subforums.filter(u => u.trim()).length;
+  const countLabel = filledCount > 0 ? `<span class="subforum-count">(${filledCount})</span>` : '';
+
+  const settingsPanel = fullSettings ? `
+    <button class="settings-toggle-btn" id="stbtn-${s.id}" onclick="toggleSettings(${s.id})">
+      <span class="chevron">▾</span> Ustawienia
+    </button>
+    <div class="source-card-body" id="sbody-${s.id}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="field-label" style="margin:0">Dane logowania</div>
+        ${srcLoginBtnHTML(s.id)}
+      </div>
+      <div class="field-label" style="margin-top:6px">Silnik wyszukiwania</div>
+      <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value)">
+        ${ENGINES.map(e => `<option value="${e.value}" ${(s.engine||'internal')===e.value?'selected':''}>${e.label}</option>`).join('')}
+      </select>
+      <div class="field-label" style="margin-top:10px">Podfora / sekcje ${countLabel}</div>
+      <div class="subforum-list" id="sflist-${s.id}">
+        ${s.subforums.map((url, idx) => subforumRowHTML(s.id, idx, url)).join('')}
+      </div>
+      <button class="subforum-add-btn" onclick="addSubforum(${s.id})">+ Dodaj kolejny link</button>
+      <div class="field-label" style="margin-top:10px">Słowa kluczowe (oddziel przecinkiem)</div>
+      <textarea class="field-input keywords-input" id="skw-${s.id}" placeholder="np. szukam, polecacie, potrzebuję..." oninput="updateSource(${s.id},'keywords',this.value)">${s.keywords||''}</textarea>
+    </div>` : '';
+
+  const toggleHTML = fullSettings ? `
+      <label class="source-toggle">
+        <input type="checkbox" ${s.enabled?'checked':''} onchange="toggleSource(${s.id}, this.checked)">
+        <span class="toggle-slider"></span>
+      </label>` : '';
+
+  const subforumsDisplay = !fullSettings ? (() => {
+    const filled = s.subforums.filter(u => u.trim());
+    if (!filled.length) return '';
+    return `<div class="card-subforums">${filled.map(u => `<a class="card-subforum-chip" href="${u}" target="_blank" onclick="event.stopPropagation()" title="${u}">↗ ${u.replace(/https?:\/\/(www\.)?/,'').replace(/\/$/,'')}</a>`).join('')}</div>`;
+  })() : '';
+
+  return `
+  <div class="source-card" id="scard-${s.id}">
+    <div class="source-card-header">
+      <div class="source-icon" style="background:${iconBg}">${s.icon}</div>
+      <div class="source-info">
+        <div class="source-name">${s.name}</div>
+        ${typeBadge(s.type)}
+        ${s.baseUrl ? `<a class="source-base-url" href="${s.baseUrl}" target="_blank" onclick="event.stopPropagation()">🔗 ${s.baseUrl.replace('https://','').replace('www.','')}</a>` : ''}
+      </div>
+      ${toggleHTML}
+    </div>
+    ${subforumsDisplay}
+    ${settingsPanel}
+  </div>
+  `;
+}
+
+function subforumRowHTML(sourceId, idx, url) {
+  return `
+    <div class="subforum-row" id="sfrow-${sourceId}-${idx}">
+      <input class="field-input" value="${url}" placeholder="https://forum.example.com/kategoria/"
+        oninput="updateSubforum(${sourceId}, ${idx}, this.value)" />
+      <button class="subforum-remove" onclick="removeSubforum(${sourceId}, ${idx})" title="Usuń">×</button>
+    </div>
+  `;
+}
+
+let manageView = 'grid';
+
+function setManageView(v, btn) {
+  manageView = v;
+  document.querySelectorAll('.manage-view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderSourcesManage();
+}
+
+function renderSourcesManage() {
+  const container = document.getElementById('sources-manage-content');
+  document.getElementById('manage-count').textContent = SOURCES.length + ' źródeł';
+  if (manageView === 'grid') {
+    container.innerHTML = `<div class="sources-grid" id="sources-grid-manage">${SOURCES.map(s => sourceCardHTML(s, true)).join('')}</div>`;
+  } else {
+    container.innerHTML = sourceListTableHTML();
+  }
+}
+
+function sourceListTableHTML() {
+  const rows = SOURCES.map(s => {
+    if (!s.subforums) s.subforums = s.subforum ? [s.subforum] : [''];
+    const filled = s.subforums.filter(u => u.trim());
+    let urlsHTML = '';
+    if (filled.length === 0) {
+      urlsHTML = `<span class="slt-url-empty">Brak URL</span>`;
+    } else {
+      urlsHTML = `<span class="slt-url-chip" title="${filled[0]}">${filled[0]}</span>`;
+      if (filled.length > 1) urlsHTML += `<span class="slt-url-more">+${filled.length - 1} więcej</span>`;
+    }
+    const kwShort = s.keywords ? s.keywords : '—';
+    const engineLabel = (ENGINES.find(e => e.value === (s.engine||'internal')) || ENGINES[0]).label;
+    const enabledHTML = `<label class="source-toggle" style="display:inline-block">
+      <input type="checkbox" ${s.enabled?'checked':''} onchange="toggleSource(${s.id},this.checked)">
+      <span class="toggle-slider"></span>
+    </label>`;
+    return `
+      <tr id="sltr-${s.id}">
+        <td><div class="slt-icon" style="background:${s.color||'#e8f0fc'}">${s.icon}</div></td>
+        <td><div class="slt-name">${s.name}</div>${typeBadge(s.type)}${s.baseUrl ? `<br><a class="source-base-url" href="${s.baseUrl}" target="_blank">🔗 ${s.baseUrl.replace('https://','').replace('www.','')}</a>` : ''}</td>
+        <td><div style="display:flex;flex-direction:column;gap:3px">${urlsHTML}</div></td>
+        <td><div class="slt-keywords" title="${s.keywords}">${kwShort}</div></td>
+        <td><span class="engine-badge">${engineLabel}</span></td>
+        <td>${srcLoginBtnHTML(s.id)}</td>
+        <td style="text-align:center">${enabledHTML}</td>
+        <td><button class="slt-edit-btn" onclick="toggleListSettings(${s.id})">⚙ Edytuj</button></td>
+      </tr>
+      <tr class="slt-settings-row" id="slts-${s.id}" style="display:none">
+        <td colspan="8">
+          <div class="slt-settings-inner">
+            <div class="field-label">Silnik wyszukiwania</div>
+            <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value)">
+              ${ENGINES.map(e => `<option value="${e.value}" ${(s.engine||'internal')===e.value?'selected':''}>${e.label}</option>`).join('')}
+            </select>
+            <div class="field-label" style="margin-top:10px">Podfora / sekcje</div>
+            <div class="subforum-list" id="sflist-${s.id}">
+              ${s.subforums.map((url, idx) => subforumRowHTML(s.id, idx, url)).join('')}
+            </div>
+            <button class="subforum-add-btn" onclick="addSubforum(${s.id})">+ Dodaj kolejny link</button>
+            <div class="field-label" style="margin-top:10px">Słowa kluczowe</div>
+            <textarea class="field-input keywords-input" id="skw-${s.id}" placeholder="np. szukam, polecacie, potrzebuję..." oninput="updateSource(${s.id},'keywords',this.value)">${s.keywords||''}</textarea>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+  return `
+    <table class="sources-list-table">
+      <thead><tr>
+        <th style="width:44px"></th>
+        <th>Źródło</th>
+        <th>Podfora</th>
+        <th>Słowa kluczowe</th>
+        <th>Silnik</th>
+        <th>Logowanie</th>
+        <th style="text-align:center">Aktywne</th>
+        <th></th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function toggleListSettings(id) {
+  const row = document.getElementById(`slts-${id}`);
+  if (!row) return;
+  const visible = row.style.display !== 'none';
+  row.style.display = visible ? 'none' : 'table-row';
+  // update button label
+  const btn = document.querySelector(`#sltr-${id} .slt-edit-btn`);
+  if (btn) btn.textContent = visible ? '⚙ Edytuj' : '✕ Zamknij';
+}
+
+
+function toggleSettings(id) {
+  const body = document.getElementById(`sbody-${id}`);
+  const btn = document.getElementById(`stbtn-${id}`);
+  const open = body.classList.toggle('open');
+  btn.classList.toggle('open', open);
+}
+
+function updateSource(id, field, val) {
+  const s = SOURCES.find(x => x.id === id);
+  if (s) s[field] = val;
+}
+
+function updateSubforum(sourceId, idx, val) {
+  const s = SOURCES.find(x => x.id === sourceId);
+  if (!s) return;
+  s.subforums[idx] = val;
+  // update count label in both grids
+  refreshSubforumCount(sourceId);
+}
+
+function addSubforum(sourceId) {
+  const s = SOURCES.find(x => x.id === sourceId);
+  if (!s) return;
+  s.subforums.push('');
+  const idx = s.subforums.length - 1;
+  // append row to both grids (search page + manage page)
+  ['sflist-' + sourceId].forEach(listId => {
+    const list = document.getElementById(listId);
+    if (list) {
+      list.insertAdjacentHTML('beforeend', subforumRowHTML(sourceId, idx, ''));
+      // focus the new input
+      const inputs = list.querySelectorAll('.subforum-row input');
+      if (inputs.length) inputs[inputs.length - 1].focus();
+    }
+  });
+  refreshSubforumCount(sourceId);
+}
+
+function removeSubforum(sourceId, idx) {
+  const s = SOURCES.find(x => x.id === sourceId);
+  if (!s) return;
+  if (s.subforums.length <= 1) {
+    // just clear it instead of removing
+    s.subforums[0] = '';
+    const input = document.querySelector(`#sfrow-${sourceId}-0 input`);
+    if (input) input.value = '';
+    return;
+  }
+  s.subforums.splice(idx, 1);
+  // re-render the list
+  const list = document.getElementById(`sflist-${sourceId}`);
+  if (list) list.innerHTML = s.subforums.map((url, i) => subforumRowHTML(sourceId, i, url)).join('');
+  refreshSubforumCount(sourceId);
+}
+
+function refreshSubforumCount(sourceId) {
+  const s = SOURCES.find(x => x.id === sourceId);
+  if (!s) return;
+  const filledCount = s.subforums.filter(u => u.trim()).length;
+  // update the label in every open settings panel
+  document.querySelectorAll(`#sbody-${sourceId} .subforum-count`).forEach(el => {
+    el.textContent = filledCount > 0 ? `(${filledCount})` : '';
+  });
+}
+
+
+// =====================
+// SEARCH
+// =====================
+const MOCK_RESULTS = [
+  { source: 'Wykop.pl', icon: '🔺', type: 'social', color: '#fde8f0',
+    title: 'Szukam polecenia na szkolenie z Excela dla całego działu',
+    snippet: 'Hej, mamy w firmie 15 osób które <mark>potrzebują szkoleń</mark> z Excela (poziom średniozaawansowany). Budżet ok. 500zł/os. Czy ktoś przechodził przez coś podobnego i może polecić sprawdzone centrum szkoleniowe?',
+    url: 'https://wykop.pl/link/przykład',
+    date: '2024-02-15', relevance: 95, keyword: 'szkolenia' },
+  { source: '4programmers.net', icon: '👨‍💻', type: 'it', color: '#f0e8fc',
+    title: 'Potrzebuję kogoś do wdrożenia systemu CRM – mała firma',
+    snippet: 'Prowadzę 10-osobową firmę usługową i <mark>szukam</mark> kogoś kto pomoże nam wdrożyć i skonfigurować CRM (najchętniej HubSpot lub Pipedrive). Płatne zlecenie, możliwa długoterminowa współpraca.',
+    url: 'https://4programmers.net/Forum/przykład',
+    date: '2024-02-18', relevance: 88, keyword: 'CRM wdrożenie' },
+  { source: 'OLX – Usługi', icon: '📋', type: 'ogloszenia', color: '#fef3e2',
+    title: 'Poszukuję dostawcy materiałów biurowych – umowa długoterminowa',
+    snippet: 'Firma z Wrocławia <mark>poszukuje</mark> rzetelnego dostawcy <mark>artykułów biurowych</mark>. Miesięczne zamówienia ok. 2000-3000 PLN. Interesuje nas faktura VAT i dostawa pod biuro.',
+    url: 'https://olx.pl/oferta/przykład',
+    date: '2024-02-20', relevance: 97, keyword: 'artykuły biurowe' },
+  { source: 'Bankier.pl Forum', icon: '🏦', type: 'biznes', color: '#e8f5f5',
+    title: 'Czy ktoś może polecić agencję SEO dla e-commerce?',
+    snippet: 'Prowadzę sklep internetowy z elektroniką. <mark>Szukam</mark> agencji SEO która ma doświadczenie z e-commerce i rozumie specyfikę branży. Budżet od 3000 PLN/miesiąc, mile widziane case studies.',
+    url: 'https://forum.bankier.pl/przykład',
+    date: '2024-02-19', relevance: 82, keyword: 'agencja SEO' },
+  { source: 'Reddit r/Polska', icon: '🤖', type: 'social', color: '#fde8f0',
+    title: 'Polecacie kogoś do stałej obsługi księgowej? Startup, B2B',
+    snippet: 'Zakładam spółkę z o.o. i <mark>szukam</mark> biura rachunkowego które ogarnie startup – faktury, ZUS, KPiR. Chodzi mi o kogoś z doświadczeniem ze startupami, nie klasyczne biuro.',
+    url: 'https://reddit.com/r/Polska/przykład',
+    date: '2024-02-21', relevance: 90, keyword: 'księgowość' },
+  { source: 'Freelancer.pl', icon: '🎯', type: 'ogloszenia', color: '#fef3e2',
+    title: 'Zlecę tłumaczenie dokumentacji technicznej EN→PL',
+    snippet: 'Mam ok. 80 stron dokumentacji technicznej z branży mechanicznej. <mark>Szukam</mark> tłumacza z doświadczeniem w tłumaczeniach technicznych. Termin: 2 tygodnie. Pytajcie o szczegóły.',
+    url: 'https://freelancer.pl/zlecenia/przykład',
+    date: '2024-02-17', relevance: 78, keyword: 'tłumaczenie' },
+  { source: 'LinkedIn PL', icon: '💼', type: 'social', color: '#fde8f0',
+    title: 'Looking for a content marketing agency – B2B tech',
+    snippet: 'We are a Polish SaaS company <mark>looking for</mark> a content marketing agency experienced in B2B tech. We need blog posts, case studies and LinkedIn content. DM me if interested.',
+    url: 'https://linkedin.com/posts/przykład',
+    date: '2024-02-22', relevance: 85, keyword: 'content marketing' },
+  { source: 'Elektroda.pl', icon: '⚡', type: 'forum', color: '#e8f0fc',
+    title: 'Szukam serwisu laptopów dla firmy – Poznań lub zdalnie',
+    snippet: 'Mamy flotę ok. 30 laptopów służbowych. <mark>Potrzebuję</mark> solidnego partnera serwisowego który odbierze sprzęt, naprawi i odda w rozsądnym czasie. Pytanie czy ktoś ma sprawdzone miejsce?',
+    url: 'https://elektroda.pl/rtvforum/topic/przykład',
+    date: '2024-02-16', relevance: 72, keyword: 'serwis laptopów' },
+];
+
+let currentResults = [];
+let searching = false;
+let selectedIndices = new Set();
+
+function toggleSelect(idx, checked) {
+  if (checked) selectedIndices.add(idx);
+  else selectedIndices.delete(idx);
+  document.getElementById(`ri-${idx}`).classList.toggle('selected', checked);
+  // update select-all state
+  const total = currentResults.length;
+  document.getElementById('select-all-cb').checked = selectedIndices.size === total;
+  document.getElementById('select-all-cb').indeterminate = selectedIndices.size > 0 && selectedIndices.size < total;
+  updateBulkBar();
+}
+
+function toggleSelectAll(checked) {
+  currentResults.forEach((_, i) => {
+    if (checked) selectedIndices.add(i);
+    else selectedIndices.delete(i);
+    const el = document.getElementById(`ri-${i}`);
+    if (el) el.classList.toggle('selected', checked);
+    const cb = document.querySelector(`.result-checkbox[data-idx="${i}"]`);
+    if (cb) cb.checked = checked;
+  });
+  updateBulkBar();
+}
+
+function updateBulkBar() {
+  const bar = document.getElementById('bulk-bar');
+  const count = selectedIndices.size;
+  document.getElementById('bulk-count').textContent = count;
+  bar.classList.toggle('visible', count > 0);
+}
+
+function bulkDeselect() {
+  toggleSelectAll(false);
+  document.getElementById('select-all-cb').checked = false;
+  document.getElementById('select-all-cb').indeterminate = false;
+}
+
+function bulkSave() {
+  let saved = 0;
+  selectedIndices.forEach(i => {
+    const btn = document.getElementById(`save-btn-${i}`);
+    if (btn && !btn.dataset.saved) {
+      saveLead(i, btn);
+      saved++;
+    }
+  });
+  const bar = document.getElementById('bulk-bar');
+  const orig = document.getElementById('bulk-count').textContent;
+  document.getElementById('bulk-bar').innerHTML = `<span style="color:#7effc0;font-weight:600;font-size:0.85rem">✅ Zapisano ${saved} lead${saved === 1 ? '' : 'ów'}!</span>`;
+  setTimeout(() => {
+    bulkDeselect();
+    // restore bar content
+    bar.innerHTML = `
+      <div class="bulk-bar-count">Zaznaczono: <strong id="bulk-count">0</strong></div>
+      <div class="bulk-bar-sep"></div>
+      <button class="bulk-btn accent" onclick="bulkSave()">🔖 Zapisz zaznaczone</button>
+      <button class="bulk-btn" onclick="bulkCopy()">📋 Kopiuj linki</button>
+      <button class="bulk-btn danger" onclick="bulkDeselect()">✕ Odznacz</button>
+      <button class="bulk-deselect" onclick="bulkDeselect()" title="Zamknij">✕</button>`;
+  }, 1800);
+}
+
+function bulkCopy() {
+  const links = [...selectedIndices].map(i => currentResults[i]?.url).filter(Boolean).join('\n');
+  navigator.clipboard.writeText(links).catch(() => {});
+  const btn = document.querySelector('.bulk-btn:nth-child(3)');
+  const orig = '📋 Kopiuj linki';
+  if (btn) { btn.textContent = `✅ Skopiowano ${selectedIndices.size}`; setTimeout(() => { btn.textContent = orig; }, 2000); }
+}
+
+
+function setQuery(q) {
+  document.getElementById('main-query').value = q;
+  document.getElementById('main-query').focus();
+}
+
+function quickSearch(q) {
+  setQuery(q);
+  // Switch to search page
+  document.getElementById('page-saved').style.display = 'none';
+  document.getElementById('page-sources').style.display = 'none';
+  document.getElementById('page-search').style.display = 'block';
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelector('.nav-item').classList.add('active');
+  document.getElementById('page-title').textContent = 'Szukaj klientów';
+  document.getElementById('page-subtitle').textContent = 'Przeszukuj fora i serwisy społecznościowe';
+  doSearch();
+}
+
+function doSearch() {
+  if (searching) return;
+  const query = document.getElementById('main-query').value.trim();
+  if (!query) { document.getElementById('main-query').focus(); return; }
+
+  searching = true;
+  const btn = document.getElementById('search-btn');
+  const icon = document.getElementById('search-btn-icon');
+  btn.disabled = true;
+  icon.textContent = '⏳';
+
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('results-section').style.display = 'none';
+  document.getElementById('stats-strip').style.display = 'none';
+  document.getElementById('progress-bar').classList.add('active');
+
+  const activeCount = SOURCES.filter(s => s.enabled).length;
+  const delay = 1200 + Math.random() * 800;
+
+  setTimeout(() => {
+    // Simulate filtered results based on query keywords
+    const qLow = query.toLowerCase();
+    const shuffled = [...MOCK_RESULTS].sort(() => Math.random() - 0.5);
+    currentResults = shuffled.slice(0, 4 + Math.floor(Math.random() * 4));
+    // Inject query keyword into snippets
+    currentResults = currentResults.map((r,i) => ({
+      ...r,
+      relevance: Math.max(65, r.relevance - i * 3 + Math.floor(Math.random() * 10))
+    })).sort((a,b) => b.relevance - a.relevance);
+
+    searching = false;
+    btn.disabled = false;
+    icon.textContent = '🔍';
+    document.getElementById('progress-bar').classList.remove('active');
+
+    renderResults(query, activeCount);
+  }, delay);
+}
+
+function renderResults(query, sourceCount) {
+  const list = document.getElementById('results-list');
+  const hotCount = currentResults.filter(r => r.relevance >= 88).length;
+  selectedIndices.clear();
+  updateBulkBar();
+
+  list.innerHTML = currentResults.map((r, i) => `
+    <div class="result-item" style="animation-delay:${i*60}ms" id="ri-${i}">
+      <div class="result-checkbox-wrap">
+        <input type="checkbox" class="result-checkbox" data-idx="${i}" onchange="toggleSelect(${i}, this.checked)">
+      </div>
+      <div class="result-source-icon" style="background:${r.color}">${r.icon}</div>
+      <div class="result-body">
+        <div class="result-source-label">${r.source} ${typeBadge(r.type)}</div>
+        <div class="result-title"><a href="${r.url}" target="_blank">${r.title}</a></div>
+        <div class="result-snippet">${r.snippet}</div>
+        <div class="result-footer">
+          <span class="result-date">📅 ${r.date}</span>
+          <span class="result-keyword-tag">🏷 ${r.keyword}</span>
+          <div class="relevance-bar">
+            <span class="relevance-label">${r.relevance}%</span>
+            <div class="relevance-track"><div class="relevance-fill" style="width:${r.relevance}%"></div></div>
+          </div>
+          <div class="result-actions">
+            <button class="result-btn" onclick="copyLink('${r.url}', this)">📋 Kopiuj</button>
+            <button class="result-btn primary" onclick="saveLead(${i}, this)" id="save-btn-${i}">🔖 Zapisz lead</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('select-all-row').classList.add('visible');
+  document.getElementById('select-all-cb').checked = false;
+
+  document.getElementById('stat-results').textContent = currentResults.length;
+  document.getElementById('stat-sources').textContent = sourceCount;
+  document.getElementById('stat-hot').textContent = hotCount;
+  document.getElementById('stat-saved').textContent = savedLeads.length;
+  document.getElementById('stats-strip').style.display = 'flex';
+
+  document.getElementById('results-title').textContent = `Wyniki dla: "${query}"`;
+  document.getElementById('results-meta').textContent = `${currentResults.length} wyników · ${sourceCount} źródeł`;
+  document.getElementById('results-section').style.display = 'block';
+}
+
+function copyLink(url, btn) {
+  navigator.clipboard.writeText(url).catch(() => {});
+  btn.textContent = '✅ Skopiowano';
+  setTimeout(() => { btn.textContent = '📋 Kopiuj'; }, 2000);
+}
+
+function saveLead(idx, btn) {
+  if (btn.dataset.saved) return;
+  const r = currentResults[idx];
+  if (!r) return;
+  const lead = { ...r, savedAt: new Date().toLocaleDateString('pl-PL'), id: Date.now() };
+  savedLeads.unshift(lead);
+  localStorage.setItem('lh_saved', JSON.stringify(savedLeads));
+  btn.dataset.saved = '1';
+  btn.innerHTML = '✅ Zapisano';
+  btn.style.background = '#e8f5ee';
+  btn.style.color = '#1a7a4a';
+  btn.style.borderColor = 'rgba(26,122,74,0.3)';
+  document.getElementById('saved-count').textContent = savedLeads.length;
+  document.getElementById('stat-saved').textContent = savedLeads.length;
+}
+
+// =====================
+// SAVED LEADS
+// =====================
+function renderSaved() {
+  const list = document.getElementById('saved-list');
+  const empty = document.getElementById('saved-empty');
+  if (!savedLeads.length) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  list.innerHTML = `
+    <div class="results-header">
+      <div class="results-title">Zapisane leady</div>
+      <div class="results-meta">${savedLeads.length} leadów · <button onclick="clearSaved()" style="background:none;border:none;cursor:pointer;color:var(--red);font-size:0.72rem;font-family:'Outfit',sans-serif">Wyczyść wszystkie</button></div>
+    </div>
+    ${savedLeads.map((r, i) => `
+    <div class="result-item" style="animation-delay:${i*40}ms">
+      <div class="result-source-icon" style="background:${r.color||'#e8f0fc'}">${r.icon}</div>
+      <div class="result-body">
+        <div class="result-source-label">${r.source} ${typeBadge(r.type)} <span class="saved-badge">✅ Zapisano ${r.savedAt}</span></div>
+        <div class="result-title"><a href="${r.url}" target="_blank">${r.title}</a></div>
+        <div class="result-snippet">${r.snippet}</div>
+        <div class="result-footer">
+          <span class="result-date">📅 ${r.date}</span>
+          <span class="result-keyword-tag">🏷 ${r.keyword}</span>
+          <div class="result-actions">
+            <button class="result-btn" onclick="copyLink('${r.url}', this)">📋 Kopiuj</button>
+            <button class="result-btn" style="color:var(--red);border-color:rgba(192,57,43,0.3)" onclick="removeLead(${r.id}, this)">🗑 Usuń</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('')}`;
+}
+
+function removeLead(id, btn) {
+  savedLeads = savedLeads.filter(l => l.id !== id);
+  localStorage.setItem('lh_saved', JSON.stringify(savedLeads));
+  document.getElementById('saved-count').textContent = savedLeads.length;
+  renderSaved();
+}
+
+function clearSaved() {
+  if (!confirm('Usunąć wszystkie zapisane leady?')) return;
+  savedLeads = [];
+  localStorage.setItem('lh_saved', JSON.stringify(savedLeads));
+  document.getElementById('saved-count').textContent = '0';
+  renderSaved();
+}
+
+// =====================
+// ADD SOURCE MODAL
+// =====================
+function openAddModal() {
+  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('new-name').focus();
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+function saveNewSource() {
+  const name = document.getElementById('new-name').value.trim();
+  if (!name) { document.getElementById('new-name').focus(); return; }
+  const type = document.getElementById('new-type').value;
+  const engine = document.getElementById('new-engine').value;
+  const baseUrl = document.getElementById('new-baseurl').value.trim();
+  const url = document.getElementById('new-url').value.trim();
+  const icon = document.getElementById('new-icon').value.trim() || '🌐';
+  const colorMap = { forum:'#e8f0fc', social:'#fde8f0', portal:'#e8f5ee', ogloszenia:'#fef3e2', it:'#f0e8fc', biznes:'#e8f5f5' };
+  const newId = nextId++;
+  SOURCES.push({ id: newId, name, type, icon, color: colorMap[type], enabled: true, baseUrl, engine, subforums: url ? [url] : [''], keywords: '', desc: '' });
+  closeModal();
+  document.getElementById('new-name').value = '';
+  document.getElementById('new-baseurl').value = '';
+  document.getElementById('new-url').value = '';
+  document.getElementById('new-icon').value = '';
+  document.getElementById('new-engine').value = 'internal';
+  renderSources();
+  renderSourcesManage();
+
+  // Navigate to search page and highlight the new card
+  ['search','saved','sources'].forEach(p => {
+    document.getElementById(`page-${p}`).style.display = p === 'search' ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelector('.nav-item').classList.add('active');
+  document.getElementById('page-title').textContent = 'Szukaj klientów';
+  document.getElementById('page-subtitle').textContent = 'Przeszukuj fora i serwisy społecznościowe';
+
+  // Scroll to and flash the new card
+  setTimeout(() => {
+    const card = document.getElementById(`scard-${newId}`);
+    if (!card) return;
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card.style.transition = 'box-shadow 0.3s, outline 0.3s';
+    card.style.outline = '2px solid var(--accent)';
+    card.style.boxShadow = '0 0 0 4px rgba(232,93,38,0.2)';
+    setTimeout(() => {
+      card.style.outline = '';
+      card.style.boxShadow = '';
+    }, 2000);
+  }, 120);
+}
+
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.getElementById('login-modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeLoginModal();
+});
+document.getElementById('src-cred-modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeSrcCredModal();
+});
+
+// =====================
+// SOURCE CREDENTIALS
+// =====================
+function getCredsKey() {
+  // Per-user storage key
+  const uid = currentUser ? currentUser.email : '__guest__';
+  return `lh_creds_${uid}`;
+}
+
+function loadCreds() {
+  return JSON.parse(localStorage.getItem(getCredsKey()) || '{}');
+}
+
+function saveCreds(creds) {
+  localStorage.setItem(getCredsKey(), JSON.stringify(creds));
+}
+
+function getSourceCred(sourceId) {
+  const creds = loadCreds();
+  return creds[sourceId] || null;
+}
+
+function srcLoginBtnHTML(sourceId) {
+  const cred = getSourceCred(sourceId);
+  if (cred) {
+    return `<button class="src-login-btn logged-in" onclick="openSrcCredModal(${sourceId})" title="Zalogowany jako: ${cred.login}\nKliknij aby zmienić lub usunąć">
+      <div class="src-lamp on"></div> ${cred.login}
+    </button>`;
+  }
+  return `<button class="src-login-btn" onclick="openSrcCredModal(${sourceId})">
+    <div class="src-lamp off"></div> Dodaj login
+  </button>`;
+}
+
+let srcCredEditingId = null;
+
+function openSrcCredModal(sourceId) {
+  if (!currentUser) {
+    alert('Zaloguj się do systemu, aby zarządzać loginami do źródeł.');
+    return;
+  }
+  srcCredEditingId = sourceId;
+  const s = SOURCES.find(x => x.id === sourceId);
+  const cred = getSourceCred(sourceId);
+
+  document.getElementById('src-cred-info').innerHTML = `
+    <div class="src-cred-icon" style="background:${s.color||'#e8f0fc'}">${s.icon}</div>
+    <div>
+      <div class="src-cred-name">${s.name}</div>
+      <div class="src-cred-url">${s.baseUrl || ''}</div>
+    </div>`;
+  document.getElementById('src-cred-login').value = cred ? cred.login : '';
+  document.getElementById('src-cred-pass').value  = cred ? cred.pass  : '';
+  document.getElementById('src-cred-pass').type = 'password';
+  document.getElementById('pass-toggle-btn').textContent = '👁';
+  document.getElementById('src-cred-modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('src-cred-login').focus(), 100);
+}
+
+function closeSrcCredModal() {
+  document.getElementById('src-cred-modal-overlay').classList.remove('open');
+  srcCredEditingId = null;
+}
+
+function togglePassVis() {
+  const inp = document.getElementById('src-cred-pass');
+  const btn = document.getElementById('pass-toggle-btn');
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+function updateCredsBadge() {
+  if (!currentUser) {
+    document.getElementById('creds-count').style.display = 'none';
+    return;
+  }
+  const count = Object.keys(loadCreds()).length;
+  const badge = document.getElementById('creds-count');
+  badge.textContent = count;
+  badge.style.display = count > 0 ? 'inline-flex' : 'none';
+}
+
+function saveSrcCred() {
+  const login = document.getElementById('src-cred-login').value.trim();
+  const pass  = document.getElementById('src-cred-pass').value;
+  if (!login) { document.getElementById('src-cred-login').focus(); return; }
+  const creds = loadCreds();
+  creds[srcCredEditingId] = { login, pass };
+  saveCreds(creds);
+  closeSrcCredModal();
+  updateCredsBadge();
+  // refresh all views
+  if (document.getElementById('page-sources').style.display !== 'none') renderSourcesManage();
+  if (document.getElementById('page-credentials').style.display !== 'none') renderCredentials();
+}
+
+function clearSrcCred(sourceId) {
+  if (!confirm('Usunąć dane logowania dla tego źródła?')) return;
+  const creds = loadCreds();
+  delete creds[sourceId];
+  saveCreds(creds);
+  updateCredsBadge();
+  renderCredentials();
+  if (document.getElementById('page-sources').style.display !== 'none') renderSourcesManage();
+}
+
+function renderCredentials() {
+  const container = document.getElementById('creds-content');
+  const notice = document.getElementById('creds-notice');
+
+  if (!currentUser) {
+    notice.style.display = 'flex';
+    container.innerHTML = `<div class="empty-state"><div class="icon">🔐</div><h3>Wymagane logowanie</h3><p>Zaloguj się do systemu (przycisk w prawym górnym rogu),<br>aby zarządzać loginami do poszczególnych źródeł.</p></div>`;
+    return;
+  }
+
+  notice.style.display = 'none';
+  const creds = loadCreds();
+  const initials = currentUser.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+
+  const rows = SOURCES.map(s => {
+    const cred = creds[s.id];
+    const maskedPass = cred && cred.pass ? '•'.repeat(Math.min(cred.pass.length, 10)) : '';
+    return `
+      <tr>
+        <td><div class="slt-icon" style="background:${s.color||'#e8f0fc'}">${s.icon}</div></td>
+        <td>
+          <div class="creds-source-name">${s.name}</div>
+          ${s.baseUrl ? `<a class="source-base-url" href="${s.baseUrl}" target="_blank">🔗 ${s.baseUrl.replace('https://','').replace('www.','')}</a>` : ''}
+        </td>
+        <td>${cred ? `<span class="creds-login-val">${cred.login}</span>` : '<span class="creds-empty">—</span>'}</td>
+        <td>${cred && cred.pass ? `<span class="creds-pass-val">${maskedPass}</span>` : '<span class="creds-empty">—</span>'}</td>
+        <td>
+          ${cred
+            ? `<span class="creds-status set">● Skonfigurowane</span>`
+            : `<span class="creds-status unset">○ Brak</span>`}
+        </td>
+        <td style="white-space:nowrap">
+          <button class="creds-edit-btn" onclick="openSrcCredModal(${s.id})">${cred ? '✏ Zmień' : '+ Dodaj'}</button>
+          ${cred ? `<button class="creds-clear-btn" onclick="clearSrcCred(${s.id})">🗑</button>` : ''}
+        </td>
+      </tr>`;
+  }).join('');
+
+  container.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <div class="login-avatar" style="width:30px;height:30px;font-size:0.75rem">${initials}</div>
+      <div>
+        <div style="font-weight:700;font-size:0.85rem">${currentUser.name}</div>
+        <div style="font-size:0.65rem;font-family:'JetBrains Mono',monospace;color:var(--text-dim)">${currentUser.email}</div>
+      </div>
+    </div>
+    <table class="creds-table">
+      <thead><tr>
+        <th style="width:44px"></th>
+        <th>Źródło</th>
+        <th>Login</th>
+        <th>Hasło</th>
+        <th>Status</th>
+        <th>Akcje</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// =====================
+// LOGIN
+// =====================
+let currentUser = JSON.parse(localStorage.getItem('lh_user') || 'null');
+
+function updateLoginUI() {
+  const lamp = document.getElementById('login-lamp');
+  const label = document.getElementById('login-btn-label');
+  if (currentUser) {
+    lamp.className = 'login-lamp lamp-logged-in';
+    label.textContent = currentUser.name.split(' ')[0];
+  } else {
+    lamp.className = 'login-lamp lamp-logged-out';
+    label.textContent = 'Zaloguj się';
+  }
+}
+
+function openLoginModal() {
+  const overlay = document.getElementById('login-modal-overlay');
+  overlay.classList.add('open');
+  if (currentUser) {
+    document.getElementById('login-form-view').style.display = 'none';
+    document.getElementById('login-logged-view').style.display = 'block';
+    const initials = currentUser.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+    document.getElementById('login-avatar').textContent = initials;
+    document.getElementById('login-user-name').textContent = currentUser.name;
+    document.getElementById('login-user-email').textContent = currentUser.email;
+  } else {
+    document.getElementById('login-form-view').style.display = 'block';
+    document.getElementById('login-logged-view').style.display = 'none';
+    setTimeout(() => document.getElementById('login-email').focus(), 100);
+  }
+}
+
+function closeLoginModal() {
+  document.getElementById('login-modal-overlay').classList.remove('open');
+  document.getElementById('login-error').style.display = 'none';
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-password').value;
+  const err   = document.getElementById('login-error');
+  if (!email || !pass) { err.textContent = 'Uzupełnij email i hasło.'; err.style.display='block'; return; }
+  if (pass.length < 4) { err.textContent = 'Hasło jest za krótkie.'; err.style.display='block'; return; }
+  // Demo: accept any valid-looking credentials
+  const name = email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  currentUser = { name, email };
+  localStorage.setItem('lh_user', JSON.stringify(currentUser));
+  updateLoginUI();
+  updateCredsBadge();
+  closeLoginModal();
+}
+
+function doLogout() {
+  currentUser = null;
+  localStorage.removeItem('lh_user');
+  updateLoginUI();
+  updateCredsBadge();
+  closeLoginModal();
+}
+
+// =====================
+// INIT
+// =====================
+document.getElementById('saved-count').textContent = savedLeads.length;
+updateLoginUI();
+updateCredsBadge();
+renderSources();
+</script>
+</body>
+</html>
