@@ -242,6 +242,24 @@ body {
   letter-spacing: 0.1em;
   color: var(--text-dim);
 }
+.sources-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sort-dropdown {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text-mid);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.sort-dropdown:hover { border-color: var(--accent); color: var(--accent); }
 .add-source-btn {
   font-family: 'Outfit', sans-serif;
   font-size: 0.78rem;
@@ -263,6 +281,22 @@ body {
   margin-bottom: 32px;
 }
 
+@media (max-width: 768px) {
+  .sources-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .source-card {
+    margin: 0 -10px;
+  }
+  .content {
+    padding: 20px 26px;
+  }
+}
+
 .source-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -278,6 +312,43 @@ body {
   align-items: center;
   gap: 10px;
   padding: 14px 16px 10px;
+  position: relative;
+}
+.favorite-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.12s;
+  opacity: 0.4;
+}
+.favorite-btn:hover { opacity: 1; background: rgba(0,0,0,0.05); }
+.favorite-btn.active { opacity: 1; color: #f59e0b; }
+.login-status-lamp {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  position: absolute;
+  top: 10px;
+  right: 32px;
+  box-shadow: 0 0 4px currentColor;
+}
+.login-status-lamp.logged-in {
+  background: var(--green);
+  color: var(--green);
+}
+.login-status-lamp.logged-out {
+  background: var(--red);
+  color: var(--red);
+}
+.login-status-lamp.not-applicable {
+  background: var(--yellow);
+  color: var(--yellow);
 }
 .source-icon {
   width: 34px; height: 34px;
@@ -831,10 +902,29 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
   margin-bottom: 18px; gap: 12px; flex-wrap: wrap;
 }
 .manage-topbar-left { display: flex; align-items: center; gap: 10px; }
+.manage-topbar-right { 
+  display: flex; align-items: center; gap: 10px; 
+  flex-wrap: wrap;
+}
 .manage-count {
   font-size: 0.72rem; font-family: 'JetBrains Mono', monospace;
   color: var(--text-dim); background: var(--surface2);
   border: 1px solid var(--border); border-radius: 5px; padding: 3px 10px;
+}
+
+@media (max-width: 768px) {
+  .manage-topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .manage-topbar-left,
+  .manage-topbar-right {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .manage-view-toggle {
+    order: -1;
+  }
 }
 .manage-view-toggle {
   display: flex; border: 1px solid var(--border2); border-radius: 6px; overflow: hidden;
@@ -855,17 +945,75 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
   width: 100%; border-collapse: collapse;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 10px; overflow: hidden; box-shadow: var(--shadow);
+  font-size: 0.82rem;
+}
+.sources-table-wrapper {
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 .sources-list-table thead tr { background: var(--surface2); border-bottom: 1px solid var(--border); }
 .sources-list-table th {
-  text-align: left; padding: 10px 14px;
-  font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.12em;
+  text-align: left; padding: 8px 12px;
+  font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em;
   color: var(--text-dim); font-weight: 600; white-space: nowrap;
+  position: sticky; top: 0; background: var(--surface2); z-index: 10;
 }
 .sources-list-table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
 .sources-list-table tbody tr:last-child { border-bottom: none; }
 .sources-list-table tbody tr:hover { background: var(--bg); }
-.sources-list-table td { padding: 10px 14px; vertical-align: middle; font-size: 0.82rem; }
+.sources-list-table td { padding: 8px 12px; vertical-align: middle; font-size: 0.78rem; }
+
+/* Responsive behavior */
+@media (max-width: 1400px) {
+  .sources-list-table th:nth-child(4),
+  .sources-list-table td:nth-child(4) {
+    display: none; /* Ukryj kolumnę słów kluczowych */
+  }
+}
+
+@media (max-width: 1200px) {
+  .sources-list-table th:nth-child(5),
+  .sources-list-table td:nth-child(5) {
+    display: none; /* Ukryj kolumnę silnika */
+  }
+  .sources-list-table th,
+  .sources-list-table td {
+    padding: 6px 8px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 1000px) {
+  .sources-list-table th:nth-child(3),
+  .sources-list-table td:nth-child(3) {
+    display: none; /* Ukryj kolumnę podfora */
+  }
+}
+
+@media (max-width: 800px) {
+  .sources-list-table th,
+  .sources-list-table td {
+    padding: 4px 6px;
+    font-size: 0.7rem;
+  }
+  .slt-name {
+    font-size: 0.75rem;
+  }
+  .source-type-badge {
+    font-size: 0.55rem;
+    padding: 1px 4px;
+  }
+}
+
+@media (max-width: 600px) {
+  .sources-table-wrapper {
+    margin: 0 -16px;
+  }
+  .sources-list-table {
+    border-radius: 0;
+  }
+}
 .slt-icon { width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
 .slt-name { font-weight: 700; color: var(--text); }
 .slt-url-chip {
@@ -1131,10 +1279,7 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
       <div class="progress-bar" id="progress-bar"><div class="progress-fill"></div></div>
 
       <!-- Sources quick toggle -->
-      <div class="sources-header">
-        <div class="sources-title">Aktywne źródła</div>
-      </div>
-      <div class="sources-grid" id="sources-grid"></div>
+      <div id="sources-container"></div>
 
       <!-- Results -->
       <div id="results-section" style="display:none">
@@ -1347,66 +1492,66 @@ const SOURCES = [
   { id: 1, name: 'Elektroda.pl', type: 'forum', icon: '⚡', color: '#e8f0fc', enabled: true,
     baseUrl: 'https://www.elektroda.pl', engine: 'internal',
     subforums: [''], keywords: 'szukam, polecacie, potrzebuję, pomożecie',
-    desc: 'Forum techniczne i elektroniczne' },
+    desc: 'Forum techniczne i elektroniczne', favorite: false, dateAdded: '2024-01-15', loginRequired: true },
   { id: 2, name: '4programmers.net', type: 'it', icon: '👨‍💻', color: '#f0e8fc', enabled: true,
     baseUrl: 'https://4programmers.net', engine: 'internal',
     subforums: ['https://4programmers.net/Forum/Praca', 'https://4programmers.net/Forum/Oferty'],
     keywords: 'szukam, potrzebuję, pomoc, oferta',
-    desc: 'Forum programistyczne' },
+    desc: 'Forum programistyczne', favorite: true, dateAdded: '2024-01-18', loginRequired: true },
   { id: 3, name: 'Forum.net.pl', type: 'forum', icon: '💬', color: '#e8f0fc', enabled: true,
     baseUrl: 'https://forum.net.pl', engine: 'google_site',
     subforums: [''], keywords: 'szukam, potrzebuję, polecacie',
-    desc: 'Forum ogólne' },
+    desc: 'Forum ogólne', favorite: false, dateAdded: '2024-01-20', loginRequired: true },
   { id: 4, name: 'Bankier.pl Forum', type: 'biznes', icon: '🏦', color: '#e8f5f5', enabled: true,
     baseUrl: 'https://forum.bankier.pl', engine: 'internal',
     subforums: ['https://forum.bankier.pl/'], keywords: 'szukam dostawcy, polecacie firmę, potrzebuję usługi',
-    desc: 'Forum finansowe i biznesowe' },
+    desc: 'Forum finansowe i biznesowe', favorite: false, dateAdded: '2024-01-22', loginRequired: true },
   { id: 5, name: 'GoldenLine', type: 'social', icon: '🟡', color: '#fde8f0', enabled: false,
     baseUrl: 'https://www.goldenline.pl', engine: 'internal',
     subforums: [''], keywords: 'szukam, hiring, rekrutacja, oferta',
-    desc: 'Polska sieć profesjonalistów' },
+    desc: 'Polska sieć profesjonalistów', favorite: true, dateAdded: '2024-01-25', loginRequired: true },
   { id: 6, name: 'LinkedIn PL', type: 'social', icon: '💼', color: '#fde8f0', enabled: true,
     baseUrl: 'https://www.linkedin.com', engine: 'google',
     subforums: [''], keywords: 'looking for, szukam, need vendor, potrzebuję',
-    desc: 'Sieć profesjonalistów' },
+    desc: 'Sieć profesjonalistów', favorite: false, dateAdded: '2024-01-28', loginRequired: true },
   { id: 7, name: 'Onet Wiadomości', type: 'portal', icon: '🔴', color: '#e8f5ee', enabled: false,
     baseUrl: 'https://www.onet.pl', engine: 'internal',
     subforums: ['https://wiadomosci.onet.pl/'], keywords: '',
-    desc: 'Portal informacyjny Onet' },
+    desc: 'Portal informacyjny Onet', favorite: false, dateAdded: '2024-02-01', loginRequired: false },
   { id: 8, name: 'WP.pl Finanse', type: 'portal', icon: '🌐', color: '#e8f5ee', enabled: false,
     baseUrl: 'https://www.wp.pl', engine: 'internal',
     subforums: ['https://finanse.wp.pl/'], keywords: '',
-    desc: 'Dział finansowy WP' },
+    desc: 'Dział finansowy WP', favorite: false, dateAdded: '2024-02-05', loginRequired: false },
   { id: 9, name: 'OLX – Usługi', type: 'ogloszenia', icon: '📋', color: '#fef3e2', enabled: true,
     baseUrl: 'https://www.olx.pl', engine: 'internal',
     subforums: ['https://www.olx.pl/uslugi/', 'https://www.olx.pl/elektronika/'],
     keywords: 'szukam, poszukuję, potrzebuję',
-    desc: 'Ogłoszenia OLX – dział usług' },
+    desc: 'Ogłoszenia OLX – dział usług', favorite: false, dateAdded: '2024-02-08', loginRequired: false },
   { id: 10, name: 'Oferteo.pl', type: 'ogloszenia', icon: '📝', color: '#fef3e2', enabled: true,
     baseUrl: 'https://oferteo.pl', engine: 'internal',
     subforums: ['https://oferteo.pl/'], keywords: '',
-    desc: 'Platforma zleceń i usług' },
+    desc: 'Platforma zleceń i usług', favorite: true, dateAdded: '2024-02-10', loginRequired: false },
   { id: 11, name: 'Reddit r/Polska', type: 'social', icon: '🤖', color: '#fde8f0', enabled: true,
     baseUrl: 'https://www.reddit.com', engine: 'google_site',
     subforums: ['https://reddit.com/r/Polska/', 'https://reddit.com/r/PracaIT/'],
     keywords: 'szukam, potrzebuję, polecacie',
-    desc: 'Reddit – polska społeczność' },
+    desc: 'Reddit – polska społeczność', favorite: false, dateAdded: '2024-02-12', loginRequired: true },
   { id: 12, name: 'Wykop.pl', type: 'social', icon: '🔺', color: '#fde8f0', enabled: true,
     baseUrl: 'https://www.wykop.pl', engine: 'internal',
     subforums: [''], keywords: 'szukam, potrzebuję, polecacie',
-    desc: 'Społeczność Wykop.pl' },
+    desc: 'Społeczność Wykop.pl', favorite: false, dateAdded: '2024-02-15', loginRequired: true },
   { id: 13, name: 'Freelancer.pl', type: 'ogloszenia', icon: '🎯', color: '#fef3e2', enabled: true,
     baseUrl: 'https://freelancer.pl', engine: 'internal',
     subforums: ['https://freelancer.pl/zlecenia/'], keywords: 'szukam wykonawcy, potrzebuję, zlecę',
-    desc: 'Platforma zleceń dla freelancerów' },
+    desc: 'Platforma zleceń dla freelancerów', favorite: false, dateAdded: '2024-02-18', loginRequired: true },
   { id: 14, name: 'inEDU.pl Forum', type: 'forum', icon: '🎓', color: '#e8f0fc', enabled: false,
     baseUrl: 'https://www.inedu.pl', engine: 'google',
     subforums: [''], keywords: 'szukam szkolenia, potrzebuję kursu',
-    desc: 'Forum edukacyjne' },
+    desc: 'Forum edukacyjne', favorite: false, dateAdded: '2024-02-20', loginRequired: true },
   { id: 15, name: 'Forum GazetaPrawna', type: 'biznes', icon: '⚖️', color: '#e8f5f5', enabled: false,
     baseUrl: 'https://forum.gazetaprawna.pl', engine: 'google_site',
     subforums: [''], keywords: 'szukam prawnika, potrzebuję porady, firma',
-    desc: 'Forum biznesowe Gazeta Prawna' },
+    desc: 'Forum biznesowe Gazeta Prawna', favorite: false, dateAdded: '2024-02-22', loginRequired: true },
 ];
 
 let nextId = 16;
@@ -1435,6 +1580,60 @@ function showPage(page) {
 }
 
 // =====================
+// SORTING & FAVORITES
+// =====================
+let currentSort = 'name-asc'; // name-asc, name-desc, date-asc, date-desc
+let showFavoritesOnly = false;
+
+function changeSorting(sortType) {
+  currentSort = sortType;
+  renderSources();
+  if (document.getElementById('page-sources').style.display !== 'none') {
+    renderSourcesManage();
+  }
+}
+
+function toggleFavorite(sourceId) {
+  const source = SOURCES.find(s => s.id === sourceId);
+  if (source) {
+    source.favorite = !source.favorite;
+    renderSources();
+    if (document.getElementById('page-sources').style.display !== 'none') {
+      renderSourcesManage();
+    }
+  }
+}
+
+function getLoginStatus(source) {
+  if (!source.loginRequired) {
+    return 'not-applicable';
+  }
+  const cred = getSourceCred(source.id);
+  return cred ? 'logged-in' : 'logged-out';
+}
+
+function getSortedSources() {
+  let sources = [...SOURCES];
+  
+  // Sortowanie
+  switch (currentSort) {
+    case 'name-asc':
+      sources.sort((a, b) => a.name.localeCompare(b.name));
+      break;
+    case 'name-desc':
+      sources.sort((a, b) => b.name.localeCompare(a.name));
+      break;
+    case 'date-asc':
+      sources.sort((a, b) => new Date(a.dateAdded) - new Date(b.dateAdded));
+      break;
+    case 'date-desc':
+      sources.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+      break;
+  }
+  
+  return sources;
+}
+// =====================
 // RENDER SOURCES
 // =====================
 function typeBadge(t) {
@@ -1444,11 +1643,101 @@ function typeBadge(t) {
 }
 
 function renderSources() {
-  const grid = document.getElementById('sources-grid');
-  const enabled = SOURCES.filter(s => s.enabled);
-  grid.innerHTML = enabled.length
-    ? enabled.map(s => sourceCardHTML(s)).join('')
-    : `<div style="color:var(--text-dim);font-size:0.78rem;padding:12px 0">Brak włączonych źródeł. Włącz je w <a href="#" onclick="document.querySelectorAll('.nav-item')[2].click();return false;" style="color:var(--accent)">Zarządzaj źródłami</a>.</div>`;
+  const sortedSources = getSortedSources();
+  const enabled = sortedSources.filter(s => s.enabled);
+  
+  // Podziel na ulubione i pozostałe
+  const favorites = enabled.filter(s => s.favorite);
+  const others = enabled.filter(s => !s.favorite);
+  
+  // Znajdź lub utwórz kontener dla źródeł
+  let sourcesContainer = document.getElementById('sources-container');
+  if (!sourcesContainer) {
+    sourcesContainer = document.createElement('div');
+    sourcesContainer.id = 'sources-container';
+    
+    // Znajdź miejsce w page-search i dodaj przed results-section
+    const pageSearch = document.getElementById('page-search');
+    const resultsSection = document.getElementById('results-section');
+    if (pageSearch && resultsSection) {
+      pageSearch.insertBefore(sourcesContainer, resultsSection);
+    } else if (pageSearch) {
+      // Jeśli nie ma results-section, dodaj przed empty-state
+      const emptyState = document.getElementById('empty-state');
+      if (emptyState) {
+        pageSearch.insertBefore(sourcesContainer, emptyState);
+      } else {
+        pageSearch.appendChild(sourcesContainer);
+      }
+    }
+  }
+  
+  let html = '';
+  
+  // Sekcja ulubionych
+  if (favorites.length > 0) {
+    html += `
+      <div class="sources-header">
+        <div class="sources-title">⭐ Ulubione źródła</div>
+        <div class="sources-controls">
+          <select class="sort-dropdown" onchange="changeSorting(this.value)">
+            <option value="name-asc" ${currentSort === 'name-asc' ? 'selected' : ''}>Nazwa A-Z</option>
+            <option value="name-desc" ${currentSort === 'name-desc' ? 'selected' : ''}>Nazwa Z-A</option>
+            <option value="date-asc" ${currentSort === 'date-asc' ? 'selected' : ''}>Data dodania ↑</option>
+            <option value="date-desc" ${currentSort === 'date-desc' ? 'selected' : ''}>Data dodania ↓</option>
+          </select>
+        </div>
+      </div>
+      <div class="sources-grid">
+        ${favorites.map(s => sourceCardHTML(s)).join('')}
+      </div>
+    `;
+  }
+  
+  // Sekcja pozostałych aktywnych
+  if (others.length > 0) {
+    html += `
+      <div class="sources-header" ${favorites.length > 0 ? 'style="margin-top:32px"' : ''}>
+        <div class="sources-title">Aktywne źródła</div>
+        ${favorites.length === 0 ? `
+        <div class="sources-controls">
+          <select class="sort-dropdown" onchange="changeSorting(this.value)">
+            <option value="name-asc" ${currentSort === 'name-asc' ? 'selected' : ''}>Nazwa A-Z</option>
+            <option value="name-desc" ${currentSort === 'name-desc' ? 'selected' : ''}>Nazwa Z-A</option>
+            <option value="date-asc" ${currentSort === 'date-asc' ? 'selected' : ''}>Data dodania ↑</option>
+            <option value="date-desc" ${currentSort === 'date-desc' ? 'selected' : ''}>Data dodania ↓</option>
+          </select>
+        </div>` : ''}
+      </div>
+      <div class="sources-grid">
+        ${others.map(s => sourceCardHTML(s)).join('')}
+      </div>
+    `;
+  }
+  
+  // Jeśli brak włączonych źródeł
+  if (enabled.length === 0) {
+    html = `
+      <div class="sources-header">
+        <div class="sources-title">Aktywne źródła</div>
+        <div class="sources-controls">
+          <select class="sort-dropdown" onchange="changeSorting(this.value)">
+            <option value="name-asc" ${currentSort === 'name-asc' ? 'selected' : ''}>Nazwa A-Z</option>
+            <option value="name-desc" ${currentSort === 'name-desc' ? 'selected' : ''}>Nazwa Z-A</option>
+            <option value="date-asc" ${currentSort === 'date-asc' ? 'selected' : ''}>Data dodania ↑</option>
+            <option value="date-desc" ${currentSort === 'date-desc' ? 'selected' : ''}>Data dodania ↓</option>
+          </select>
+        </div>
+      </div>
+      <div class="sources-grid">
+        <div style="color:var(--text-dim);font-size:0.78rem;padding:12px 0">Brak włączonych źródeł. Włącz je w <a href="#" onclick="document.querySelectorAll('.nav-item')[2].click();return false;" style="color:var(--accent)">Zarządzaj źródłami</a>.</div>
+      </div>
+    `;
+  }
+  
+  if (sourcesContainer) {
+    sourcesContainer.innerHTML = html;
+  }
 }
 
 function toggleSource(id, val) {
@@ -1462,6 +1751,12 @@ function sourceCardHTML(s, fullSettings = false) {
   const iconBg = s.color || '#e8f0fc';
   const filledCount = s.subforums.filter(u => u.trim()).length;
   const countLabel = filledCount > 0 ? `<span class="subforum-count">(${filledCount})</span>` : '';
+  const loginStatus = getLoginStatus(s);
+  const statusTitles = {
+    'logged-in': 'Zalogowany',
+    'logged-out': 'Niezalogowany',
+    'not-applicable': 'Logowanie niewymagane'
+  };
 
   const settingsPanel = fullSettings ? `
     <button class="settings-toggle-btn" id="stbtn-${s.id}" onclick="toggleSettings(${s.id})">
@@ -1507,6 +1802,10 @@ function sourceCardHTML(s, fullSettings = false) {
         ${s.baseUrl ? `<a class="source-base-url" href="${s.baseUrl}" target="_blank" onclick="event.stopPropagation()">🔗 ${s.baseUrl.replace('https://','').replace('www.','')}</a>` : ''}
       </div>
       ${toggleHTML}
+      <button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">
+        ${s.favorite ? '⭐' : '☆'}
+      </button>
+      <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}"></div>
     </div>
     ${subforumsDisplay}
     ${settingsPanel}
@@ -1535,18 +1834,89 @@ function setManageView(v, btn) {
 
 function renderSourcesManage() {
   const container = document.getElementById('sources-manage-content');
-  document.getElementById('manage-count').textContent = SOURCES.length + ' źródeł';
+  const sortedSources = getSortedSources();
+  
+  document.getElementById('manage-count').textContent = sortedSources.length + ' źródeł';
+  
+  // Aktualizuj topbar
+  const topbar = document.querySelector('.manage-topbar');
+  if (topbar) {
+    topbar.innerHTML = `
+      <div class="manage-topbar-left">
+        <div class="sources-title">Wszystkie źródła</div>
+        <div class="manage-count" id="manage-count">${sortedSources.length} źródeł</div>
+      </div>
+      <div class="manage-topbar-right">
+        <select class="sort-dropdown" onchange="changeSorting(this.value)">
+          <option value="name-asc" ${currentSort === 'name-asc' ? 'selected' : ''}>Nazwa A-Z</option>
+          <option value="name-desc" ${currentSort === 'name-desc' ? 'selected' : ''}>Nazwa Z-A</option>
+          <option value="date-asc" ${currentSort === 'date-asc' ? 'selected' : ''}>Data dodania ↑</option>
+          <option value="date-desc" ${currentSort === 'date-desc' ? 'selected' : ''}>Data dodania ↓</option>
+        </select>
+        <div class="manage-view-toggle">
+          <button class="manage-view-btn${manageView === 'grid' ? ' active' : ''}" id="mgbtn-grid" onclick="setManageView('grid',this)">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="0" y="0" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="7.5" y="0" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="0" y="7.5" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1" fill="currentColor"/></svg>
+            Kafelki
+          </button>
+          <button class="manage-view-btn${manageView === 'list' ? ' active' : ''}" id="mgbtn-list" onclick="setManageView('list',this)">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="0" y="1" width="13" height="2" rx="1" fill="currentColor"/><rect x="0" y="5.5" width="13" height="2" rx="1" fill="currentColor"/><rect x="0" y="10" width="13" height="2" rx="1" fill="currentColor"/></svg>
+            Lista
+          </button>
+        </div>
+        <button class="add-source-btn" onclick="openAddModal()">+ Dodaj źródło</button>
+      </div>`;
+  }
+  
   if (manageView === 'grid') {
-    container.innerHTML = `<div class="sources-grid" id="sources-grid-manage">${SOURCES.map(s => sourceCardHTML(s, true)).join('')}</div>`;
+    let html = '';
+    
+    // Podziel na aktywne i nieaktywne
+    const active = sortedSources.filter(s => s.enabled);
+    const inactive = sortedSources.filter(s => !s.enabled);
+    
+    // Sekcja aktywnych
+    if (active.length > 0) {
+      html += `
+        <div class="sources-header" style="margin-bottom:16px">
+          <div class="sources-title">✅ Aktywne źródła (${active.length})</div>
+        </div>
+        <div class="sources-grid" style="margin-bottom:32px">
+          ${active.map(s => sourceCardHTML(s, true)).join('')}
+        </div>
+      `;
+    }
+    
+    // Sekcja nieaktywnych
+    if (inactive.length > 0) {
+      html += `
+        <div class="sources-header" style="margin-bottom:16px">
+          <div class="sources-title">⏸️ Nieaktywne źródła (${inactive.length})</div>
+        </div>
+        <div class="sources-grid">
+          ${inactive.map(s => sourceCardHTML(s, true)).join('')}
+        </div>
+      `;
+    }
+    
+    container.innerHTML = html;
   } else {
-    container.innerHTML = sourceListTableHTML();
+    // W widoku listy pokazujemy jedną tabelę z wszystkimi źródłami
+    container.innerHTML = sourceListTableHTML(sortedSources);
   }
 }
 
-function sourceListTableHTML() {
-  const rows = SOURCES.map(s => {
+function sourceListTableHTML(sources = null) {
+  const sortedSources = sources || getSortedSources();
+  const rows = sortedSources.map(s => {
     if (!s.subforums) s.subforums = s.subforum ? [s.subforum] : [''];
     const filled = s.subforums.filter(u => u.trim());
+    const loginStatus = getLoginStatus(s);
+    const statusTitles = {
+      'logged-in': 'Zalogowany',
+      'logged-out': 'Niezalogowany', 
+      'not-applicable': 'Niewymagane'
+    };
+    
     let urlsHTML = '';
     if (filled.length === 0) {
       urlsHTML = `<span class="slt-url-empty">Brak URL</span>`;
@@ -1560,16 +1930,39 @@ function sourceListTableHTML() {
       <input type="checkbox" ${s.enabled?'checked':''} onchange="toggleSource(${s.id},this.checked)">
       <span class="toggle-slider"></span>
     </label>`;
+    
+    const favoriteHTML = `<button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" style="position:static;opacity:1;margin-right:4px;font-size:0.8rem" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">
+      ${s.favorite ? '⭐' : '☆'}
+    </button>`;
+    
+    const nameHTML = `
+      <div style="display:flex;align-items:center;gap:4px;min-width:120px">
+        ${favoriteHTML}
+        <div>
+          <div class="slt-name">${s.name}</div>
+          ${typeBadge(s.type)}
+          ${s.baseUrl ? `<br><a class="source-base-url" href="${s.baseUrl}" target="_blank">🔗 ${s.baseUrl.replace('https://','').replace('www.','').substring(0,25)}</a>` : ''}
+        </div>
+      </div>
+    `;
+    
     return `
       <tr id="sltr-${s.id}">
         <td><div class="slt-icon" style="background:${s.color||'#e8f0fc'}">${s.icon}</div></td>
-        <td><div class="slt-name">${s.name}</div>${typeBadge(s.type)}${s.baseUrl ? `<br><a class="source-base-url" href="${s.baseUrl}" target="_blank">🔗 ${s.baseUrl.replace('https://','').replace('www.','')}</a>` : ''}</td>
+        <td>
+          ${nameHTML}
+        </td>
         <td><div style="display:flex;flex-direction:column;gap:3px">${urlsHTML}</div></td>
         <td><div class="slt-keywords" title="${s.keywords}">${kwShort}</div></td>
         <td><span class="engine-badge">${engineLabel}</span></td>
-        <td>${srcLoginBtnHTML(s.id)}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:6px;min-width:80px">
+            <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}" style="position:static"></div>
+            <div style="font-size:0.7rem">${srcLoginBtnHTML(s.id)}</div>
+          </div>
+        </td>
         <td style="text-align:center">${enabledHTML}</td>
-        <td><button class="slt-edit-btn" onclick="toggleListSettings(${s.id})">⚙ Edytuj</button></td>
+        <td><button class="slt-edit-btn" onclick="toggleListSettings(${s.id})" style="font-size:0.65rem;padding:3px 8px">⚙</button></td>
       </tr>
       <tr class="slt-settings-row" id="slts-${s.id}" style="display:none">
         <td colspan="8">
@@ -1591,6 +1984,7 @@ function sourceListTableHTML() {
     `;
   }).join('');
   return `
+    <div class="sources-table-wrapper">
     <table class="sources-list-table">
       <thead><tr>
         <th style="width:44px"></th>
@@ -1603,7 +1997,8 @@ function sourceListTableHTML() {
         <th></th>
       </tr></thead>
       <tbody>${rows}</tbody>
-    </table>`;
+    </table>
+    </div>`;
 }
 
 function toggleListSettings(id) {
@@ -2000,7 +2395,25 @@ function saveNewSource() {
   const icon = document.getElementById('new-icon').value.trim() || '🌐';
   const colorMap = { forum:'#e8f0fc', social:'#fde8f0', portal:'#e8f5ee', ogloszenia:'#fef3e2', it:'#f0e8fc', biznes:'#e8f5f5' };
   const newId = nextId++;
-  SOURCES.push({ id: newId, name, type, icon, color: colorMap[type], enabled: true, baseUrl, engine, subforums: url ? [url] : [''], keywords: '', desc: '' });
+  
+  // Nowe źródło z pełną konfiguracją
+  SOURCES.push({ 
+    id: newId, 
+    name, 
+    type, 
+    icon, 
+    color: colorMap[type], 
+    enabled: true, 
+    baseUrl, 
+    engine, 
+    subforums: url ? [url] : [''], 
+    keywords: '', 
+    desc: '', 
+    favorite: false,
+    dateAdded: new Date().toISOString().split('T')[0],
+    loginRequired: true // domyślnie wymagane logowanie
+  });
+  
   closeModal();
   document.getElementById('new-name').value = '';
   document.getElementById('new-baseurl').value = '';
@@ -2021,6 +2434,7 @@ function saveNewSource() {
 
   // Scroll to and flash the new card
   setTimeout(() => {
+    // Źródło jest dodawane jako ulubione jeśli favorite=false, więc będzie w sekcji "Pozostałe źródła"
     const card = document.getElementById(`scard-${newId}`);
     if (!card) return;
     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -2274,10 +2688,12 @@ function doLogout() {
 // =====================
 // INIT
 // =====================
-document.getElementById('saved-count').textContent = savedLeads.length;
-updateLoginUI();
-updateCredsBadge();
-renderSources();
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('saved-count').textContent = savedLeads.length;
+  updateLoginUI();
+  updateCredsBadge();
+  renderSources();
+});
 </script>
 </body>
 </html>
