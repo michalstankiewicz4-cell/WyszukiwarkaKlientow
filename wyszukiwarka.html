@@ -1836,13 +1836,24 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
     </div>
     <div class="form-row">
       <label class="form-label">Silnik wyszukiwania</label>
-      <select class="form-select" id="new-engine">
+      <select class="form-select" id="new-engine" onchange="document.getElementById('new-api-fields').style.display=this.value==='api'?'':'none'">
         <option value="internal">Wewnętrzna wyszukiwarka</option>
         <option value="google">Google</option>
         <option value="google_site">Google (site:)</option>
         <option value="bing">Bing</option>
         <option value="duckduckgo">DuckDuckGo</option>
+        <option value="api">API</option>
       </select>
+    </div>
+    <div id="new-api-fields" style="display:none">
+      <div class="form-row">
+        <label class="form-label">URL endpointu API</label>
+        <input class="form-input" type="text" id="new-api-url" placeholder="https://api.example.com/search">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Klucz API <span style="font-weight:400;color:var(--text-dim)">(opcjonalnie)</span></label>
+        <input class="form-input" type="password" id="new-api-key" placeholder="sk-...">
+      </div>
     </div>
     <div class="form-row">
       <label class="form-label">Główny URL serwisu</label>
@@ -1938,11 +1949,12 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
 let savedLeads = JSON.parse(localStorage.getItem('lh_saved') || '[]');
 
 const ENGINES = [
-  { value: 'internal', label: 'Wewnętrzna wyszukiwarka' },
-  { value: 'google',   label: 'Google' },
+  { value: 'internal',    label: 'Wewnętrzna wyszukiwarka' },
+  { value: 'google',      label: 'Google' },
   { value: 'google_site', label: 'Google (site:)' },
-  { value: 'bing',     label: 'Bing' },
-  { value: 'duckduckgo', label: 'DuckDuckGo' },
+  { value: 'bing',        label: 'Bing' },
+  { value: 'duckduckgo',  label: 'DuckDuckGo' },
+  { value: 'api',         label: 'API' },
 ];
 
 const SOURCES = [
@@ -2229,9 +2241,15 @@ function sourceCardHTML(s, fullSettings = false) {
         ${srcLoginBtnHTML(s.id)}
       </div>
       <div class="field-label" style="margin-top:6px">Silnik wyszukiwania</div>
-      <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value)">
+      <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value);toggleApiFields(${s.id},this.value)">
         ${ENGINES.map(e => `<option value="${e.value}" ${(s.engine||'internal')===e.value?'selected':''}>${e.label}</option>`).join('')}
       </select>
+      <div id="api-fields-${s.id}" style="${(s.engine||'')!=='api'?'display:none':''}">
+        <div class="field-label" style="margin-top:8px">URL endpointu API</div>
+        <input class="field-input" type="text" placeholder="https://api.example.com/search" value="${s.apiUrl||''}" oninput="updateSource(${s.id},'apiUrl',this.value)">
+        <div class="field-label" style="margin-top:8px">Klucz API <span style="font-weight:400;color:var(--text-dim)">(opcjonalnie)</span></div>
+        <input class="field-input" type="password" placeholder="sk-..." value="${s.apiKey||''}" oninput="updateSource(${s.id},'apiKey',this.value)">
+      </div>
       <div class="field-label" style="margin-top:10px">Podfora / sekcje ${countLabel}</div>
       <div class="subforum-list" id="sflist-${s.id}">
         ${s.subforums.map((url, idx) => subforumRowHTML(s.id, idx, url)).join('')}
@@ -2459,9 +2477,15 @@ function sourceListTableHTML(sources = null) {
         <td colspan="8">
           <div class="slt-settings-inner">
             <div class="field-label">Silnik wyszukiwania</div>
-            <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value)">
+            <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value);toggleApiFields(${s.id},this.value)">
               ${ENGINES.map(e => `<option value="${e.value}" ${(s.engine||'internal')===e.value?'selected':''}>${e.label}</option>`).join('')}
             </select>
+            <div id="api-fields-${s.id}" style="${(s.engine||'')!=='api'?'display:none':''}">
+              <div class="field-label" style="margin-top:8px">URL endpointu API</div>
+              <input class="field-input" type="text" placeholder="https://api.example.com/search" value="${s.apiUrl||''}" oninput="updateSource(${s.id},'apiUrl',this.value)">
+              <div class="field-label" style="margin-top:8px">Klucz API <span style="font-weight:400;color:var(--text-dim)">(opcjonalnie)</span></div>
+              <input class="field-input" type="password" placeholder="sk-..." value="${s.apiKey||''}" oninput="updateSource(${s.id},'apiKey',this.value)">
+            </div>
             <div class="field-label" style="margin-top:10px">Podfora / sekcje</div>
             <div class="subforum-list" id="sflist-${s.id}">
               ${s.subforums.map((url, idx) => subforumRowHTML(s.id, idx, url)).join('')}
@@ -3013,22 +3037,26 @@ function saveNewSource() {
   const baseUrl = document.getElementById('new-baseurl').value.trim();
   const url = document.getElementById('new-url').value.trim();
   const icon = document.getElementById('new-icon').value.trim() || '🌐';
+  const apiUrl = document.getElementById('new-api-url').value.trim();
+  const apiKey = document.getElementById('new-api-key').value.trim();
   const colorMap = { forum:'#e8f0fc', social:'#fde8f0', portal:'#e8f5ee', ogloszenia:'#fef3e2', it:'#f0e8fc', biznes:'#e8f5f5' };
   const newId = nextId++;
-  
+
   // Nowe źródło z pełną konfiguracją
-  SOURCES.push({ 
-    id: newId, 
-    name, 
-    type, 
-    icon, 
-    color: colorMap[type], 
-    enabled: true, 
-    baseUrl, 
-    engine, 
-    subforums: url ? [url] : [''], 
-    keywords: '', 
-    desc: '', 
+  SOURCES.push({
+    id: newId,
+    name,
+    type,
+    icon,
+    color: colorMap[type],
+    enabled: true,
+    baseUrl,
+    engine,
+    apiUrl,
+    apiKey,
+    subforums: url ? [url] : [''],
+    keywords: '',
+    desc: '',
     favorite: false,
     dateAdded: new Date().toISOString().split('T')[0],
     loginRequired: true // domyślnie wymagane logowanie
@@ -3051,6 +3079,9 @@ function saveNewSource() {
   document.getElementById('new-url').value = '';
   document.getElementById('new-icon').value = '';
   document.getElementById('new-engine').value = 'internal';
+  document.getElementById('new-api-url').value = '';
+  document.getElementById('new-api-key').value = '';
+  document.getElementById('new-api-fields').style.display = 'none';
   renderSources();
   renderSourcesManage();
 
@@ -3638,11 +3669,12 @@ const ENGINE_META = {
   google_site: { label: 'Google (site:)',           color: '#34A853' },
   bing:        { label: 'Bing',                    color: '#008272' },
   duckduckgo:  { label: 'DuckDuckGo',              color: '#DE5833' },
+  api:         { label: 'API',                     color: '#10b981' },
 };
 
 function renderEngines() {
   const container = document.getElementById('engines-content');
-  const order = ['internal','google','google_site','bing','duckduckgo'];
+  const order = ['internal','google','google_site','bing','duckduckgo','api'];
 
   const cards = order.map(key => {
     const meta = ENGINE_META[key] || { label: key, color: '#999' };
@@ -3651,12 +3683,13 @@ function renderEngines() {
 
     const rows = sources.map(s => {
       const domain = s.baseUrl ? s.baseUrl.replace('https://','').replace('http://','').replace('www.','').split('/')[0] : '';
+      const apiInfo = (s.engine === 'api' && s.apiUrl) ? s.apiUrl.replace('https://','').replace('http://','').split('/')[0] : '';
       return `
         <div class="engine-source-row">
           <div class="engine-source-icon" style="background:${s.color||'#e8f0fc'}">${s.icon}</div>
           <div style="flex:1;min-width:0">
             <div class="engine-source-name">${s.name}</div>
-            ${domain ? `<div class="engine-source-url" title="${s.baseUrl}">${domain}</div>` : ''}
+            ${apiInfo ? `<div class="engine-source-url" title="${s.apiUrl}">⚡ ${apiInfo}</div>` : domain ? `<div class="engine-source-url" title="${s.baseUrl}">${domain}</div>` : ''}
           </div>
           <div class="engine-source-status ${s.enabled ? 'on' : 'off'}" title="${s.enabled ? 'Aktywne' : 'Nieaktywne'}"></div>
         </div>`;
@@ -3738,6 +3771,14 @@ function doLogout() {
   updateLoginUI();
   updateCredsBadge();
   closeLoginModal();
+}
+
+// =====================
+// API FIELDS TOGGLE
+// =====================
+function toggleApiFields(id, engine) {
+  const el = document.getElementById('api-fields-' + id);
+  if (el) el.style.display = engine === 'api' ? '' : 'none';
 }
 
 // =====================
