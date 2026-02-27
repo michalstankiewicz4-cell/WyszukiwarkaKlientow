@@ -1024,6 +1024,37 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
 }
 .info-donation-iban:hover { border-color: var(--accent); }
 .info-donation-iban .copy-hint { font-size: 0.58rem; color: var(--text-dim); font-weight: 400; white-space: nowrap; }
+.info-donation-alts { margin-top: 10px; }
+.info-donation-alt-label {
+  font-size: 0.62rem; color: var(--text-dim); text-align: center;
+  margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.08em;
+  font-family: 'JetBrains Mono', monospace;
+}
+.info-donation-alt-btns { display: flex; gap: 8px; }
+.info-donation-blik {
+  flex: 1; display: flex; align-items: center; gap: 6px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 6px 9px; cursor: pointer;
+  transition: border-color 0.15s; font-size: 0.72rem;
+}
+.info-donation-blik:hover { border-color: #e5007e; }
+.blik-logo {
+  font-family: 'JetBrains Mono', monospace; font-weight: 800;
+  font-size: 0.65rem; color: #e5007e; letter-spacing: -0.02em;
+  background: rgba(229,0,126,0.1); border-radius: 3px;
+  padding: 1px 5px; flex-shrink: 0;
+}
+.blik-number { font-family: 'JetBrains Mono', monospace; color: var(--text); font-weight: 600; flex: 1; }
+.info-donation-blik .copy-hint { font-size: 0.58rem; color: var(--text-dim); white-space: nowrap; }
+.info-donation-patronite {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 6px 9px; cursor: pointer;
+  text-decoration: none; color: var(--text-mid);
+  font-size: 0.78rem; font-weight: 600;
+  transition: all 0.15s; font-family: 'Outfit', sans-serif;
+}
+.info-donation-patronite:hover { border-color: #e5007e; color: #e5007e; background: rgba(229,0,126,0.06); }
 .info-note {
   font-size: 0.74rem; color: var(--text-dim);
   text-align: center; margin-top: 12px; line-height: 1.5;
@@ -1523,6 +1554,21 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
               <div class="info-donation-iban" onclick="copyIban(this)" title="Kliknij aby skopiować">
                 <span>PL55 1020 1097 0000 7902 0226 5353</span>
                 <span class="copy-hint">📋 kopiuj</span>
+              </div>
+              <div class="info-donation-alts">
+                <div class="info-donation-alt-label">lub</div>
+                <div class="info-donation-alt-btns">
+                  <div class="info-donation-blik" onclick="copyBlik(this)" title="Kliknij aby skopiować numer BLIK">
+                    <span class="blik-logo">BLIK</span>
+                    <span class="blik-number">797 486 355</span>
+                    <span class="copy-hint">📋 kopiuj</span>
+                  </div>
+                  <a class="info-donation-patronite" href="https://patronite.pl/michalstankiewicz" target="_blank" rel="noopener">
+                    <span>❤️</span>
+                    <span>Patronite</span>
+                    <span style="font-size:0.6rem;opacity:0.7">↗</span>
+                  </a>
+                </div>
               </div>
             </div>
             <div class="info-note">Jeżeli wspierasz moją pracę — dziękuję! 🙏</div>
@@ -3675,6 +3721,14 @@ function closeInfoPanel() {
 function copyIban(el) {
   const iban = el.querySelector('span').textContent.replace(/\s/g, '');
   navigator.clipboard.writeText(iban).then(() => {
+    const hint = el.querySelector('.copy-hint');
+    hint.textContent = '✅ skopiowano';
+    setTimeout(() => { hint.textContent = '📋 kopiuj'; }, 2000);
+  });
+}
+function copyBlik(el) {
+  const num = el.querySelector('.blik-number').textContent.replace(/\s/g, '');
+  navigator.clipboard.writeText(num).then(() => {
     const hint = el.querySelector('.copy-hint');
     hint.textContent = '✅ skopiowano';
     setTimeout(() => { hint.textContent = '📋 kopiuj'; }, 2000);
