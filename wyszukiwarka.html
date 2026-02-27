@@ -1589,6 +1589,11 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
       <label class="form-label">Ikona (emoji)</label>
       <input class="form-input" id="new-icon" placeholder="🌐" maxlength="2" style="width:80px" />
     </div>
+    <div class="form-row">
+      <label class="form-label">Zestawy fraz i słów kluczowych</label>
+      <div class="kw-source-picker" id="new-kw-sets-picker"></div>
+      <div class="kw-hint">Frazy z zaznaczonych zestawów będą używane podczas wyszukiwania w tym źródle.</div>
+    </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Anuluj</button>
       <button class="btn-save" onclick="saveNewSource()">Dodaj źródło</button>
@@ -2693,6 +2698,7 @@ function addSourceFromSearch(idx, encodedName, encodedUrl) {
   document.getElementById('new-url').value = '';
   document.getElementById('new-icon').value = '🌐';
   document.getElementById('new-engine').value = 'google_site';
+  renderNewSourceKwPicker();
   document.getElementById('modal-overlay').classList.add('open');
   setTimeout(() => document.getElementById('new-name').select(), 80);
 }
@@ -2705,8 +2711,23 @@ document.getElementById('src-search-modal-overlay').addEventListener('click', fu
 // ADD SOURCE MODAL
 // =====================
 function openAddModal() {
+  renderNewSourceKwPicker();
   document.getElementById('modal-overlay').classList.add('open');
   document.getElementById('new-name').focus();
+}
+
+function renderNewSourceKwPicker() {
+  const picker = document.getElementById('new-kw-sets-picker');
+  if (!KEYWORD_SETS.length) {
+    picker.innerHTML = '<div style="padding:10px 12px;font-size:0.72rem;color:var(--text-dim)">Brak zestawów — dodaj je w zakładce Frazy i słowa kluczowe.</div>';
+    return;
+  }
+  picker.innerHTML = KEYWORD_SETS.map(ks => `
+    <label class="kw-source-row">
+      <input type="checkbox" class="new-kw-cb" data-id="${ks.id}">
+      <span class="kw-src-name">${ks.name}</span>
+      <span style="font-size:0.62rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px">${ks.phrases.slice(0,3).join(', ')}${ks.phrases.length > 3 ? '…' : ''}</span>
+    </label>`).join('');
 }
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
@@ -2740,6 +2761,17 @@ function saveNewSource() {
     loginRequired: true // domyślnie wymagane logowanie
   });
   
+  // Przypisz zaznaczone zestawy fraz
+  const selectedKwIds = [...document.querySelectorAll('.new-kw-cb:checked')].map(cb => parseInt(cb.dataset.id));
+  selectedKwIds.forEach(kwId => {
+    const ks = KEYWORD_SETS.find(k => k.id === kwId);
+    if (ks) ks.links.push({ sourceId: newId, subforum: url || '' });
+  });
+  if (selectedKwIds.length) {
+    saveKeywordSets();
+    syncKeywordSetsToSources();
+  }
+
   closeModal();
   document.getElementById('new-name').value = '';
   document.getElementById('new-baseurl').value = '';
