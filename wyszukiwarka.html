@@ -3109,15 +3109,17 @@ function cloneSource(id) {
 // =====================
 function exportSources() {
   const data = {
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
-    sources: SOURCES
+    sources: SOURCES,
+    keywordSets: KEYWORD_SETS,
+    credentials: loadCreds()
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href     = url;
-  a.download = `klienthunter-sources-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `klienthunter-backup-${new Date().toISOString().slice(0,10)}.json`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -3131,33 +3133,64 @@ function importSources() {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = ev => {
-      let imported;
+      let parsed;
       try {
-        const parsed = JSON.parse(ev.target.result);
-        imported = Array.isArray(parsed) ? parsed : (parsed.sources || []);
-        if (!Array.isArray(imported) || imported.length === 0) throw new Error('Brak źródeł');
-        imported.forEach(s => { if (typeof s.id === 'undefined' || typeof s.name === 'undefined') throw new Error('Nieprawidłowy format'); });
+        parsed = JSON.parse(ev.target.result);
+      } catch (err) {
+        alert('Błąd importu: nieprawidłowy plik JSON.');
+        return;
+      }
+
+      const importedSources  = Array.isArray(parsed) ? parsed : (parsed.sources || []);
+      const importedKwSets   = parsed.keywordSets || null;
+      const importedCreds    = parsed.credentials || null;
+
+      try {
+        if (!Array.isArray(importedSources) || importedSources.length === 0) throw new Error('Brak źródeł w pliku');
+        importedSources.forEach(s => {
+          if (typeof s.id === 'undefined' || typeof s.name === 'undefined') throw new Error('Nieprawidłowy format źródeł');
+        });
       } catch (err) {
         alert('Błąd importu: ' + err.message + '\nUpewnij się, że plik pochodzi z eksportu KlientHunter.');
         return;
       }
-      const mode = confirm(
-        `Znaleziono ${imported.length} źródeł.\n\nOK → Dołącz do istniejących (zalecane)\nAnuluj → Zastąp wszystkie`
-      );
-      if (mode) {
-        // Dołącz — generuj nowe ID, aby uniknąć konfliktów
-        imported.forEach(s => {
+
+      let summary = `Znaleziono w pliku:\n• ${importedSources.length} źródeł`;
+      if (importedKwSets) summary += `\n• ${importedKwSets.length} zestawów fraz`;
+      if (importedCreds)  summary += `\n• ${Object.keys(importedCreds).length} loginów`;
+      summary += '\n\nOK → Dołącz źródła do istniejących\nAnuluj → Zastąp wszystkie źródła';
+
+      const appendMode = confirm(summary);
+
+      // --- Źródła ---
+      if (appendMode) {
+        importedSources.forEach(s => {
           const newId = nextId++;
           SOURCES.push({ desc: '', ...s, id: newId, dateAdded: s.dateAdded || new Date().toISOString().split('T')[0] });
         });
       } else {
-        // Zastąp
         SOURCES.length = 0;
-        imported.forEach(s => SOURCES.push({ desc: '', ...s }));
+        importedSources.forEach(s => SOURCES.push({ desc: '', ...s }));
         nextId = Math.max(...SOURCES.map(s => s.id), 0) + 1;
       }
+
+      // --- Zestawy fraz (zastąp) ---
+      if (importedKwSets) {
+        KEYWORD_SETS.splice(0, KEYWORD_SETS.length, ...importedKwSets);
+        saveKeywordSets();
+        syncKeywordSetsToSources();
+      }
+
+      // --- Loginy (scala z istniejącymi) ---
+      if (importedCreds) {
+        const existing = loadCreds();
+        saveCreds({ ...existing, ...importedCreds });
+      }
+
       renderSources();
       renderSourcesManage();
+      if (importedKwSets) renderKeywords();
+      if (importedCreds)  renderCredentials();
     };
     reader.readAsText(file);
   };
