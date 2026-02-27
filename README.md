@@ -1,2 +1,2 @@
-# Wyszukiwarka-klient-w
+# Wyszukiwarka-klientów
 Wyszukiwarka klientów
