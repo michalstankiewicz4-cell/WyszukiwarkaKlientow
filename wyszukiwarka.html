@@ -28,6 +28,31 @@
   --blue-bg: #e8f0fc;
   --shadow: 0 2px 12px rgba(0,0,0,0.07);
   --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+  --sidebar-bg: #1a1714;
+}
+
+/* DARK THEME */
+html[data-theme="dark"] {
+  --bg: #111010;
+  --surface: #1c1a17;
+  --surface2: #242220;
+  --border: #2e2a25;
+  --border2: #3a3530;
+  --accent-light: rgba(232,93,38,0.15);
+  --text: #f0ede6;
+  --text-mid: #a8a098;
+  --text-dim: #6a6058;
+  --green: #2da866;
+  --green-bg: rgba(26,122,74,0.15);
+  --yellow: #d4a017;
+  --yellow-bg: rgba(176,120,0,0.15);
+  --red: #e05545;
+  --red-bg: rgba(192,57,43,0.15);
+  --blue: #4d8fd4;
+  --blue-bg: rgba(37,99,168,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+  --sidebar-bg: #0a0908;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -46,7 +71,7 @@ body {
 .sidebar {
   width: 300px;
   flex-shrink: 0;
-  background: var(--text);
+  background: var(--sidebar-bg);
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -857,6 +882,49 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
+/* DARK MODE OVERRIDES */
+html[data-theme="dark"] .badge-forum { background: rgba(37,99,168,0.22); color: #6aafdf; }
+html[data-theme="dark"] .badge-social { background: rgba(168,37,79,0.22); color: #d45f8f; }
+html[data-theme="dark"] .badge-portal { background: rgba(26,122,74,0.22); color: #2da866; }
+html[data-theme="dark"] .badge-ogloszenia { background: rgba(176,120,0,0.22); color: #d4a017; }
+html[data-theme="dark"] .badge-it { background: rgba(106,37,168,0.22); color: #a44fd4; }
+html[data-theme="dark"] .badge-biznes { background: rgba(26,122,122,0.22); color: #2da8a8; }
+html[data-theme="dark"] .result-item.selected {
+  background: linear-gradient(135deg, var(--surface) 0%, rgba(232,93,38,0.09) 100%);
+}
+html[data-theme="dark"] .card-subforum-chip:hover { background: rgba(37,99,168,0.3); color: #6aafdf; }
+html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); color: var(--text-dim); }
+
+/* THEME TOGGLE & LANG SWITCHER */
+.topbar-controls {
+  display: flex; align-items: center; gap: 8px; margin-left: auto;
+}
+.theme-toggle {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  cursor: pointer;
+  font-size: 1.05rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.theme-toggle:hover { border-color: var(--accent); background: var(--accent-light); }
+.lang-switcher {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text-dim);
+  font-size: 0.75rem; font-weight: 600;
+  cursor: not-allowed;
+  opacity: 0.45;
+  user-select: none;
+  font-family: 'Outfit', sans-serif;
+}
+.lang-arrow { font-size: 0.6rem; }
+
 /* STATS STRIP */
 .stats-strip {
   display: flex;
@@ -1316,6 +1384,16 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
     <div>
       <div class="page-title" id="page-title">Szukaj klientów</div>
       <div class="page-subtitle" id="page-subtitle">Przeszukuj fora i serwisy społecznościowe</div>
+    </div>
+    <div class="topbar-controls">
+      <div class="lang-switcher" title="Zmiana języka – wkrótce dostępna">
+        <span>🌐</span>
+        <span>PL</span>
+        <span class="lang-arrow">▾</span>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle-btn" title="Przełącz motyw (jasny / ciemny)">
+        <span id="theme-icon">🌙</span>
+      </button>
     </div>
     <button class="login-btn" id="login-btn" onclick="openLoginModal()">
       <div class="login-lamp lamp-logged-out" id="login-lamp"></div>
@@ -3441,9 +3519,27 @@ function doLogout() {
 }
 
 // =====================
+// THEME
+// =====================
+let currentTheme = localStorage.getItem('lh_theme') || 'light';
+
+function applyTheme(t) {
+  currentTheme = t;
+  document.documentElement.setAttribute('data-theme', t);
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = t === 'dark' ? '☀️' : '🌙';
+  localStorage.setItem('lh_theme', t);
+}
+
+function toggleTheme() {
+  applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+}
+
+// =====================
 // INIT
 // =====================
 document.addEventListener('DOMContentLoaded', function() {
+  applyTheme(currentTheme);
   document.getElementById('saved-count').textContent = savedLeads.length;
   updateLoginUI();
   updateCredsBadge();
