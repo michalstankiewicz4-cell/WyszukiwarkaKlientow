@@ -1565,6 +1565,41 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
 .add-kwset-btn { font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 600; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border2); color: var(--text-mid); border-radius: 6px; cursor: pointer; transition: all 0.12s; }
 .add-kwset-btn:hover { border-color: var(--accent); color: var(--accent); }
 
+/* SCRIPTS PAGE */
+.scripts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.script-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); transition: box-shadow 0.15s; }
+.script-card:hover { box-shadow: var(--shadow-lg); }
+.script-card-header { padding: 13px 14px 10px; display: flex; align-items: flex-start; gap: 10px; }
+.script-card-icon { width: 34px; height: 34px; border-radius: 8px; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.05rem; flex-shrink: 0; }
+.script-card-info { flex: 1; min-width: 0; }
+.script-card-name { font-weight: 700; font-size: 0.88rem; color: var(--text); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.script-card-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+.script-lang-badge { font-size: 0.58rem; font-family: 'JetBrains Mono', monospace; padding: 1px 6px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.05em; background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border2); }
+.lang-js  { background: rgba(247,220,111,0.18); color: #9a7300; border-color: rgba(247,220,111,0.5); }
+.lang-python { background: rgba(37,99,168,0.12); color: var(--blue); border-color: rgba(37,99,168,0.3); }
+.lang-bash   { background: rgba(16,185,129,0.12); color: #10b981; border-color: rgba(16,185,129,0.3); }
+.lang-curl   { background: rgba(232,93,38,0.12); color: var(--accent); border-color: rgba(232,93,38,0.25); }
+.lang-php    { background: rgba(106,37,168,0.12); color: #6a25a8; border-color: rgba(106,37,168,0.3); }
+html[data-theme="dark"] .lang-js { color: #f0c040; }
+.script-card-actions { display: flex; gap: 5px; flex-shrink: 0; }
+.script-action-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text-dim); cursor: pointer; font-size: 0.78rem; display: flex; align-items: center; justify-content: center; transition: all 0.12s; }
+.script-action-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.script-action-btn.danger:hover { border-color: var(--red); color: var(--red); background: var(--red-bg); }
+.script-desc { padding: 0 14px 10px; font-size: 0.78rem; color: var(--text-mid); line-height: 1.5; }
+.script-code-wrap { border-top: 1px solid var(--border); }
+.script-code-toggle { width: 100%; display: flex; align-items: center; gap: 6px; padding: 7px 14px; background: none; border: none; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; transition: color 0.12s; }
+.script-code-toggle:hover { color: var(--accent); }
+.script-code-toggle .chevron { transition: transform 0.2s; display: inline-block; }
+.script-code-toggle.open .chevron { transform: rotate(180deg); }
+.script-code-block { display: none; background: var(--bg); border-top: 1px solid var(--border); padding: 12px 14px; overflow-x: auto; max-height: 260px; overflow-y: auto; }
+.script-code-block.open { display: block; }
+.script-code-block pre { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-mid); line-height: 1.65; margin: 0; white-space: pre; }
+/* SCRIPT MODAL */
+.script-modal { width: 620px; max-height: 90vh; display: flex; flex-direction: column; }
+.script-modal .modal-body { flex: 1; overflow-y: auto; padding-right: 4px; }
+.script-textarea { width: 100%; min-height: 220px; resize: vertical; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; padding: 12px 14px; border: 1px solid var(--border2); border-radius: 8px; background: var(--bg); color: var(--text); box-sizing: border-box; line-height: 1.65; outline: none; tab-size: 2; }
+.script-textarea:focus { border-color: var(--accent); }
+
 /* ENGINES PAGE */
 .engines-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
 .engine-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
@@ -1624,6 +1659,9 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
     </button>
     <button class="nav-item" onclick="showPage('engines')">
       <span class="nav-icon">🔎</span> Silniki wyszukiwań
+    </button>
+    <button class="nav-item" onclick="showPage('scripts')">
+      <span class="nav-icon">📜</span> Skrypty
     </button>
     <button class="nav-item" onclick="showPage('credentials')">
       <span class="nav-icon">🔐</span> Loginy do źródeł
@@ -1903,6 +1941,18 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
       <div id="keywords-content"></div>
     </div>
 
+    <!-- PAGE: SCRIPTS -->
+    <div id="page-scripts" style="display:none">
+      <div class="creds-topbar">
+        <div>
+          <div class="sources-title">Skrypty</div>
+          <div style="font-size:0.72rem;color:var(--text-dim);margin-top:2px">Skrypty dla niestandardowych wyszukiwań — powiązane z silnikami</div>
+        </div>
+        <button class="add-kwset-btn" onclick="openScriptModal()">+ Dodaj skrypt</button>
+      </div>
+      <div id="scripts-content"></div>
+    </div>
+
     <!-- PAGE: ENGINES -->
     <div id="page-engines" style="display:none">
       <div class="creds-topbar">
@@ -2098,6 +2148,49 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
   </div>
 </div>
 
+<!-- SCRIPT MODAL -->
+<div class="modal-overlay" id="script-modal-overlay">
+  <div class="modal script-modal">
+    <div class="modal-title" id="script-modal-title">Dodaj skrypt</div>
+    <div class="modal-sub">Skrypt dla niestandardowego wyszukiwania powiązany z silnikiem</div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label class="form-label">Nazwa skryptu</label>
+        <input class="form-input" id="script-name" placeholder="np. OpenSearch API scraper">
+      </div>
+      <div style="display:flex;gap:12px">
+        <div class="form-row" style="flex:1">
+          <label class="form-label">Silnik</label>
+          <select class="form-select" id="script-engine"></select>
+        </div>
+        <div class="form-row" style="flex:1">
+          <label class="form-label">Język</label>
+          <select class="form-select" id="script-language">
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="bash">Bash</option>
+            <option value="curl">cURL</option>
+            <option value="php">PHP</option>
+            <option value="other">Inny</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Opis <span style="font-weight:400;color:var(--text-dim)">(opcjonalnie)</span></label>
+        <input class="form-input" id="script-desc" placeholder="Co robi ten skrypt?">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Kod skryptu</label>
+        <textarea class="script-textarea" id="script-code" placeholder="// Wpisz kod skryptu...&#10;// Skrypt zostanie uruchomiony gdy silnik wymaga niestandardowego wyszukiwania"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeScriptModal()">Anuluj</button>
+      <button class="btn-save" onclick="saveScript()">Zapisz skrypt</button>
+    </div>
+  </div>
+</div>
+
 <!-- SOURCE CREDENTIALS MODAL -->
 <div class="modal-overlay" id="src-cred-modal-overlay">
   <div class="modal src-cred-modal">
@@ -2209,26 +2302,28 @@ let nextId = 16;
 // PAGES
 // =====================
 function showPage(page) {
-  ['search','saved','sources','keywords','engines','credentials'].forEach(p => {
+  ['search','saved','sources','keywords','scripts','engines','credentials'].forEach(p => {
     document.getElementById(`page-${p}`).style.display = p === page ? 'block' : 'none';
   });
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   event.currentTarget.classList.add('active');
   const titles = {
-    search: ['Szukaj klientów', 'Przeszukuj fora i serwisy społecznościowe'],
-    saved: ['Zapisane leady', 'Twoja lista potencjalnych klientów'],
-    sources: ['Zarządzaj źródłami', 'Konfiguruj i edytuj źródła danych'],
-    keywords: ['Frazy i słowa kluczowe', 'Zestawy fraz powiązane z wybranymi źródłami'],
-    engines: ['Silniki wyszukiwań', 'Źródła pogrupowane według metody wyszukiwania'],
-    credentials: ['Loginy do źródeł', 'Zarządzaj danymi dostępowymi do każdego źródła']
+    search:      ['Szukaj klientów',          'Przeszukuj fora i serwisy społecznościowe'],
+    saved:       ['Zapisane leady',            'Twoja lista potencjalnych klientów'],
+    sources:     ['Zarządzaj źródłami',        'Konfiguruj i edytuj źródła danych'],
+    keywords:    ['Frazy i słowa kluczowe',    'Zestawy fraz powiązane z wybranymi źródłami'],
+    scripts:     ['Skrypty',                   'Skrypty dla niestandardowych wyszukiwań'],
+    engines:     ['Silniki wyszukiwań',        'Źródła pogrupowane według metody wyszukiwania'],
+    credentials: ['Loginy do źródeł',          'Zarządzaj danymi dostępowymi do każdego źródła'],
   };
   document.getElementById('page-title').textContent = titles[page][0];
   document.getElementById('page-subtitle').textContent = titles[page][1];
 
-  if (page === 'saved') renderSaved();
-  if (page === 'sources') renderSourcesManage();
-  if (page === 'keywords') renderKeywords();
-  if (page === 'engines') renderEngines();
+  if (page === 'saved')       renderSaved();
+  if (page === 'sources')     renderSourcesManage();
+  if (page === 'keywords')    renderKeywords();
+  if (page === 'scripts')     renderScripts();
+  if (page === 'engines')     renderEngines();
   if (page === 'credentials') renderCredentials();
 }
 
@@ -3320,11 +3415,12 @@ function cloneSource(id) {
 // =====================
 function exportSources() {
   const data = {
-    version: 2,
+    version: 3,
     exportedAt: new Date().toISOString(),
     sources: SOURCES,
     keywordSets: KEYWORD_SETS,
-    credentials: loadCreds()
+    credentials: loadCreds(),
+    scripts: SCRIPTS,
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
@@ -3355,6 +3451,7 @@ function importSources() {
       const importedSources  = Array.isArray(parsed) ? parsed : (parsed.sources || []);
       const importedKwSets   = parsed.keywordSets || null;
       const importedCreds    = parsed.credentials || null;
+      const importedScripts  = parsed.scripts || null;
 
       try {
         if (!Array.isArray(importedSources) || importedSources.length === 0) throw new Error('Brak źródeł w pliku');
@@ -3367,8 +3464,9 @@ function importSources() {
       }
 
       let summary = `Znaleziono w pliku:\n• ${importedSources.length} źródeł`;
-      if (importedKwSets) summary += `\n• ${importedKwSets.length} zestawów fraz`;
-      if (importedCreds)  summary += `\n• ${Object.keys(importedCreds).length} loginów`;
+      if (importedKwSets)   summary += `\n• ${importedKwSets.length} zestawów fraz`;
+      if (importedCreds)    summary += `\n• ${Object.keys(importedCreds).length} loginów`;
+      if (importedScripts)  summary += `\n• ${importedScripts.length} skryptów`;
       summary += '\n\nOK → Dołącz źródła do istniejących\nAnuluj → Zastąp wszystkie źródła';
 
       const appendMode = confirm(summary);
@@ -3398,10 +3496,18 @@ function importSources() {
         saveCreds({ ...existing, ...importedCreds });
       }
 
+      // --- Skrypty (zastąp) ---
+      if (importedScripts) {
+        SCRIPTS.splice(0, SCRIPTS.length, ...importedScripts);
+        scriptNextId = SCRIPTS.length ? Math.max(...SCRIPTS.map(s => s.id)) + 1 : 1;
+        saveScripts();
+      }
+
       renderSources();
       renderSourcesManage();
-      if (importedKwSets) renderKeywords();
-      if (importedCreds)  renderCredentials();
+      if (importedKwSets)  renderKeywords();
+      if (importedCreds)   renderCredentials();
+      if (importedScripts) renderScripts();
     };
     reader.readAsText(file);
   };
@@ -3839,6 +3945,157 @@ function deleteKwSet(id) {
 function closeKwModal() {
   document.getElementById('kw-modal-overlay').classList.remove('open');
 }
+
+// =====================
+// SCRIPTS
+// =====================
+let SCRIPTS = (() => {
+  const stored = localStorage.getItem('lh_scripts');
+  return stored ? JSON.parse(stored) : [];
+})();
+let scriptNextId = SCRIPTS.length ? Math.max(...SCRIPTS.map(s => s.id)) + 1 : 1;
+let editingScriptId = null;
+
+function saveScripts() { localStorage.setItem('lh_scripts', JSON.stringify(SCRIPTS)); }
+
+const LANG_META = {
+  javascript: { label: 'JS',   cls: 'lang-js',     icon: '⚡' },
+  python:     { label: 'Py',   cls: 'lang-python',  icon: '🐍' },
+  bash:       { label: 'Bash', cls: 'lang-bash',    icon: '🖥️' },
+  curl:       { label: 'cURL', cls: 'lang-curl',    icon: '📡' },
+  php:        { label: 'PHP',  cls: 'lang-php',     icon: '🐘' },
+  other:      { label: '?',    cls: '',             icon: '📄' },
+};
+
+function escapeHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderScripts() {
+  const container = document.getElementById('scripts-content');
+  if (!SCRIPTS.length) {
+    container.innerHTML = `<div class="empty-state"><div class="icon">📜</div><h3>Brak skryptów</h3><p>Dodaj skrypt powiązany z silnikiem wyszukiwania dla niestandardowych zapytań.</p></div>`;
+    return;
+  }
+  const enginesUsed = [...new Set(SCRIPTS.map(s => s.engine))];
+  let html = '';
+  enginesUsed.forEach(eng => {
+    const meta = ENGINE_META[eng] || { label: eng, color: '#999' };
+    const group = SCRIPTS.filter(s => s.engine === eng);
+    html += `
+      <div class="sources-header" style="margin:14px 0 10px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:9px;height:9px;border-radius:50%;background:${meta.color};box-shadow:0 0 5px ${meta.color}99;flex-shrink:0"></div>
+          <span class="sources-title">${meta.label}</span>
+          <span class="manage-count">${group.length}</span>
+        </div>
+      </div>
+      <div class="scripts-grid">${group.map(scriptCardHTML).join('')}</div>`;
+  });
+  container.innerHTML = html;
+}
+
+function scriptCardHTML(s) {
+  const lang    = LANG_META[s.language] || LANG_META.other;
+  const engMeta = ENGINE_META[s.engine] || { label: s.engine, color: '#999' };
+  const lines   = (s.code || '').split('\n').length;
+  return `
+    <div class="script-card" id="sscript-${s.id}">
+      <div class="script-card-header">
+        <div class="script-card-icon">${lang.icon}</div>
+        <div class="script-card-info">
+          <div class="script-card-name">${s.name}</div>
+          <div class="script-card-badges">
+            <span class="engine-badge" style="background:${engMeta.color}22;color:${engMeta.color};border:1px solid ${engMeta.color}44">${engMeta.label}</span>
+            <span class="script-lang-badge ${lang.cls}">${lang.label}</span>
+            <span class="script-lang-badge" style="opacity:0.7">${s.dateAdded||''}</span>
+          </div>
+        </div>
+        <div class="script-card-actions">
+          <button class="script-action-btn" onclick="openScriptModal(${s.id})" title="Edytuj">✏️</button>
+          <button class="script-action-btn danger" onclick="deleteScript(${s.id})" title="Usuń">🗑</button>
+        </div>
+      </div>
+      ${s.description ? `<div class="script-desc">${s.description}</div>` : ''}
+      ${s.code ? `
+      <div class="script-code-wrap">
+        <button class="script-code-toggle" id="sct-${s.id}" onclick="toggleScriptCode(${s.id})">
+          <span class="chevron">▾</span>&nbsp; Kod · ${lines} ${lines === 1 ? 'linia' : 'linii'}
+        </button>
+        <div class="script-code-block" id="scb-${s.id}">
+          <pre>${escapeHtml(s.code)}</pre>
+        </div>
+      </div>` : ''}
+    </div>`;
+}
+
+function toggleScriptCode(id) {
+  document.getElementById('sct-' + id).classList.toggle('open');
+  document.getElementById('scb-' + id).classList.toggle('open');
+}
+
+function openScriptModal(id = null) {
+  editingScriptId = id;
+  const sel = document.getElementById('script-engine');
+  sel.innerHTML = ENGINES.map(e => `<option value="${e.value}">${e.label}</option>`).join('');
+  if (id !== null) {
+    const s = SCRIPTS.find(x => x.id === id);
+    if (!s) return;
+    document.getElementById('script-modal-title').textContent = 'Edytuj skrypt';
+    document.getElementById('script-name').value     = s.name;
+    document.getElementById('script-engine').value   = s.engine;
+    document.getElementById('script-language').value = s.language;
+    document.getElementById('script-desc').value     = s.description || '';
+    document.getElementById('script-code').value     = s.code || '';
+  } else {
+    document.getElementById('script-modal-title').textContent = 'Dodaj skrypt';
+    document.getElementById('script-name').value     = '';
+    document.getElementById('script-engine').value   = 'api';
+    document.getElementById('script-language').value = 'javascript';
+    document.getElementById('script-desc').value     = '';
+    document.getElementById('script-code').value     = '';
+  }
+  document.getElementById('script-modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('script-name').focus(), 80);
+}
+
+function closeScriptModal() {
+  document.getElementById('script-modal-overlay').classList.remove('open');
+  editingScriptId = null;
+}
+
+function saveScript() {
+  const name = document.getElementById('script-name').value.trim();
+  if (!name) { document.getElementById('script-name').focus(); return; }
+  const data = {
+    name,
+    engine:      document.getElementById('script-engine').value,
+    language:    document.getElementById('script-language').value,
+    description: document.getElementById('script-desc').value.trim(),
+    code:        document.getElementById('script-code').value,
+    dateAdded:   new Date().toISOString().split('T')[0],
+  };
+  if (editingScriptId !== null) {
+    const idx = SCRIPTS.findIndex(s => s.id === editingScriptId);
+    if (idx >= 0) SCRIPTS[idx] = { ...SCRIPTS[idx], ...data };
+  } else {
+    SCRIPTS.push({ id: scriptNextId++, ...data });
+  }
+  saveScripts();
+  closeScriptModal();
+  renderScripts();
+}
+
+function deleteScript(id) {
+  if (!confirm('Usunąć ten skrypt?')) return;
+  SCRIPTS = SCRIPTS.filter(s => s.id !== id);
+  saveScripts();
+  renderScripts();
+}
+
+document.getElementById('script-modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeScriptModal();
+});
 
 // =====================
 // ENGINES
