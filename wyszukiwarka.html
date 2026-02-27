@@ -912,7 +912,7 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
 .theme-toggle:hover { border-color: var(--accent); background: var(--accent-light); }
 .lang-switcher {
   display: flex; align-items: center; gap: 5px;
-  padding: 6px 10px;
+  height: 36px; padding: 0 10px; box-sizing: border-box;
   border-radius: 8px;
   border: 1px solid var(--border2);
   background: var(--surface2);
@@ -1425,7 +1425,8 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
 .login-btn {
   display: flex; align-items: center; gap: 7px;
   font-family: 'Outfit', sans-serif; font-size: 0.75rem; font-weight: 600;
-  padding: 6px 14px; border-radius: 7px; cursor: pointer;
+  height: 36px; padding: 0 14px; box-sizing: border-box;
+  border-radius: 7px; cursor: pointer;
   border: 1px solid var(--border2); background: var(--surface);
   color: var(--text-mid); transition: all 0.15s; white-space: nowrap;
 }
