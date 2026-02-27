@@ -1970,6 +1970,8 @@ function sourceCardHTML(s, fullSettings = false) {
         ${s.subforums.map((url, idx) => subforumRowHTML(s.id, idx, url)).join('')}
       </div>
       <button class="subforum-add-btn" onclick="addSubforum(${s.id})">+ Dodaj kolejny link</button>
+      <div class="field-label" style="margin-top:10px">Opis źródła <span style="font-weight:400;color:var(--text-dim)">(widoczny po najechaniu na kafelek)</span></div>
+      <textarea class="field-input keywords-input" id="sdesc-${s.id}" placeholder="Krótki opis źródła..." maxlength="255" oninput="updateSource(${s.id},'desc',this.value)" style="min-height:52px;resize:vertical">${s.desc||''}</textarea>
       <div class="field-label" style="margin-top:10px">Powiązane zestawy fraz</div>
       <div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:3px">${getSourceKwSetsHTML(s.id)}</div>
       <div class="field-label" style="margin-top:10px">Słowa kluczowe aktywne (z zestawów)</div>
@@ -1988,8 +1990,10 @@ function sourceCardHTML(s, fullSettings = false) {
     return `<div class="card-subforums">${filled.map(u => `<a class="card-subforum-chip" href="${u}" target="_blank" onclick="event.stopPropagation()" title="${u}">↗ ${u.replace(/https?:\/\/(www\.)?/,'').replace(/\/$/,'')}</a>`).join('')}</div>`;
   })() : '';
 
+  const cardTitle = !fullSettings && s.desc ? s.desc : '';
+
   return `
-  <div class="source-card" id="scard-${s.id}">
+  <div class="source-card" id="scard-${s.id}"${cardTitle ? ` title="${cardTitle.replace(/"/g,'&quot;')}"` : ''}>
     <div class="source-card-header">
       <div class="source-icon" style="background:${iconBg}">${s.icon}</div>
       <div class="source-info">
@@ -2196,6 +2200,8 @@ function sourceListTableHTML(sources = null) {
               ${s.subforums.map((url, idx) => subforumRowHTML(s.id, idx, url)).join('')}
             </div>
             <button class="subforum-add-btn" onclick="addSubforum(${s.id})">+ Dodaj kolejny link</button>
+            <div class="field-label" style="margin-top:10px">Opis źródła <span style="font-weight:400;color:var(--text-dim)">(widoczny po najechaniu na kafelek)</span></div>
+            <textarea class="field-input keywords-input" id="sdesc-${s.id}" placeholder="Krótki opis źródła..." maxlength="255" oninput="updateSource(${s.id},'desc',this.value)" style="min-height:52px;resize:vertical">${s.desc||''}</textarea>
             <div class="field-label" style="margin-top:10px">Powiązane zestawy fraz</div>
             <div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:3px">${getSourceKwSetsHTML(s.id)}</div>
             <div class="field-label" style="margin-top:10px">Słowa kluczowe aktywne (z zestawów)</div>
