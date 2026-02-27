@@ -273,6 +273,8 @@ body {
   transition: all 0.12s;
 }
 .add-source-btn:hover { border-color: var(--accent); color: var(--accent); }
+.io-btn { font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 600; padding: 6px 12px; background: var(--surface); border: 1px solid var(--border2); color: var(--text-dim); border-radius: 6px; cursor: pointer; transition: all 0.12s; display:flex; align-items:center; gap:5px; }
+.io-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 
 .sources-grid {
   display: grid;
@@ -1157,6 +1159,32 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
 .creds-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
 .creds-notice { background: var(--yellow-bg); border: 1px solid rgba(176,120,0,0.25); border-radius: 8px; padding: 10px 14px; font-size: 0.75rem; color: var(--yellow); margin-bottom: 16px; display: flex; align-items: flex-start; gap: 8px; }
 .creds-notice-icon { flex-shrink: 0; font-size: 0.9rem; margin-top: 1px; }
+.creds-group-header td { background: var(--surface2); padding: 6px 14px; border-top: 2px solid var(--border2); border-bottom: 1px solid var(--border); }
+.creds-group-header:first-child td { border-top: none; }
+.creds-group-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); }
+.creds-group-count { display: inline-flex; align-items: center; justify-content: center; margin-left: 7px; background: var(--border2); color: var(--text-dim); font-size: 0.6rem; font-weight: 700; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; }
+.creds-group-header.status-set .creds-group-label { color: var(--green); }
+.creds-group-header.status-unset .creds-group-label { color: var(--text-dim); }
+
+/* ENGINES PAGE */
+.engines-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+.engine-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
+.engine-card-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+.engine-card-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.engine-card-name { font-weight: 700; font-size: 0.88rem; flex: 1; }
+.engine-card-count { font-size: 0.68rem; font-weight: 700; background: var(--border2); color: var(--text-dim); padding: 2px 8px; border-radius: 9px; }
+.engine-source-list { padding: 6px 0; }
+.engine-source-row { display: flex; align-items: center; gap: 10px; padding: 7px 16px; transition: background 0.1s; }
+.engine-source-row:hover { background: var(--bg); }
+.engine-source-icon { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; }
+.engine-source-name { flex: 1; font-size: 0.8rem; font-weight: 600; color: var(--text); }
+.engine-source-url  { font-size: 0.62rem; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+.engine-source-status { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.engine-source-status.on  { background: var(--green); box-shadow: 0 0 4px var(--green); }
+.engine-source-status.off { background: var(--text-dim); }
+.engine-empty { padding: 18px 16px; font-size: 0.75rem; color: var(--text-dim); font-style: italic; }
+.clone-btn { font-family: 'Outfit', sans-serif; font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border: 1px solid var(--border2); border-radius: 5px; background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
+.clone-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 
 /* SOURCE CRED MODAL */
 .src-cred-modal { width: 420px; }
@@ -1191,6 +1219,9 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
     </button>
     <button class="nav-item" onclick="showPage('sources')">
       <span class="nav-icon">⚙️</span> Zarządzaj źródłami
+    </button>
+    <button class="nav-item" onclick="showPage('engines')">
+      <span class="nav-icon">🔎</span> Silniki wyszukiwań
     </button>
     <button class="nav-item" onclick="showPage('credentials')">
       <span class="nav-icon">🔐</span> Loginy do źródeł
@@ -1338,10 +1369,26 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
               Lista
             </button>
           </div>
+          <button class="io-btn" onclick="exportSources()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M3 6.5l3.5 3.5 3.5-3.5M1 11h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Eksport
+          </button>
+          <button class="io-btn" onclick="importSources()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12V4M3 6.5L6.5 3 10 6.5M1 1h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Import
+          </button>
           <button class="add-source-btn" onclick="openAddModal()">+ Dodaj źródło</button>
         </div>
       </div>
       <div id="sources-manage-content"></div>
+    </div>
+
+    <!-- PAGE: ENGINES -->
+    <div id="page-engines" style="display:none">
+      <div class="creds-topbar">
+        <div><div class="sources-title">Silniki wyszukiwań</div></div>
+      </div>
+      <div id="engines-content"></div>
     </div>
 
     <!-- PAGE: CREDENTIALS -->
@@ -1349,6 +1396,10 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
       <div class="creds-topbar">
         <div>
           <div class="sources-title">Loginy do źródeł</div>
+        </div>
+        <div class="manage-view-toggle">
+          <button class="manage-view-btn" id="cg-btn-status" onclick="setCredsGroup('status',this)">Wg statusu</button>
+          <button class="manage-view-btn" id="cg-btn-name" onclick="setCredsGroup('name',this)">Wg nazwy</button>
         </div>
       </div>
       <div class="creds-notice" id="creds-notice">
@@ -1560,7 +1611,7 @@ let nextId = 16;
 // PAGES
 // =====================
 function showPage(page) {
-  ['search','saved','sources','credentials'].forEach(p => {
+  ['search','saved','sources','engines','credentials'].forEach(p => {
     document.getElementById(`page-${p}`).style.display = p === page ? 'block' : 'none';
   });
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -1569,6 +1620,7 @@ function showPage(page) {
     search: ['Szukaj klientów', 'Przeszukuj fora i serwisy społecznościowe'],
     saved: ['Zapisane leady', 'Twoja lista potencjalnych klientów'],
     sources: ['Zarządzaj źródłami', 'Konfiguruj i edytuj źródła danych'],
+    engines: ['Silniki wyszukiwań', 'Źródła pogrupowane według metody wyszukiwania'],
     credentials: ['Loginy do źródeł', 'Zarządzaj danymi dostępowymi do każdego źródła']
   };
   document.getElementById('page-title').textContent = titles[page][0];
@@ -1576,6 +1628,7 @@ function showPage(page) {
 
   if (page === 'saved') renderSaved();
   if (page === 'sources') renderSourcesManage();
+  if (page === 'engines') renderEngines();
   if (page === 'credentials') renderCredentials();
 }
 
@@ -1805,6 +1858,7 @@ function sourceCardHTML(s, fullSettings = false) {
       <button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">
         ${s.favorite ? '⭐' : '☆'}
       </button>
+      ${fullSettings ? `<button class="clone-btn" onclick="cloneSource(${s.id})" title="Klonuj źródło">⧉</button>` : ''}
       <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}"></div>
     </div>
     ${subforumsDisplay}
@@ -1863,6 +1917,14 @@ function renderSourcesManage() {
             Lista
           </button>
         </div>
+        <button class="io-btn" onclick="exportSources()" title="Eksportuj źródła do pliku JSON">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M3 6.5l3.5 3.5 3.5-3.5M1 11h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Eksport
+        </button>
+        <button class="io-btn" onclick="importSources()" title="Importuj źródła z pliku JSON">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12V4M3 6.5L6.5 3 10 6.5M1 1h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Import
+        </button>
         <button class="add-source-btn" onclick="openAddModal()">+ Dodaj źródło</button>
       </div>`;
   }
@@ -1900,8 +1962,19 @@ function renderSourcesManage() {
     
     container.innerHTML = html;
   } else {
-    // W widoku listy pokazujemy jedną tabelę z wszystkimi źródłami
-    container.innerHTML = sourceListTableHTML(sortedSources);
+    const active   = sortedSources.filter(s => s.enabled);
+    const inactive = sortedSources.filter(s => !s.enabled);
+    let html = '';
+    if (active.length > 0) {
+      html += `<div class="sources-header" style="margin-bottom:16px"><div class="sources-title">✅ Aktywne źródła (${active.length})</div></div>`;
+      html += sourceListTableHTML(active);
+      html += `<div style="margin-bottom:28px"></div>`;
+    }
+    if (inactive.length > 0) {
+      html += `<div class="sources-header" style="margin-bottom:16px"><div class="sources-title">⏸️ Nieaktywne źródła (${inactive.length})</div></div>`;
+      html += sourceListTableHTML(inactive);
+    }
+    container.innerHTML = html;
   }
 }
 
@@ -1962,7 +2035,10 @@ function sourceListTableHTML(sources = null) {
           </div>
         </td>
         <td style="text-align:center">${enabledHTML}</td>
-        <td><button class="slt-edit-btn" onclick="toggleListSettings(${s.id})" style="font-size:0.65rem;padding:3px 8px">⚙</button></td>
+        <td style="white-space:nowrap">
+          <button class="slt-edit-btn" onclick="toggleListSettings(${s.id})" style="font-size:0.65rem;padding:3px 8px">⚙</button>
+          <button class="clone-btn" onclick="cloneSource(${s.id})" title="Klonuj źródło" style="margin-left:4px">⧉</button>
+        </td>
       </tr>
       <tr class="slt-settings-row" id="slts-${s.id}" style="display:none">
         <td colspan="8">
@@ -2448,6 +2524,91 @@ function saveNewSource() {
   }, 120);
 }
 
+function cloneSource(id) {
+  const s = SOURCES.find(x => x.id === id);
+  if (!s) return;
+  const newId = nextId++;
+  const clone = {
+    ...s,
+    id: newId,
+    name: s.name + ' (kopia)',
+    favorite: false,
+    dateAdded: new Date().toISOString().split('T')[0],
+    subforums: s.subforums ? [...s.subforums] : [''],
+  };
+  SOURCES.push(clone);
+  renderSources();
+  renderSourcesManage();
+  setTimeout(() => {
+    const card = document.getElementById(`scard-${newId}`);
+    if (!card) return;
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card.style.outline = '2px solid var(--accent)';
+    card.style.boxShadow = '0 0 0 4px rgba(232,93,38,0.2)';
+    setTimeout(() => { card.style.outline = ''; card.style.boxShadow = ''; }, 2000);
+  }, 120);
+}
+
+// =====================
+// IMPORT / EXPORT
+// =====================
+function exportSources() {
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    sources: SOURCES
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `klienthunter-sources-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importSources() {
+  const input = document.createElement('input');
+  input.type   = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      let imported;
+      try {
+        const parsed = JSON.parse(ev.target.result);
+        imported = Array.isArray(parsed) ? parsed : (parsed.sources || []);
+        if (!Array.isArray(imported) || imported.length === 0) throw new Error('Brak źródeł');
+        imported.forEach(s => { if (typeof s.id === 'undefined' || typeof s.name === 'undefined') throw new Error('Nieprawidłowy format'); });
+      } catch (err) {
+        alert('Błąd importu: ' + err.message + '\nUpewnij się, że plik pochodzi z eksportu KlientHunter.');
+        return;
+      }
+      const mode = confirm(
+        `Znaleziono ${imported.length} źródeł.\n\nOK → Dołącz do istniejących (zalecane)\nAnuluj → Zastąp wszystkie`
+      );
+      if (mode) {
+        // Dołącz — generuj nowe ID, aby uniknąć konfliktów
+        imported.forEach(s => {
+          const newId = nextId++;
+          SOURCES.push({ ...s, id: newId, dateAdded: s.dateAdded || new Date().toISOString().split('T')[0] });
+        });
+      } else {
+        // Zastąp
+        SOURCES.length = 0;
+        imported.forEach(s => SOURCES.push({ ...s }));
+        nextId = Math.max(...SOURCES.map(s => s.id), 0) + 1;
+      }
+      renderSources();
+      renderSourcesManage();
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
 document.getElementById('modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
@@ -2564,6 +2725,20 @@ function clearSrcCred(sourceId) {
   if (document.getElementById('page-sources').style.display !== 'none') renderSourcesManage();
 }
 
+let credsGroupBy = 'status';
+
+function setCredsGroup(mode, btn) {
+  if (credsGroupBy === mode) {
+    credsGroupBy = 'none';
+    btn.classList.remove('active');
+  } else {
+    credsGroupBy = mode;
+    document.querySelectorAll('#cg-btn-status,#cg-btn-name').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  renderCredentials();
+}
+
 function renderCredentials() {
   const container = document.getElementById('creds-content');
   const notice = document.getElementById('creds-notice');
@@ -2575,10 +2750,14 @@ function renderCredentials() {
   }
 
   notice.style.display = 'none';
+  ['status','name'].forEach(m => {
+    const b = document.getElementById('cg-btn-'+m);
+    if (b) b.classList.toggle('active', credsGroupBy === m);
+  });
   const creds = loadCreds();
   const initials = currentUser.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
 
-  const rows = SOURCES.map(s => {
+  function makeRow(s) {
     const cred = creds[s.id];
     const maskedPass = cred && cred.pass ? '•'.repeat(Math.min(cred.pass.length, 10)) : '';
     return `
@@ -2600,7 +2779,37 @@ function renderCredentials() {
           ${cred ? `<button class="creds-clear-btn" onclick="clearSrcCred(${s.id})">🗑</button>` : ''}
         </td>
       </tr>`;
-  }).join('');
+  }
+
+  function makeGroupHeader(label, count, extraClass) {
+    return `<tr class="creds-group-header${extraClass ? ' '+extraClass : ''}"><td colspan="6"><span class="creds-group-label">${label}</span><span class="creds-group-count">${count}</span></td></tr>`;
+  }
+
+  let rows = '';
+  if (credsGroupBy === 'status') {
+    const loggedIn  = SOURCES.filter(s => creds[s.id]);
+    const loggedOut = SOURCES.filter(s => !creds[s.id]);
+    if (loggedIn.length) {
+      rows += makeGroupHeader('Zalogowane', loggedIn.length, 'status-set');
+      rows += loggedIn.map(makeRow).join('');
+    }
+    if (loggedOut.length) {
+      rows += makeGroupHeader('Niezalogowane', loggedOut.length, 'status-unset');
+      rows += loggedOut.map(makeRow).join('');
+    }
+  } else if (credsGroupBy === 'name') {
+    const nameMap = {};
+    SOURCES.forEach(s => {
+      if (!nameMap[s.name]) nameMap[s.name] = [];
+      nameMap[s.name].push(s);
+    });
+    Object.entries(nameMap).sort((a,b) => a[0].localeCompare(b[0], 'pl')).forEach(([name, sources]) => {
+      rows += makeGroupHeader(name, sources.length);
+      rows += sources.map(makeRow).join('');
+    });
+  } else {
+    rows = SOURCES.map(makeRow).join('');
+  }
 
   container.innerHTML = `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
@@ -2621,6 +2830,55 @@ function renderCredentials() {
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
+}
+
+// =====================
+// ENGINES
+// =====================
+const ENGINE_META = {
+  internal:    { label: 'Wewnętrzna wyszukiwarka', color: '#6c63ff' },
+  google:      { label: 'Google',                  color: '#4285F4' },
+  google_site: { label: 'Google (site:)',           color: '#34A853' },
+  bing:        { label: 'Bing',                    color: '#008272' },
+  duckduckgo:  { label: 'DuckDuckGo',              color: '#DE5833' },
+};
+
+function renderEngines() {
+  const container = document.getElementById('engines-content');
+  const order = ['internal','google','google_site','bing','duckduckgo'];
+
+  const cards = order.map(key => {
+    const meta = ENGINE_META[key] || { label: key, color: '#999' };
+    const sources = SOURCES.filter(s => (s.engine || 'internal') === key);
+    if (!sources.length) return '';
+
+    const rows = sources.map(s => {
+      const domain = s.baseUrl ? s.baseUrl.replace('https://','').replace('http://','').replace('www.','').split('/')[0] : '';
+      return `
+        <div class="engine-source-row">
+          <div class="engine-source-icon" style="background:${s.color||'#e8f0fc'}">${s.icon}</div>
+          <div style="flex:1;min-width:0">
+            <div class="engine-source-name">${s.name}</div>
+            ${domain ? `<div class="engine-source-url" title="${s.baseUrl}">${domain}</div>` : ''}
+          </div>
+          <div class="engine-source-status ${s.enabled ? 'on' : 'off'}" title="${s.enabled ? 'Aktywne' : 'Nieaktywne'}"></div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="engine-card">
+        <div class="engine-card-header">
+          <div class="engine-card-dot" style="background:${meta.color};box-shadow:0 0 6px ${meta.color}88"></div>
+          <div class="engine-card-name">${meta.label}</div>
+          <div class="engine-card-count">${sources.length} źródeł</div>
+        </div>
+        <div class="engine-source-list">${rows}</div>
+      </div>`;
+  }).join('');
+
+  container.innerHTML = cards
+    ? `<div class="engines-grid">${cards}</div>`
+    : `<div class="empty-state"><div class="icon">🔎</div><h3>Brak źródeł</h3></div>`;
 }
 
 // =====================

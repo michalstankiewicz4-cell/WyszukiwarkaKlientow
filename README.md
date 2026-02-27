@@ -7,18 +7,28 @@
 ### 📂 **Zarządzanie źródłami**
 - **15+ predefiniowanych źródeł** (Elektroda.pl, 4programmers.net, LinkedIn, OLX, Reddit i więcej)
 - **Dodawanie własnych źródeł** z konfiguracją silników wyszukiwania
+- **Klonowanie źródeł** jednym kliknięciem — kopia pojawia się z dopiskiem „(kopia)"
+- **Import / Export** — eksport całej listy do pliku JSON i import z możliwością dołączenia lub zastąpienia
 - **Sortowanie źródeł** A-Z, Z-A, według daty dodania
-- **System ulubionych** - oznacz najważniejsze źródła ⭐
-- **Podział na sekcje**: Ulubione i Aktywne źródła (strona wyszukiwania), Aktywne i Nieaktywne (zarządzanie)
-- **Dwa widoki**: kafelki i lista z responsywnym designem
+- **System ulubionych** — oznacz najważniejsze źródła ⭐
+- **Podział na sekcje**: Ulubione i Aktywne (strona wyszukiwania), Aktywne i Nieaktywne (zarządzanie)
+- **Dwa widoki**: kafelki i lista — oba z grupowaniem na sekcje Aktywne / Nieaktywne
+
+### 🔎 **Silniki wyszukiwań**
+- Dedykowana zakładka grupująca źródła według metody wyszukiwania
+- Karty dla każdego silnika z liczbą źródeł i listą przypisanych serwisów
+- Wsparcie: Wewnętrzna wyszukiwarka, Google, Google (site:), Bing, DuckDuckGo
 
 ### 🔐 **System logowania do źródeł**
 - **Lampki statusu logowania** przy każdym źródle:
-  - 🟢 **Zielona** - zalogowany
-  - 🔴 **Czerwona** - nie zalogowany (wymagane)
-  - 🟡 **Żółta** - logowanie niewymagane
+  - 🟢 **Zielona** — zalogowany
+  - 🔴 **Czerwona** — niezalogowany (wymagane)
+  - ⚫ **Szara** — logowanie niewymagane
+- **Grupowanie w zakładce „Loginy do źródeł"**:
+  - **Wg statusu** — sekcje Zalogowane / Niezalogowane
+  - **Wg nazwy** — alfabetyczny podział z nagłówkami grup (przydatne przy duplikatach nazw)
 - **Bezpieczne przechowywanie** danych dostępowych w localStorage
-- **Per-user storage** - każdy użytkownik ma własne dane logowania
+- **Per-user storage** — każdy użytkownik ma własne dane logowania
 
 ### 🔍 **Inteligentne wyszukiwanie**
 - **Wsparcie dla różnych silników**: wewnętrzne wyszukiwarki, Google, Bing, DuckDuckGo
@@ -29,12 +39,12 @@
 
 ### 📊 **Zarządzanie leadami**
 - **Zapisywanie obiecujących leadów** z możliwością późniejszego przeglądu
-- **Masowe operacje** - zaznaczanie i zapisywanie wielu wyników jednocześnie
+- **Masowe operacje** — zaznaczanie i zapisywanie wielu wyników jednocześnie
 - **Kopiowanie linków** do schowka
-- **Statystyki wyszukiwania** - liczba wyników, źródeł, hot leadów
+- **Statystyki wyszukiwania** — liczba wyników, źródeł, hot leadów
 
 ### 🎨 **Nowoczesny interfejs**
-- **Responsywny design** - działa na wszystkich urządzeniach
+- **Responsywny design** — działa na wszystkich urządzeniach
 - **Ciemny sidebar** z jasnymi kartami źródeł
 - **Animacje i przejścia** dla lepszego UX
 - **Intuicyjna nawigacja** z szybkimi zapytaniami
@@ -60,7 +70,7 @@
    - Lub uruchom lokalny serwer HTTP
 
 3. **Konfiguracja**:
-   - Przejdź do "Zarządzaj źródłami"
+   - Przejdź do „Zarządzaj źródłami"
    - Włącz interesujące Cię źródła
    - Skonfiguruj dane logowania jeśli potrzebne
    - Dodaj własne źródła według potrzeb
@@ -68,18 +78,25 @@
 ## 📋 Jak używać
 
 ### 1. **Konfiguracja źródeł**
-- Przejdź do sekcji "Zarządzaj źródłami"
+- Przejdź do sekcji „Zarządzaj źródłami"
 - Włącz źródła, które chcesz przeszukiwać
 - Oznacz najważniejsze jako ulubione ⭐
+- Sklonuj źródło przyciskiem **⧉**, aby szybko stworzyć wariant z innymi podserwisami
 - Skonfiguruj dane logowania dla źródeł wymagających rejestracji
 
-### 2. **Wyszukiwanie leadów**
+### 2. **Import / Export**
+- **Eksport**: kliknij „Eksport" w topbarze — pobierz plik `klienthunter-sources-YYYY-MM-DD.json`
+- **Import**: kliknij „Import", wybierz plik JSON, a następnie zdecyduj czy chcesz:
+  - **Dołączyć** — nowe źródła zostaną dodane obok istniejących (nowe ID, brak konfliktów)
+  - **Zastąpić** — cała lista zostanie zastąpiona zaimportowanymi źródłami
+
+### 3. **Wyszukiwanie leadów**
 - Wpisz zapytanie opisujące to, czego szukają Twoi klienci
-- Np.: "szukam szkoleń z Excela", "potrzebuję agencji SEO"
-- Kliknij "Szukaj" - aplikacja przeszuka aktywne źródła
+- Np.: „szukam szkoleń z Excela", „potrzebuję agencji SEO"
+- Kliknij „Szukaj" — aplikacja przeszuka aktywne źródła
 - Przeglądaj wyniki z oceną relevancji
 
-### 3. **Zarządzanie wynikami**
+### 4. **Zarządzanie wynikami**
 - Zaznaczaj obiecujące leady checkboxami
 - Zapisuj pojedyncze wyniki lub masowo
 - Kopiuj linki do schowka
@@ -88,17 +105,17 @@
 ## 🔧 Konfiguracja zaawansowana
 
 ### Dodawanie własnych źródeł
-1. Kliknij "+" w sekcji zarządzania źródłami
+1. Kliknij „+ Dodaj źródło" w sekcji zarządzania źródłami
 2. Wybierz typ źródła (forum, social media, portal itp.)
 3. Skonfiguruj silnik wyszukiwania
 4. Dodaj URL główny i podfora/sekcje
 5. Ustaw słowa kluczowe do wyszukiwania
 
 ### Silniki wyszukiwania
-- **Internal** - wewnętrzna wyszukiwarka serwisu
-- **Google** - wyszukiwanie przez Google
-- **Google (site:)** - Google z ograniczeniem do domeny
-- **Bing/DuckDuckGo** - alternatywne silniki
+- **Internal** — wewnętrzna wyszukiwarka serwisu
+- **Google** — wyszukiwanie przez Google
+- **Google (site:)** — Google z ograniczeniem do domeny
+- **Bing / DuckDuckGo** — alternatywne silniki
 
 ## 📱 Responsywność
 
@@ -112,28 +129,28 @@ Aplikacja automatycznie dostosowuje się do różnych rozmiarów ekranu:
 ## 🎯 Przykłady użycia
 
 ### Dla freelancerów
-- "szukam programisty PHP"
-- "potrzebuję grafika do projektu" 
-- "zlecę tłumaczenie dokumentacji"
+- „szukam programisty PHP"
+- „potrzebuję grafika do projektu"
+- „zlecę tłumaczenie dokumentacji"
 
 ### Dla agencji
-- "szukam agencji marketingowej"
-- "polecacie firmę SEO"
-- "potrzebuję wsparcia w social media"
+- „szukam agencji marketingowej"
+- „polecacie firmę SEO"
+- „potrzebuję wsparcia w social media"
 
 ### Dla usług B2B
-- "szukam dostawcy artykułów biurowych"
-- "potrzebuję księgowej"
-- "szukam serwisu komputerowego"
+- „szukam dostawcy artykułów biurowych"
+- „potrzebuję księgowej"
+- „szukam serwisu komputerowego"
 
 ## 📈 Roadmapa
 
-- [ ] **API Integration** - połączenie z rzeczywistymi źródłami
-- [ ] **Advanced Filtering** - filtrowanie po dacie, lokalizacji, itp.
-- [ ] **Export funkcji** - eksport leadów do CSV/Excel
-- [ ] **Notifications** - powiadomienia o nowych leadach
-- [ ] **Analytics Dashboard** - szczegółowe statystyki
-- [ ] **Team Collaboration** - współdzielenie źródeł i leadów
+- [ ] **API Integration** — połączenie z rzeczywistymi źródłami
+- [ ] **Advanced Filtering** — filtrowanie po dacie, lokalizacji itp.
+- [ ] **Export leadów** — eksport leadów do CSV/Excel
+- [ ] **Notifications** — powiadomienia o nowych leadach
+- [ ] **Analytics Dashboard** — szczegółowe statystyki
+- [ ] **Team Collaboration** — współdzielenie źródeł i leadów
 
 ## 🤝 Współpraca
 
@@ -147,8 +164,8 @@ Zachęcamy do współpracy! Jeśli masz pomysły na nowe funkcje lub znalazłeś
 
 ## 📄 Licencja
 
-Ten projekt jest licencjonowany pod MIT License - szczegóły w pliku [LICENSE](LICENSE).
+Ten projekt jest licencjonowany pod MIT License — szczegóły w pliku [LICENSE](LICENSE).
 
 ---
 
-**Lead Hunter** - Twój przewodnik w świecie pozyskiwania klientów! 🎯
+**Lead Hunter** — Twój przewodnik w świecie pozyskiwania klientów! 🎯
