@@ -1166,6 +1166,37 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
 .creds-group-header.status-set .creds-group-label { color: var(--green); }
 .creds-group-header.status-unset .creds-group-label { color: var(--text-dim); }
 
+/* KEYWORDS PAGE */
+.kw-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; }
+.kw-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; }
+.kw-card-header { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-bottom: 1px solid var(--border); gap: 10px; }
+.kw-card-name { font-weight: 700; font-size: 0.9rem; color: var(--text); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kw-card-actions { display: flex; gap: 5px; flex-shrink: 0; }
+.kw-card-body { padding: 12px 16px; display: flex; flex-direction: column; gap: 12px; }
+.kw-section-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 7px; }
+.kw-phrases { display: flex; flex-wrap: wrap; gap: 5px; }
+.kw-phrase { display: inline-block; background: var(--accent-light); color: var(--accent); border: 1px solid rgba(232,93,38,0.2); border-radius: 20px; font-size: 0.7rem; font-weight: 600; padding: 3px 10px; }
+.kw-phrase-more { background: var(--surface2); color: var(--text-dim); border-color: var(--border2); }
+.kw-link-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+.kw-link-name { font-size: 0.78rem; font-weight: 600; color: var(--text); flex: 1; }
+.kw-link-sub { font-size: 0.62rem; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
+.kw-no-links { font-size: 0.72rem; color: var(--text-dim); font-style: italic; }
+/* KW MODAL */
+.kw-modal { width: 560px; max-height: 85vh; display: flex; flex-direction: column; }
+.kw-modal .modal-body { flex: 1; overflow-y: auto; padding: 0 4px; }
+.kw-source-picker { max-height: 260px; overflow-y: auto; border: 1px solid var(--border2); border-radius: 8px; background: var(--surface2); }
+.kw-source-row { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
+.kw-source-row:last-child { border-bottom: none; }
+.kw-source-row:hover { background: var(--bg); }
+.kw-source-row input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+.kw-src-name { font-size: 0.8rem; font-weight: 600; flex: 1; }
+.kw-sub-select { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; padding: 3px 7px; border: 1px solid var(--border2); border-radius: 5px; background: var(--surface); color: var(--text-mid); max-width: 170px; }
+.kw-phrases-textarea { width: 100%; min-height: 110px; resize: vertical; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; padding: 10px 12px; border: 1px solid var(--border2); border-radius: 8px; background: var(--surface2); color: var(--text); box-sizing: border-box; line-height: 1.6; }
+.kw-phrases-textarea:focus { outline: none; border-color: var(--accent); }
+.kw-hint { font-size: 0.65rem; color: var(--text-dim); margin-top: 4px; }
+.add-kwset-btn { font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 600; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border2); color: var(--text-mid); border-radius: 6px; cursor: pointer; transition: all 0.12s; }
+.add-kwset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
 /* ENGINES PAGE */
 .engines-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
 .engine-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
@@ -1219,6 +1250,9 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
     </button>
     <button class="nav-item" onclick="showPage('sources')">
       <span class="nav-icon">⚙️</span> Zarządzaj źródłami
+    </button>
+    <button class="nav-item" onclick="showPage('keywords')">
+      <span class="nav-icon">🏷️</span> Frazy i słowa kluczowe
     </button>
     <button class="nav-item" onclick="showPage('engines')">
       <span class="nav-icon">🔎</span> Silniki wyszukiwań
@@ -1383,6 +1417,15 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
       <div id="sources-manage-content"></div>
     </div>
 
+    <!-- PAGE: KEYWORDS -->
+    <div id="page-keywords" style="display:none">
+      <div class="creds-topbar">
+        <div><div class="sources-title">Frazy i słowa kluczowe</div></div>
+        <button class="add-kwset-btn" onclick="openKwModal()">+ Dodaj zestaw</button>
+      </div>
+      <div id="keywords-content"></div>
+    </div>
+
     <!-- PAGE: ENGINES -->
     <div id="page-engines" style="display:none">
       <div class="creds-topbar">
@@ -1411,6 +1454,33 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
 
   </div>
 </main>
+</div>
+
+<!-- KEYWORDS MODAL -->
+<div class="modal-overlay" id="kw-modal-overlay">
+  <div class="modal kw-modal">
+    <div class="modal-title" id="kw-modal-title">Dodaj zestaw fraz</div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label class="form-label">Nazwa zestawu</label>
+        <input class="form-input" id="kw-modal-name" placeholder="np. Zapytania o szkolenia IT" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">Frazy i słowa kluczowe</label>
+        <textarea class="kw-phrases-textarea" id="kw-modal-phrases" placeholder="szukam szkolenia z Excela&#10;kurs programowania&#10;potrzebuję nauczyciela&#10;(jedna fraza na linię)"></textarea>
+        <div class="kw-hint">Wpisz każdą frazę w osobnej linii. Frazy będą używane podczas wyszukiwania.</div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Powiązane źródła i podlinki</label>
+        <div class="kw-source-picker" id="kw-source-picker"></div>
+        <div class="kw-hint">Zaznacz źródła i wybierz konkretny podlink lub zostaw „Wszystkie".</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeKwModal()">Anuluj</button>
+      <button class="btn-save" onclick="saveKwSet()">Zapisz</button>
+    </div>
+  </div>
 </div>
 
 <!-- ADD SOURCE MODAL -->
@@ -1611,7 +1681,7 @@ let nextId = 16;
 // PAGES
 // =====================
 function showPage(page) {
-  ['search','saved','sources','engines','credentials'].forEach(p => {
+  ['search','saved','sources','keywords','engines','credentials'].forEach(p => {
     document.getElementById(`page-${p}`).style.display = p === page ? 'block' : 'none';
   });
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -1620,6 +1690,7 @@ function showPage(page) {
     search: ['Szukaj klientów', 'Przeszukuj fora i serwisy społecznościowe'],
     saved: ['Zapisane leady', 'Twoja lista potencjalnych klientów'],
     sources: ['Zarządzaj źródłami', 'Konfiguruj i edytuj źródła danych'],
+    keywords: ['Frazy i słowa kluczowe', 'Zestawy fraz powiązane z wybranymi źródłami'],
     engines: ['Silniki wyszukiwań', 'Źródła pogrupowane według metody wyszukiwania'],
     credentials: ['Loginy do źródeł', 'Zarządzaj danymi dostępowymi do każdego źródła']
   };
@@ -1628,6 +1699,7 @@ function showPage(page) {
 
   if (page === 'saved') renderSaved();
   if (page === 'sources') renderSourcesManage();
+  if (page === 'keywords') renderKeywords();
   if (page === 'engines') renderEngines();
   if (page === 'credentials') renderCredentials();
 }
@@ -1829,8 +1901,10 @@ function sourceCardHTML(s, fullSettings = false) {
         ${s.subforums.map((url, idx) => subforumRowHTML(s.id, idx, url)).join('')}
       </div>
       <button class="subforum-add-btn" onclick="addSubforum(${s.id})">+ Dodaj kolejny link</button>
-      <div class="field-label" style="margin-top:10px">Słowa kluczowe (oddziel przecinkiem)</div>
-      <textarea class="field-input keywords-input" id="skw-${s.id}" placeholder="np. szukam, polecacie, potrzebuję..." oninput="updateSource(${s.id},'keywords',this.value)">${s.keywords||''}</textarea>
+      <div class="field-label" style="margin-top:10px">Powiązane zestawy fraz</div>
+      <div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:3px">${getSourceKwSetsHTML(s.id)}</div>
+      <div class="field-label" style="margin-top:10px">Słowa kluczowe aktywne (z zestawów)</div>
+      <textarea class="field-input keywords-input" id="skw-${s.id}" placeholder="np. szukam, polecacie, potrzebuję..." oninput="updateSource(${s.id},'keywords',this.value)" title="Zarządzaj frazami przez zakładkę Frazy i słowa kluczowe">${s.keywords||''}</textarea>
     </div>` : '';
 
   const toggleHTML = fullSettings ? `
@@ -2052,7 +2126,9 @@ function sourceListTableHTML(sources = null) {
               ${s.subforums.map((url, idx) => subforumRowHTML(s.id, idx, url)).join('')}
             </div>
             <button class="subforum-add-btn" onclick="addSubforum(${s.id})">+ Dodaj kolejny link</button>
-            <div class="field-label" style="margin-top:10px">Słowa kluczowe</div>
+            <div class="field-label" style="margin-top:10px">Powiązane zestawy fraz</div>
+            <div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:3px">${getSourceKwSetsHTML(s.id)}</div>
+            <div class="field-label" style="margin-top:10px">Słowa kluczowe aktywne (z zestawów)</div>
             <textarea class="field-input keywords-input" id="skw-${s.id}" placeholder="np. szukam, polecacie, potrzebuję..." oninput="updateSource(${s.id},'keywords',this.value)">${s.keywords||''}</textarea>
           </div>
         </td>
@@ -2609,6 +2685,9 @@ function importSources() {
   input.click();
 }
 
+document.getElementById('kw-modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeKwModal();
+});
 document.getElementById('modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
@@ -2830,6 +2909,212 @@ function renderCredentials() {
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
+}
+
+// =====================
+// KEYWORDS
+// =====================
+function getDefaultKeywordSets() {
+  return [
+    {
+      id: 10001, name: 'Frazy ogólne',
+      phrases: ['szukam', 'potrzebuję', 'polecacie', 'poszukuję', 'pomożecie'],
+      links: [
+        { sourceId: 1,  subforum: '' },
+        { sourceId: 3,  subforum: '' },
+        { sourceId: 9,  subforum: 'https://www.olx.pl/uslugi/' },
+        { sourceId: 11, subforum: 'https://reddit.com/r/Polska/' },
+        { sourceId: 12, subforum: '' },
+      ]
+    },
+    {
+      id: 10002, name: 'Frazy IT i programowanie',
+      phrases: ['szukam', 'potrzebuję', 'pomoc', 'oferta', 'zlecę', 'szukam wykonawcy'],
+      links: [
+        { sourceId: 2,  subforum: 'https://4programmers.net/Forum/Praca' },
+        { sourceId: 2,  subforum: 'https://4programmers.net/Forum/Oferty' },
+        { sourceId: 11, subforum: 'https://reddit.com/r/PracaIT/' },
+        { sourceId: 13, subforum: 'https://freelancer.pl/zlecenia/' },
+      ]
+    },
+    {
+      id: 10003, name: 'Frazy biznesowe',
+      phrases: ['szukam dostawcy', 'polecacie firmę', 'potrzebuję usługi', 'firma'],
+      links: [
+        { sourceId: 4, subforum: 'https://forum.bankier.pl/' },
+      ]
+    },
+    {
+      id: 10004, name: 'Frazy prawne',
+      phrases: ['szukam prawnika', 'potrzebuję porady', 'pomoc prawna'],
+      links: [
+        { sourceId: 15, subforum: '' },
+      ]
+    },
+    {
+      id: 10005, name: 'Frazy rekrutacja i praca',
+      phrases: ['szukam', 'hiring', 'rekrutacja', 'oferta', 'looking for', 'need vendor'],
+      links: [
+        { sourceId: 5, subforum: '' },
+        { sourceId: 6, subforum: '' },
+      ]
+    },
+    {
+      id: 10006, name: 'Frazy edukacja i szkolenia',
+      phrases: ['szukam szkolenia', 'potrzebuję kursu', 'szukam kursu'],
+      links: [
+        { sourceId: 14, subforum: '' },
+      ]
+    },
+  ];
+}
+
+let KEYWORD_SETS = (() => {
+  const stored = localStorage.getItem('lh_kw_sets');
+  if (stored) return JSON.parse(stored);
+  const defaults = getDefaultKeywordSets();
+  localStorage.setItem('lh_kw_sets', JSON.stringify(defaults));
+  return defaults;
+})();
+let editingKwId = null;
+
+function saveKeywordSets() {
+  localStorage.setItem('lh_kw_sets', JSON.stringify(KEYWORD_SETS));
+}
+
+function syncKeywordSetsToSources() {
+  SOURCES.forEach(src => {
+    const linked = KEYWORD_SETS.filter(ks => ks.links.some(l => l.sourceId === src.id));
+    if (!linked.length) return;
+    const merged = [...new Set(linked.flatMap(ks => ks.phrases))];
+    src.keywords = merged.join(', ');
+  });
+}
+
+function getSourceKwSetsHTML(sourceId) {
+  const linked = KEYWORD_SETS.filter(ks => ks.links.some(l => l.sourceId === sourceId));
+  if (!linked.length)
+    return `<span style="font-size:0.7rem;color:var(--text-dim);font-style:italic">Brak — dodaj w zakładce Frazy i słowa kluczowe</span>`;
+  return linked.map(ks => `<span class="kw-phrase" style="margin-right:3px;margin-bottom:3px">${ks.name}</span>`).join('');
+}
+
+syncKeywordSetsToSources();
+
+function renderKeywords() {
+  const container = document.getElementById('keywords-content');
+  if (!KEYWORD_SETS.length) {
+    container.innerHTML = `<div class="empty-state"><div class="icon">🏷️</div><h3>Brak zestawów fraz</h3><p>Kliknij „+ Dodaj zestaw" aby stworzyć pierwszy zestaw słów kluczowych.</p></div>`;
+    return;
+  }
+  const cards = KEYWORD_SETS.map(set => {
+    const shown = set.phrases.slice(0, 6).map(p => `<span class="kw-phrase">${p}</span>`).join('');
+    const more  = set.phrases.length > 6 ? `<span class="kw-phrase kw-phrase-more">+${set.phrases.length - 6} więcej</span>` : '';
+    const linkedRows = set.links.map(l => {
+      const src = SOURCES.find(s => s.id === l.sourceId);
+      if (!src) return '';
+      const sub = l.subforum
+        ? l.subforum.replace(/https?:\/\/(www\.)?/,'').replace(/\/$/,'').split('/').slice(-2).join('/')
+        : 'Wszystkie podlinki';
+      return `<div class="kw-link-row">
+        <div class="slt-icon" style="background:${src.color||'#e8f0fc'};width:20px;height:20px;font-size:0.65rem;flex-shrink:0">${src.icon}</div>
+        <span class="kw-link-name">${src.name}</span>
+        <span class="kw-link-sub" title="${l.subforum||''}">${sub}</span>
+      </div>`;
+    }).join('');
+    return `
+      <div class="kw-card">
+        <div class="kw-card-header">
+          <span class="kw-card-name" title="${set.name}">${set.name}</span>
+          <div class="kw-card-actions">
+            <button class="creds-edit-btn" onclick="openKwModal(${set.id})">✏ Edytuj</button>
+            <button class="creds-clear-btn" onclick="deleteKwSet(${set.id})">🗑</button>
+          </div>
+        </div>
+        <div class="kw-card-body">
+          <div>
+            <div class="kw-section-label">Frazy (${set.phrases.length})</div>
+            <div class="kw-phrases">${shown}${more}</div>
+          </div>
+          ${set.links.length
+            ? `<div><div class="kw-section-label">Powiązane źródła (${set.links.length})</div>${linkedRows}</div>`
+            : '<div class="kw-no-links">Brak powiązanych źródeł</div>'}
+        </div>
+      </div>`;
+  }).join('');
+  container.innerHTML = `<div class="kw-card-grid">${cards}</div>`;
+}
+
+function openKwModal(id = null) {
+  editingKwId = id || null;
+  const set = id ? KEYWORD_SETS.find(s => s.id === id) : null;
+  document.getElementById('kw-modal-title').textContent = set ? 'Edytuj zestaw fraz' : 'Dodaj zestaw fraz';
+  document.getElementById('kw-modal-name').value = set ? set.name : '';
+  document.getElementById('kw-modal-phrases').value = set ? set.phrases.join('\n') : '';
+  const linksMap = {};
+  if (set) set.links.forEach(l => { linksMap[l.sourceId] = l.subforum; });
+  const rows = SOURCES.map(s => {
+    const checked = s.id in linksMap;
+    if (!s.subforums) s.subforums = s.subforum ? [s.subforum] : [''];
+    const subs = s.subforums.filter(u => u.trim());
+    const opts = ['', ...subs].map(u =>
+      `<option value="${u}" ${linksMap[s.id] === u ? 'selected' : ''}>${u ? u.replace(/https?:\/\/(www\.)?/,'').replace(/\/$/,'') : 'Wszystkie podlinki'}</option>`
+    ).join('');
+    const sel = subs.length
+      ? `<select class="kw-sub-select" id="kwsub-${s.id}" style="${checked ? '' : 'display:none'}">${opts}</select>`
+      : '';
+    return `<label class="kw-source-row">
+      <input type="checkbox" class="kw-src-cb" data-id="${s.id}" ${checked ? 'checked' : ''} onchange="toggleKwSource(${s.id})">
+      <div class="slt-icon" style="background:${s.color||'#e8f0fc'};width:22px;height:22px;font-size:0.7rem;flex-shrink:0">${s.icon}</div>
+      <span class="kw-src-name">${s.name}</span>
+      ${sel}
+    </label>`;
+  }).join('');
+  document.getElementById('kw-source-picker').innerHTML = rows;
+  document.getElementById('kw-modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('kw-modal-name').focus(), 80);
+}
+
+function toggleKwSource(sourceId) {
+  const cb  = document.querySelector(`.kw-src-cb[data-id="${sourceId}"]`);
+  const sel = document.getElementById(`kwsub-${sourceId}`);
+  if (sel) sel.style.display = cb.checked ? '' : 'none';
+}
+
+function saveKwSet() {
+  const name = document.getElementById('kw-modal-name').value.trim();
+  if (!name) { document.getElementById('kw-modal-name').focus(); return; }
+  const phrases = document.getElementById('kw-modal-phrases').value
+    .split('\n').map(p => p.trim()).filter(Boolean);
+  const links = [];
+  document.querySelectorAll('.kw-src-cb:checked').forEach(cb => {
+    const sourceId = parseInt(cb.dataset.id);
+    const sel = document.getElementById(`kwsub-${sourceId}`);
+    links.push({ sourceId, subforum: sel ? sel.value : '' });
+  });
+  if (editingKwId) {
+    const set = KEYWORD_SETS.find(s => s.id === editingKwId);
+    if (set) { set.name = name; set.phrases = phrases; set.links = links; }
+  } else {
+    KEYWORD_SETS.push({ id: Date.now(), name, phrases, links });
+  }
+  saveKeywordSets();
+  syncKeywordSetsToSources();
+  closeKwModal();
+  renderKeywords();
+  if (document.getElementById('page-sources').style.display !== 'none') renderSourcesManage();
+}
+
+function deleteKwSet(id) {
+  if (!confirm('Usunąć ten zestaw fraz?')) return;
+  KEYWORD_SETS = KEYWORD_SETS.filter(s => s.id !== id);
+  saveKeywordSets();
+  syncKeywordSetsToSources();
+  renderKeywords();
+  if (document.getElementById('page-sources').style.display !== 'none') renderSourcesManage();
+}
+
+function closeKwModal() {
+  document.getElementById('kw-modal-overlay').classList.remove('open');
 }
 
 // =====================
