@@ -2881,12 +2881,12 @@ function importSources() {
         // Dołącz — generuj nowe ID, aby uniknąć konfliktów
         imported.forEach(s => {
           const newId = nextId++;
-          SOURCES.push({ ...s, id: newId, dateAdded: s.dateAdded || new Date().toISOString().split('T')[0] });
+          SOURCES.push({ desc: '', ...s, id: newId, dateAdded: s.dateAdded || new Date().toISOString().split('T')[0] });
         });
       } else {
         // Zastąp
         SOURCES.length = 0;
-        imported.forEach(s => SOURCES.push({ ...s }));
+        imported.forEach(s => SOURCES.push({ desc: '', ...s }));
         nextId = Math.max(...SOURCES.map(s => s.id), 0) + 1;
       }
       renderSources();
