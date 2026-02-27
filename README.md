@@ -1,4 +1,4 @@
-# 🎯 Lead Hunter - Wyszukiwarka Klientów
+# 🎯 Lead Hunter - Wyszukiwarka Klientów (interaktywna wizualizacja)
 
 **Lead Hunter** to zaawansowane narzędzie do wyszukiwania potencjalnych klientów na forach, serwisach społecznościowych i platformach ogłoszeniowych. Aplikacja automatycznie przeszukuje skonfigurowane źródła w poszukiwaniu osób poszukujących produktów lub usług.
 
