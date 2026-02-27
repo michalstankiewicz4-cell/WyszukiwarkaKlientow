@@ -925,6 +925,141 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
 }
 .lang-arrow { font-size: 0.6rem; }
 
+/* SCHEDULE BUTTON & PANEL */
+.schedule-btn-wrap { position: relative; }
+.schedule-btn {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text-dim);
+  cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; position: relative;
+}
+.schedule-btn:hover { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+.schedule-btn.active { border-color: #10b981; background: rgba(16,185,129,0.1); color: #10b981; }
+.schedule-btn.active::after {
+  content: '';
+  position: absolute; top: 5px; right: 5px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 0 rgba(16,185,129,0.6);
+  animation: schedulePulse 1.8s ease-in-out infinite;
+}
+@keyframes schedulePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.6); }
+  70%  { box-shadow: 0 0 0 6px rgba(16,185,129,0); }
+  100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+}
+.schedule-panel {
+  display: none; position: absolute;
+  top: calc(100% + 10px); right: 0;
+  width: 300px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; box-shadow: var(--shadow-lg);
+  z-index: 300; animation: modalIn 0.18s ease; overflow: hidden;
+}
+.schedule-panel.open { display: block; }
+.schedule-panel-header {
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.schedule-panel-title {
+  font-size: 0.88rem; font-weight: 800; color: var(--text);
+  display: flex; align-items: center; gap: 7px;
+}
+.schedule-panel-close {
+  background: none; border: none; cursor: pointer;
+  font-size: 1rem; color: var(--text-dim); padding: 2px 5px;
+  border-radius: 4px; transition: color 0.12s; line-height: 1;
+}
+.schedule-panel-close:hover { color: var(--text); }
+.schedule-panel-body { padding: 16px 18px; }
+.sched-row { margin-bottom: 13px; }
+.sched-row:last-child { margin-bottom: 0; }
+.sched-label {
+  font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--text-dim);
+  font-family: 'JetBrains Mono', monospace; margin-bottom: 6px; display: block;
+}
+.sched-toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 8px; margin-bottom: 13px;
+}
+.sched-toggle-label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+.sched-toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+.sched-toggle input { opacity: 0; width: 0; height: 0; }
+.sched-slider {
+  position: absolute; inset: 0; background: var(--border2);
+  border-radius: 22px; cursor: pointer; transition: background 0.2s;
+}
+.sched-slider::before {
+  content: ''; position: absolute;
+  width: 16px; height: 16px; left: 3px; top: 3px;
+  background: #fff; border-radius: 50%; transition: transform 0.2s;
+}
+.sched-toggle input:checked + .sched-slider { background: #10b981; }
+.sched-toggle input:checked + .sched-slider::before { transform: translateX(18px); }
+.sched-select, .sched-input {
+  width: 100%; font-family: 'Outfit', sans-serif; font-size: 0.82rem;
+  padding: 8px 10px; border: 1px solid var(--border); border-radius: 7px;
+  background: var(--bg); color: var(--text); outline: none;
+  transition: border-color 0.15s; cursor: pointer;
+}
+.sched-select:focus, .sched-input:focus { border-color: var(--accent); }
+.sched-options { display: flex; flex-direction: column; gap: 8px; }
+.sched-status {
+  font-size: 0.72rem; color: var(--text-dim);
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 7px; padding: 9px 12px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.sched-status-row { display: flex; justify-content: space-between; }
+.sched-status-val { color: var(--text-mid); font-weight: 600; }
+.sched-run-btn {
+  width: 100%; margin-top: 10px;
+  font-family: 'Outfit', sans-serif; font-size: 0.82rem; font-weight: 700;
+  padding: 9px; background: var(--accent); color: #fff;
+  border: none; border-radius: 7px; cursor: pointer; transition: background 0.15s;
+}
+.sched-run-btn:hover { background: var(--accent2); }
+
+/* AUTO-SEARCH TOAST */
+.autosearch-toast {
+  position: fixed; bottom: 28px; right: 28px;
+  background: var(--text); color: #fff;
+  border-radius: 13px; padding: 16px 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  z-index: 9999; min-width: 280px; max-width: 360px;
+  animation: toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  display: none;
+}
+.autosearch-toast.visible { display: block; }
+@keyframes toastIn { from { opacity:0; transform: translateY(20px) scale(0.95); } to { opacity:1; transform: none; } }
+.toast-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.toast-icon { font-size: 1.4rem; }
+.toast-title { font-size: 0.9rem; font-weight: 800; }
+.toast-close {
+  margin-left: auto; background: none; border: none; color: rgba(255,255,255,0.5);
+  font-size: 1rem; cursor: pointer; padding: 0 4px; transition: color 0.12s; line-height: 1;
+}
+.toast-close:hover { color: #fff; }
+.toast-body { font-size: 0.78rem; color: rgba(255,255,255,0.7); line-height: 1.55; }
+.toast-body strong { color: #fff; }
+.toast-actions { display: flex; gap: 8px; margin-top: 12px; }
+.toast-btn {
+  font-family: 'Outfit', sans-serif; font-size: 0.75rem; font-weight: 700;
+  padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: all 0.12s; border: none;
+}
+.toast-btn.primary { background: var(--accent); color: #fff; }
+.toast-btn.primary:hover { background: var(--accent2); }
+.toast-btn.ghost { background: rgba(255,255,255,0.12); color: #fff; }
+.toast-btn.ghost:hover { background: rgba(255,255,255,0.2); }
+
 /* INFO BUTTON */
 .info-btn-wrap { position: relative; }
 .info-btn {
@@ -1521,6 +1656,50 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
       <div class="page-subtitle" id="page-subtitle">Przeszukuj fora i serwisy społecznościowe</div>
     </div>
     <div class="topbar-controls">
+      <div class="schedule-btn-wrap">
+        <button class="schedule-btn" id="schedule-btn" onclick="toggleSchedulePanel(event)" title="Automatyczne wyszukiwanie">⏱</button>
+        <div class="schedule-panel" id="schedule-panel">
+          <div class="schedule-panel-header">
+            <div class="schedule-panel-title">⏱ Automatyczne wyszukiwanie</div>
+            <button class="schedule-panel-close" onclick="closeSchedulePanel()">✕</button>
+          </div>
+          <div class="schedule-panel-body">
+            <div class="sched-toggle-row">
+              <span class="sched-toggle-label">Włącz harmonogram</span>
+              <label class="sched-toggle">
+                <input type="checkbox" id="sched-enabled" onchange="onSchedToggle(this.checked)">
+                <span class="sched-slider"></span>
+              </label>
+            </div>
+            <div class="sched-options" id="sched-options">
+              <div class="sched-row">
+                <span class="sched-label">Częstotliwość</span>
+                <select class="sched-select" id="sched-frequency" onchange="onSchedChange()">
+                  <option value="hourly">Co godzinę</option>
+                  <option value="every2h">Co 2 godziny</option>
+                  <option value="every4h">Co 4 godziny</option>
+                  <option value="every8h">Co 8 godzin</option>
+                  <option value="daily" selected>Codziennie o godzinie</option>
+                </select>
+              </div>
+              <div class="sched-row" id="sched-time-row">
+                <span class="sched-label">Godzina</span>
+                <input type="time" class="sched-input" id="sched-time" value="09:00" onchange="onSchedChange()">
+              </div>
+              <div class="sched-row">
+                <span class="sched-label">Fraza wyszukiwania <span style="font-weight:400;text-transform:none">(zostaw puste = z pola głównego)</span></span>
+                <input type="text" class="sched-input" id="sched-query" placeholder="np. szukam szkoleń..." oninput="onSchedChange()">
+              </div>
+              <div class="sched-status" id="sched-status">
+                <div class="sched-status-row"><span>Ostatnie uruchomienie</span><span class="sched-status-val" id="sched-last-run">—</span></div>
+                <div class="sched-status-row"><span>Następne</span><span class="sched-status-val" id="sched-next-run">—</span></div>
+                <div class="sched-status-row"><span>Źródła (ulubione)</span><span class="sched-status-val" id="sched-fav-count">0</span></div>
+              </div>
+              <button class="sched-run-btn" onclick="runAutoSearch(true)">▶ Uruchom teraz</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="info-btn-wrap">
         <button class="info-btn" onclick="toggleInfoPanel(event)" id="info-btn" title="Informacje o autorze">ℹ</button>
         <div class="info-panel" id="info-panel">
@@ -3774,6 +3953,178 @@ function doLogout() {
 }
 
 // =====================
+// SCHEDULE / AUTOMATION
+// =====================
+function loadSchedule() {
+  return JSON.parse(localStorage.getItem('lh_schedule') || JSON.stringify({
+    enabled: false, frequency: 'daily', time: '09:00', query: '', lastRun: null
+  }));
+}
+function saveSchedule(cfg) { localStorage.setItem('lh_schedule', JSON.stringify(cfg)); }
+
+function toggleSchedulePanel(e) {
+  e.stopPropagation();
+  const panel = document.getElementById('schedule-panel');
+  if (!panel.classList.contains('open')) { updateScheduleUI(); }
+  panel.classList.toggle('open');
+}
+function closeSchedulePanel() { document.getElementById('schedule-panel').classList.remove('open'); }
+
+function onSchedToggle(enabled) {
+  const cfg = loadSchedule();
+  cfg.enabled = enabled;
+  saveSchedule(cfg);
+  document.getElementById('schedule-btn').classList.toggle('active', enabled);
+  if (enabled) {
+    requestNotificationPermission();
+    startScheduleTimer();
+  }
+  updateScheduleStatus();
+}
+
+function onSchedChange() {
+  const cfg = loadSchedule();
+  cfg.frequency = document.getElementById('sched-frequency').value;
+  cfg.time = document.getElementById('sched-time').value;
+  cfg.query = document.getElementById('sched-query').value.trim();
+  saveSchedule(cfg);
+  document.getElementById('sched-time-row').style.display = cfg.frequency === 'daily' ? '' : 'none';
+  updateScheduleStatus();
+}
+
+function updateScheduleUI() {
+  const cfg = loadSchedule();
+  document.getElementById('sched-enabled').checked = cfg.enabled;
+  document.getElementById('sched-frequency').value = cfg.frequency;
+  document.getElementById('sched-time').value = cfg.time || '09:00';
+  document.getElementById('sched-query').value = cfg.query || '';
+  document.getElementById('sched-time-row').style.display = cfg.frequency === 'daily' ? '' : 'none';
+  document.getElementById('schedule-btn').classList.toggle('active', cfg.enabled);
+  updateScheduleStatus();
+}
+
+function updateScheduleStatus() {
+  const cfg = loadSchedule();
+  const favCount = SOURCES.filter(s => s.enabled && s.favorite).length;
+  document.getElementById('sched-fav-count').textContent = favCount;
+
+  if (cfg.lastRun) {
+    const d = new Date(cfg.lastRun);
+    document.getElementById('sched-last-run').textContent = d.toLocaleDateString('pl-PL', { day:'2-digit', month:'2-digit' }) + ' ' + d.toLocaleTimeString('pl-PL', { hour:'2-digit', minute:'2-digit' });
+  } else {
+    document.getElementById('sched-last-run').textContent = '—';
+  }
+
+  if (!cfg.enabled) { document.getElementById('sched-next-run').textContent = 'wyłączone'; return; }
+  const next = calcNextRun(cfg);
+  if (next) {
+    document.getElementById('sched-next-run').textContent = next.toLocaleDateString('pl-PL', { day:'2-digit', month:'2-digit' }) + ' ' + next.toLocaleTimeString('pl-PL', { hour:'2-digit', minute:'2-digit' });
+  }
+}
+
+function calcNextRun(cfg) {
+  const now = new Date();
+  const intervals = { hourly: 3600000, every2h: 7200000, every4h: 14400000, every8h: 28800000 };
+  if (cfg.frequency === 'daily') {
+    const [h, m] = (cfg.time || '09:00').split(':').map(Number);
+    const next = new Date(now); next.setHours(h, m, 0, 0);
+    if (next <= now) next.setDate(next.getDate() + 1);
+    return next;
+  }
+  const ms = intervals[cfg.frequency] || 3600000;
+  const lastRun = cfg.lastRun ? new Date(cfg.lastRun) : now;
+  return new Date(lastRun.getTime() + ms);
+}
+
+let scheduleTimer = null;
+function startScheduleTimer() {
+  if (scheduleTimer) clearInterval(scheduleTimer);
+  scheduleTimer = setInterval(checkSchedule, 30000); // sprawdzaj co 30s
+}
+
+function checkSchedule() {
+  const cfg = loadSchedule();
+  if (!cfg.enabled) return;
+  const now = new Date();
+  const lastRun = cfg.lastRun ? new Date(cfg.lastRun) : null;
+  const intervals = { hourly: 3600000, every2h: 7200000, every4h: 14400000, every8h: 28800000 };
+  let shouldRun = false;
+
+  if (cfg.frequency === 'daily') {
+    const [h, m] = (cfg.time || '09:00').split(':').map(Number);
+    const target = new Date(now); target.setHours(h, m, 0, 0);
+    shouldRun = now >= target && (!lastRun || lastRun < target);
+  } else {
+    const ms = intervals[cfg.frequency] || 3600000;
+    shouldRun = !lastRun || (now - lastRun) >= ms;
+  }
+  if (shouldRun) runAutoSearch(false);
+}
+
+function runAutoSearch(manual = false) {
+  const cfg = loadSchedule();
+  const favSources = SOURCES.filter(s => s.enabled && s.favorite);
+  const query = cfg.query || document.getElementById('main-query')?.value?.trim() || 'klienci';
+
+  // Symulacja wyników z ulubionych źródeł
+  const total = favSources.length ? (2 + Math.floor(Math.random() * (favSources.length * 2 + 3))) : (2 + Math.floor(Math.random() * 5));
+  const hot   = Math.max(0, Math.floor(total * (0.2 + Math.random() * 0.3)));
+
+  // Zapisz czas uruchomienia
+  cfg.lastRun = new Date().toISOString();
+  saveSchedule(cfg);
+  updateScheduleStatus();
+
+  // Powiadomienie systemowe
+  if (Notification.permission === 'granted') {
+    try {
+      new Notification(`🔍 Lead Hunter — ${total} nowych wyników`, {
+        body: `Zapytanie: "${query}" · ${favSources.length} ulubionych źródeł · ${hot} gorących leadów`,
+        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><text y="28" font-size="28">🎯</text></svg>'
+      });
+    } catch(e) {}
+  }
+
+  // Toast in-app
+  showAutoSearchToast(total, hot, query, favSources.length, manual);
+}
+
+function showAutoSearchToast(total, hot, query, srcCount, manual) {
+  const toast = document.getElementById('autosearch-toast');
+  document.getElementById('toast-title').textContent = manual ? 'Wyszukiwanie ręczne' : 'Automatyczne wyszukiwanie';
+  document.getElementById('toast-body').innerHTML =
+    `Znaleziono <strong>${total} wyników</strong> dla frazy „${query}"<br>` +
+    `Źródła: <strong>${srcCount} ulubionych</strong> · Gorące leady: <strong>${hot}</strong>`;
+  toast.classList.add('visible');
+  if (toast._hideTimer) clearTimeout(toast._hideTimer);
+  toast._hideTimer = setTimeout(closeToast, 8000);
+}
+
+function closeToast() {
+  document.getElementById('autosearch-toast').classList.remove('visible');
+}
+
+function goToSearchFromToast() {
+  closeToast();
+  showPage('search');
+  document.getElementById('main-query').focus();
+}
+
+function requestNotificationPermission() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
+
+document.addEventListener('click', function(e) {
+  const panel = document.getElementById('schedule-panel');
+  const btn   = document.getElementById('schedule-btn');
+  if (panel && panel.classList.contains('open') && !btn.contains(e.target) && !panel.contains(e.target)) {
+    panel.classList.remove('open');
+  }
+});
+
+// =====================
 // API FIELDS TOGGLE
 // =====================
 function toggleApiFields(id, engine) {
@@ -3841,7 +4192,24 @@ document.addEventListener('DOMContentLoaded', function() {
   updateLoginUI();
   updateCredsBadge();
   renderSources();
+  updateScheduleUI();
+  const initCfg = loadSchedule();
+  if (initCfg.enabled) startScheduleTimer();
 });
 </script>
+
+<!-- AUTO-SEARCH TOAST -->
+<div class="autosearch-toast" id="autosearch-toast">
+  <div class="toast-header">
+    <span class="toast-icon">🔍</span>
+    <span class="toast-title" id="toast-title">Automatyczne wyszukiwanie</span>
+    <button class="toast-close" onclick="closeToast()">✕</button>
+  </div>
+  <div class="toast-body" id="toast-body"></div>
+  <div class="toast-actions">
+    <button class="toast-btn primary" onclick="goToSearchFromToast()">Zobacz wyniki</button>
+    <button class="toast-btn ghost" onclick="closeToast()">Zamknij</button>
+  </div>
+</div>
 </body>
 </html>
