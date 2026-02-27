@@ -1524,7 +1524,7 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
         <div class="query-builder">
           <span>szukam osób poszukujących</span>
           <input class="query-keyword-input" id="src-search-keyword" placeholder="np. szkoleń IT, agencji SEO, dostawcy..." onkeydown="if(event.key==='Enter')openGoogleAISearch()" />
-          <span>wynik prezentuj w postaci nazwy źródła, linku i krótkiego opisu w jednym zdaniu oraz znaczka [+] po każdym źródle.</span>
+          <span>wynik prezentuj w postaci nazwy źródła, pełnego linku (http://www. lub https://www) i krótkiego opisu w jednym zdaniu oraz znaczka [+] po każdym źródle.</span>
         </div>
         <div class="query-builder-actions">
           <button class="src-search-go-btn" onclick="openGoogleAISearch()">🌐 Otwórz Google AI</button>
@@ -2608,7 +2608,7 @@ function closeSrcSearchModal() {
 
 function buildSourceQuery() {
   const kw = document.getElementById('src-search-keyword').value.trim() || '…';
-  return `szukam osób poszukujących ${kw} wynik prezentuj w postaci nazwy źródła, linku i krótkiego opisu w jednym zdaniu oraz znaczka [+] po każdym źródle.`;
+  return `szukam osób poszukujących ${kw} wynik prezentuj w postaci nazwy źródła, pełnego linku (http://www. lub https://www) i krótkiego opisu w jednym zdaniu oraz znaczka [+] po każdym źródle.`;
 }
 
 function openGoogleAISearch() {
