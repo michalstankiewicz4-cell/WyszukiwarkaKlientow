@@ -1166,6 +1166,35 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
 .creds-group-header.status-set .creds-group-label { color: var(--green); }
 .creds-group-header.status-unset .creds-group-label { color: var(--text-dim); }
 
+/* SOURCE SEARCH MODAL */
+.src-search-modal { width: 680px; max-height: 88vh; display: flex; flex-direction: column; }
+.src-search-modal .modal-body { flex: 1; overflow-y: auto; padding-right: 4px; }
+.query-builder { background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 14px 16px; font-size: 0.82rem; color: var(--text-mid); line-height: 2.2; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.query-keyword-input { font-family: 'Outfit', sans-serif; font-size: 0.82rem; font-weight: 600; padding: 4px 10px; border: 2px solid var(--accent); border-radius: 6px; background: var(--surface); color: var(--text); min-width: 180px; flex: 1; outline: none; }
+.query-builder-actions { display: flex; gap: 8px; margin-top: 12px; }
+.src-search-go-btn { font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 700; padding: 8px 18px; background: var(--accent); border: none; color: #fff; border-radius: 7px; cursor: pointer; transition: opacity 0.12s; }
+.src-search-go-btn:hover { opacity: 0.88; }
+.src-search-copy-btn { font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 600; padding: 8px 14px; background: var(--surface2); border: 1px solid var(--border2); color: var(--text-mid); border-radius: 7px; cursor: pointer; transition: all 0.12s; }
+.src-search-copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+.src-search-divider { display: flex; align-items: center; gap: 10px; margin: 18px 0 10px; color: var(--text-dim); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+.src-search-divider::before,.src-search-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+.src-paste-area { width:100%; min-height:90px; max-height:150px; resize:vertical; font-family:'JetBrains Mono',monospace; font-size:0.72rem; padding:10px 12px; border:1px solid var(--border2); border-radius:8px; background:var(--surface2); color:var(--text); box-sizing:border-box; line-height:1.6; }
+.src-paste-area:focus { outline:none; border-color:var(--accent); }
+.src-analyze-btn { font-family:'Outfit',sans-serif; font-size:0.75rem; font-weight:700; padding:7px 16px; background:var(--surface2); border:1px solid var(--border2); color:var(--text-mid); border-radius:7px; cursor:pointer; transition:all 0.12s; margin-top:8px; }
+.src-analyze-btn:hover { border-color:var(--accent); color:var(--accent); }
+.src-results-list { display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+.src-result-card { display:flex; align-items:flex-start; gap:12px; background:var(--surface2); border:1px solid var(--border); border-radius:9px; padding:11px 14px; transition:border-color 0.12s; }
+.src-result-card:hover { border-color:var(--border2); }
+.src-result-info { flex:1; min-width:0; }
+.src-result-name { font-weight:700; font-size:0.85rem; color:var(--text); margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.src-result-url  { font-family:'JetBrains Mono',monospace; font-size:0.63rem; color:var(--accent); margin-bottom:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.src-result-desc { font-size:0.74rem; color:var(--text-dim); line-height:1.5; }
+.src-result-add  { flex-shrink:0; font-family:'Outfit',sans-serif; font-size:1rem; font-weight:700; width:30px; height:30px; border-radius:7px; border:2px solid var(--accent); background:var(--accent-light); color:var(--accent); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.12s; margin-top:1px; }
+.src-result-add:hover { background:var(--accent); color:#fff; }
+.src-result-add.added { background:var(--green-bg); border-color:var(--green); color:var(--green); cursor:default; font-size:0.8rem; }
+.search-source-btn { font-family:'Outfit',sans-serif; font-size:0.78rem; font-weight:600; padding:6px 12px; background:var(--surface); border:1px solid var(--border2); color:var(--text-dim); border-radius:6px; cursor:pointer; transition:all 0.12s; }
+.search-source-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-light); }
+
 /* KEYWORDS PAGE */
 .kw-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; }
 .kw-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; }
@@ -1411,6 +1440,7 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12V4M3 6.5L6.5 3 10 6.5M1 1h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Import
           </button>
+          <button class="search-source-btn" onclick="openSrcSearchModal()">🔍 Szukaj źródeł</button>
           <button class="add-source-btn" onclick="openAddModal()">+ Dodaj źródło</button>
         </div>
       </div>
@@ -1479,6 +1509,40 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeKwModal()">Anuluj</button>
       <button class="btn-save" onclick="saveKwSet()">Zapisz</button>
+    </div>
+  </div>
+</div>
+
+<!-- SOURCE SEARCH MODAL -->
+<div class="modal-overlay" id="src-search-modal-overlay">
+  <div class="modal src-search-modal">
+    <div class="modal-title">🔍 Szukaj nowych źródeł</div>
+    <div class="modal-sub">Zbuduj zapytanie i wyślij je do Google AI, a następnie wklej wyniki tutaj</div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label class="form-label">Zapytanie do Google AI</label>
+        <div class="query-builder">
+          <span>szukam osób poszukujących</span>
+          <input class="query-keyword-input" id="src-search-keyword" placeholder="np. szkoleń IT, agencji SEO, dostawcy..." onkeydown="if(event.key==='Enter')openGoogleAISearch()" />
+          <span>wynik prezentuj w postaci nazwy źródła, linku i krótkiego opisu w jednym zdaniu oraz znaczka [+] po każdym źródle.</span>
+        </div>
+        <div class="query-builder-actions">
+          <button class="src-search-go-btn" onclick="openGoogleAISearch()">🌐 Otwórz Google AI</button>
+          <button class="src-search-copy-btn" onclick="copySourceQuery()">📋 Skopiuj zapytanie</button>
+        </div>
+      </div>
+
+      <div class="src-search-divider">Wklej wyniki Google AI</div>
+
+      <div class="form-row">
+        <textarea class="src-paste-area" id="src-paste-area" placeholder="Wklej tutaj odpowiedź z Google AI...&#10;&#10;Przykład:&#10;Elektroda.pl, https://elektroda.pl, Forum techniczne z aktywną społecznością elektroniczną. [+]&#10;OLX Usługi, https://olx.pl/uslugi/, Serwis ogłoszeń z sekcją usług dla firm i osób prywatnych. [+]"></textarea>
+        <button class="src-analyze-btn" onclick="analyzeSourceResults()">🔎 Analizuj wyniki</button>
+      </div>
+
+      <div id="src-search-results" class="src-results-list"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeSrcSearchModal()">Zamknij</button>
     </div>
   </div>
 </div>
@@ -2526,6 +2590,115 @@ function clearSaved() {
   document.getElementById('saved-count').textContent = '0';
   renderSaved();
 }
+
+// =====================
+// SOURCE SEARCH
+// =====================
+function openSrcSearchModal() {
+  document.getElementById('src-search-results').innerHTML = '';
+  document.getElementById('src-paste-area').value = '';
+  document.getElementById('src-search-modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('src-search-keyword').focus(), 80);
+}
+
+function closeSrcSearchModal() {
+  document.getElementById('src-search-modal-overlay').classList.remove('open');
+}
+
+function buildSourceQuery() {
+  const kw = document.getElementById('src-search-keyword').value.trim() || '…';
+  return `szukam osób poszukujących ${kw} wynik prezentuj w postaci nazwy źródła, linku i krótkiego opisu w jednym zdaniu oraz znaczka [+] po każdym źródle.`;
+}
+
+function openGoogleAISearch() {
+  const query = buildSourceQuery();
+  const url = 'https://www.google.com/search?udm=50&q=' + encodeURIComponent(query);
+  window.open(url, '_blank');
+}
+
+function copySourceQuery() {
+  const query = buildSourceQuery();
+  navigator.clipboard.writeText(query).then(() => {
+    const btn = document.querySelector('.src-search-copy-btn');
+    const orig = btn.textContent;
+    btn.textContent = '✓ Skopiowano!';
+    setTimeout(() => btn.textContent = orig, 1800);
+  });
+}
+
+function analyzeSourceResults() {
+  const text = document.getElementById('src-paste-area').value.trim();
+  if (!text) return;
+  const container = document.getElementById('src-search-results');
+
+  // Split on [+] — each chunk is one source entry
+  const chunks = text.split(/\[\+\]/gi).map(c => c.trim()).filter(Boolean);
+  if (!chunks.length) {
+    container.innerHTML = '<div style="font-size:0.78rem;color:var(--text-dim);padding:8px 0">Nie znaleziono wyników w formacie z [+]. Upewnij się, że wkleiłeś odpowiedź Google AI.</div>';
+    return;
+  }
+
+  const parsed = [];
+  chunks.forEach(chunk => {
+    // Remove leading bullets/numbers/markdown
+    chunk = chunk.replace(/^\s*[\*\-\d\.\)]+\s*/, '').replace(/\*\*/g, '').trim();
+    const urlMatch = chunk.match(/https?:\/\/[^\s,;\)]+/);
+    if (!urlMatch) return;
+    const url = urlMatch[0].replace(/[.,;)]+$/, '');
+    const urlIdx = chunk.indexOf(urlMatch[0]);
+    const namePart = chunk.substring(0, urlIdx).replace(/[,\-:]+$/, '').trim();
+    const descPart = chunk.substring(urlIdx + urlMatch[0].length).replace(/^[,\-:\s]+/, '').trim();
+    if (!namePart && !descPart) return;
+    parsed.push({
+      name: (namePart || url.replace(/https?:\/\/(www\.)?/, '').split('/')[0]).substring(0, 80),
+      url,
+      desc: descPart.substring(0, 220)
+    });
+  });
+
+  if (!parsed.length) {
+    container.innerHTML = '<div style="font-size:0.78rem;color:var(--text-dim);padding:8px 0">Nie udało się wyodrębnić źródeł. Sprawdź format wklejonego tekstu.</div>';
+    return;
+  }
+
+  container.innerHTML = parsed.map((r, i) => `
+    <div class="src-result-card" id="src-res-${i}">
+      <div class="src-result-info">
+        <div class="src-result-name">${r.name}</div>
+        <div class="src-result-url">${r.url}</div>
+        ${r.desc ? `<div class="src-result-desc">${r.desc}</div>` : ''}
+      </div>
+      <button class="src-result-add" id="src-add-btn-${i}" onclick="addSourceFromSearch(${i},'${encodeURIComponent(r.name)}','${encodeURIComponent(r.url)}')" title="Dodaj źródło">+</button>
+    </div>`).join('');
+
+  // Store parsed for later use
+  window._srcSearchParsed = parsed;
+}
+
+function addSourceFromSearch(idx, encodedName, encodedUrl) {
+  const name = decodeURIComponent(encodedName);
+  const url  = decodeURIComponent(encodedUrl);
+  const btn  = document.getElementById(`src-add-btn-${idx}`);
+
+  // Mark as added
+  btn.textContent = '✓';
+  btn.classList.add('added');
+  btn.disabled = true;
+
+  // Pre-fill add source modal
+  closeSrcSearchModal();
+  document.getElementById('new-name').value = name;
+  document.getElementById('new-baseurl').value = url;
+  document.getElementById('new-url').value = '';
+  document.getElementById('new-icon').value = '🌐';
+  document.getElementById('new-engine').value = 'google_site';
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('new-name').select(), 80);
+}
+
+document.getElementById('src-search-modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeSrcSearchModal();
+});
 
 // =====================
 // ADD SOURCE MODAL
