@@ -1433,35 +1433,10 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
   color: var(--text-mid); transition: all 0.15s; white-space: nowrap;
 }
 .login-btn:hover { border-color: var(--accent); color: var(--accent); }
-.login-lamp {
-  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-  position: relative;
-}
-.login-lamp::after {
-  content: ''; position: absolute; inset: -3px; border-radius: 50%;
-  opacity: 0.35; animation: lpulse 2s ease-in-out infinite;
-}
-@keyframes lpulse { 0%,100%{transform:scale(1);opacity:0.35} 50%{transform:scale(1.7);opacity:0.1} }
-.lamp-logged-out { background: var(--red); box-shadow: 0 0 6px var(--red); }
-.lamp-logged-out::after { background: var(--red); }
-.lamp-logged-in  { background: var(--green); box-shadow: 0 0 6px var(--green); }
-.lamp-logged-in::after  { background: var(--green); }
+.login-btn.configured { border-color: #10b981; color: #10b981; background: rgba(16,185,129,0.06); }
 
 /* LOGIN MODAL */
 .login-modal { width: 400px; }
-.login-user-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 14px; background: var(--green-bg);
-  border: 1px solid rgba(26,122,74,0.2); border-radius: 8px; margin-bottom: 4px;
-}
-.login-avatar {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: var(--green); color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 800; font-size: 0.9rem; flex-shrink: 0;
-}
-.login-user-name { font-weight: 700; font-size: 0.88rem; color: var(--text); }
-.login-user-email { font-size: 0.7rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
 
 /* SOURCE LOGIN BUTTON */
 .src-login-btn {
@@ -1611,7 +1586,6 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
 .engine-card-count { font-size: 0.68rem; font-weight: 700; background: var(--border2); color: var(--text-dim); padding: 2px 8px; border-radius: 9px; }
 .engine-cfg-btn { border: none; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; padding: 3px 8px; font-size: 0.75rem; cursor: pointer; color: var(--text-dim); transition: all 0.15s; }
 .engine-cfg-btn:hover { border-color: var(--accent); color: var(--accent); }
-.engine-cfg-btn.configured { color: #10b981; border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.08); }
 .engine-source-list { padding: 6px 0; }
 .engine-source-row { display: flex; align-items: center; gap: 10px; padding: 7px 16px; transition: background 0.1s; }
 .engine-source-row:hover { background: var(--bg); }
@@ -1625,74 +1599,6 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
 .engine-source-del:hover { background: rgba(239,68,68,0.12); color: #ef4444; }
 .engine-empty { padding: 18px 16px; font-size: 0.75rem; color: var(--text-dim); font-style: italic; }
 
-/* REDDIT API */
-.reddit-api-bar {
-  display: flex; align-items: center; gap: 10px;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
-  box-shadow: var(--shadow);
-}
-.reddit-api-dot {
-  width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0;
-  background: var(--text-dim);
-}
-.reddit-api-dot.active { background: #10b981; box-shadow: 0 0 5px #10b98199; }
-.reddit-api-label { font-size: 0.82rem; font-weight: 700; color: var(--text); flex: 1; }
-.reddit-api-sub { font-size: 0.7rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
-.reddit-api-btn {
-  font-family: 'Outfit', sans-serif; font-size: 0.75rem; font-weight: 700;
-  padding: 6px 14px; border-radius: 7px; cursor: pointer; border: none;
-  transition: all 0.15s;
-}
-.reddit-api-btn.setup { background: #ff4500; color: #fff; }
-.reddit-api-btn.setup:hover { background: #cc3700; }
-.reddit-api-btn.edit { background: var(--surface2); border: 1px solid var(--border2); color: var(--text-mid); }
-.reddit-api-btn.edit:hover { border-color: var(--accent); color: var(--accent); }
-/* GOOGLE API */
-.google-api-bar {
-  display: flex; align-items: center; gap: 10px;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
-  box-shadow: var(--shadow);
-}
-.google-api-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; background: var(--text-dim); }
-.google-api-dot.active { background: #4285F4; box-shadow: 0 0 5px #4285F499; }
-.google-api-label { font-size: 0.82rem; font-weight: 700; color: var(--text); flex: 1; }
-.google-api-sub { font-size: 0.7rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
-.google-api-btn {
-  font-family: 'Outfit', sans-serif; font-size: 0.75rem; font-weight: 700;
-  padding: 6px 14px; border-radius: 7px; cursor: pointer; border: none; transition: all 0.15s;
-}
-.google-api-btn.setup { background: #4285F4; color: #fff; }
-.google-api-btn.setup:hover { background: #2a6dd9; }
-.google-api-btn.edit { background: var(--surface2); border: 1px solid var(--border2); color: var(--text-mid); }
-.google-api-btn.edit:hover { border-color: var(--accent); color: var(--accent); }
-/* modal */
-.reddit-modal { width: 500px; }
-.reddit-step {
-  display: flex; gap: 12px; align-items: flex-start;
-  padding: 10px 14px; border-radius: 8px; background: var(--surface2);
-  border: 1px solid var(--border); margin-bottom: 8px;
-}
-.reddit-step-num {
-  width: 22px; height: 22px; border-radius: 50%; background: var(--accent);
-  color: #fff; font-size: 0.7rem; font-weight: 800;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
-}
-.reddit-step-text { font-size: 0.78rem; color: var(--text-mid); line-height: 1.5; }
-.reddit-step-text a { color: var(--accent); text-decoration: none; }
-.reddit-step-text a:hover { text-decoration: underline; }
-.reddit-step-text code { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; background: var(--bg); padding: 1px 5px; border-radius: 3px; color: var(--text); }
-.reddit-test-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
-.reddit-test-status { font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); }
-/* real result badge */
-.real-badge {
-  font-size: 0.58rem; font-family: 'JetBrains Mono', monospace;
-  padding: 1px 5px; border-radius: 3px; font-weight: 700;
-  background: rgba(16,185,129,0.15); color: #10b981;
-  border: 1px solid rgba(16,185,129,0.3); margin-left: 5px;
-  vertical-align: middle; text-transform: uppercase;
-}
 .clone-btn { font-family: 'Outfit', sans-serif; font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border: 1px solid var(--border2); border-radius: 5px; background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
 .clone-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 .delete-src-btn { font-family: 'Outfit', sans-serif; font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border: 1px solid var(--border2); border-radius: 5px; background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
@@ -1815,18 +1721,12 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
           </div>
           <div class="topbar-panel-body">
             <div class="sec-section">
-              <div class="sec-section-title">📦 Klucze API (Reddit, Google)</div>
-              <label class="sec-radio-row"><input type="radio" name="sec-keys" value="localStorage" onchange="onSecurityChange()"><div><span class="sec-radio-label">localStorage</span><span class="sec-radio-desc">Trwałe — przeżywają odświeżenie strony</span></div></label>
-              <label class="sec-radio-row"><input type="radio" name="sec-keys" value="ram" onchange="onSecurityChange()"><div><span class="sec-radio-label">RAM <span class="sec-ram-badge">bezpieczniejsze</span></span><span class="sec-radio-desc">Czyszczone po zamknięciu lub odświeżeniu</span></div></label>
-            </div>
-            <div class="sec-section">
               <div class="sec-section-title">🔑 Hasła do portali</div>
               <label class="sec-radio-row"><input type="radio" name="sec-pass" value="localStorage" onchange="onSecurityChange()"><div><span class="sec-radio-label">localStorage</span><span class="sec-radio-desc">Trwałe — przeżywają odświeżenie strony</span></div></label>
               <label class="sec-radio-row"><input type="radio" name="sec-pass" value="ram" onchange="onSecurityChange()"><div><span class="sec-radio-label">RAM <span class="sec-ram-badge">bezpieczniejsze</span></span><span class="sec-radio-desc">Czyszczone po zamknięciu lub odświeżeniu</span></div></label>
             </div>
             <div class="sec-section">
               <div class="sec-section-title">📤 Eksport — zaszyfrowane dane</div>
-              <label class="sec-check-row"><input type="checkbox" id="sec-export-keys" onchange="onSecurityChange()"><span>Dołącz klucze API (zaszyfrowane)</span></label>
               <label class="sec-check-row"><input type="checkbox" id="sec-export-pass" onchange="onSecurityChange()"><span>Dołącz hasła do portali (zaszyfrowane)</span></label>
               <div class="sec-note">⚠ Przy eksporcie zostaniesz poproszony o hasło szyfrowania.</div>
             </div>
@@ -1896,9 +1796,8 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
         <span id="theme-icon">🌙</span>
       </button>
     </div>
-    <button class="login-btn" id="login-btn" onclick="openLoginModal()">
-      <div class="login-lamp lamp-logged-out" id="login-lamp"></div>
-      <span id="login-btn-label">Zaloguj się</span>
+    <button class="login-btn" id="login-btn" onclick="openLoginModal()" title="Domyślne dane logowania do portali">
+      🔐 <span id="login-btn-label">Domyślne dane</span>
     </button>
   </div>
 
@@ -2066,9 +1965,9 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
           <button class="manage-view-btn" id="cg-btn-active" onclick="setCredsGroup('active',this)">Wg aktywności</button>
         </div>
       </div>
-      <div class="creds-notice" id="creds-notice">
+      <div class="creds-notice" id="creds-notice" style="display:none">
         <span class="creds-notice-icon">🔒</span>
-        <span>Hasła są przechowywane lokalnie w przeglądarce i powiązane z Twoim kontem użytkownika. Zaloguj się do systemu, aby zarządzać swoimi loginami.</span>
+        <span>Hasła są przechowywane lokalnie w przeglądarce. Tryb przechowywania możesz zmienić w ustawieniach bezpieczeństwa 🔒.</span>
       </div>
       <div id="creds-content"></div>
     </div>
@@ -2104,85 +2003,6 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
   </div>
 </div>
 
-<!-- REDDIT API MODAL -->
-<div class="modal-overlay" id="reddit-modal-overlay">
-  <div class="modal reddit-modal">
-    <div class="modal-title">🤖 Reddit API — konfiguracja</div>
-    <div class="modal-sub">Połącz aplikację z Reddit API aby uzyskiwać prawdziwe wyniki wyszukiwania</div>
-    <div class="form-row" style="margin-bottom:16px">
-      <div class="reddit-step">
-        <div class="reddit-step-num">1</div>
-        <div class="reddit-step-text">Wejdź na <a href="https://support.reddithelp.com/hc/en-us/articles/42728983564564-Responsible-Builder-Policy" target="_blank">Responsible Builder Policy</a>, przeczytaj i zaakceptuj politykę Reddit — bez tego formularz tworzenia aplikacji jest niedostępny.</div>
-      </div>
-      <div class="reddit-step">
-        <div class="reddit-step-num">2</div>
-        <div class="reddit-step-text">Wejdź na <a href="https://www.reddit.com/prefs/apps" target="_blank">reddit.com/prefs/apps</a> i kliknij <strong>„create another app..."</strong></div>
-      </div>
-      <div class="reddit-step">
-        <div class="reddit-step-num">3</div>
-        <div class="reddit-step-text">Wypełnij: dowolna nazwa, typ: <code>installed app</code>, redirect URI: <code>http://localhost</code> → kliknij <strong>create app</strong></div>
-      </div>
-      <div class="reddit-step">
-        <div class="reddit-step-num">4</div>
-        <div class="reddit-step-text">Pod nazwą aplikacji znajdziesz ciąg znaków (np. <code>AbCdEfGhIj1234</code>) — to Twój <strong>Client ID</strong>. Wklej go poniżej.</div>
-      </div>
-    </div>
-    <div class="form-row">
-      <label class="form-label">Client ID</label>
-      <input class="form-input" id="reddit-client-id" placeholder="np. AbCdEfGhIj1234" autocomplete="off">
-    </div>
-    <div class="reddit-test-row">
-      <button class="btn-cancel" style="font-size:0.78rem;padding:7px 14px" onclick="testRedditConnection()">⚡ Testuj połączenie</button>
-      <span class="reddit-test-status" id="reddit-test-status"></span>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeRedditModal()">Anuluj</button>
-      <button class="btn-save" onclick="saveRedditConfig()">Zapisz</button>
-    </div>
-  </div>
-</div>
-
-<!-- GOOGLE API MODAL -->
-<div class="modal-overlay" id="google-modal-overlay">
-  <div class="modal reddit-modal">
-    <div class="modal-title">🔍 Google Custom Search API — konfiguracja</div>
-    <div class="modal-sub">Prawdziwe wyniki Google wewnątrz aplikacji. Każde aktywne źródło Google = 1 zapytanie.</div>
-    <div class="form-row" style="margin-bottom:16px">
-      <div class="reddit-step">
-        <div class="reddit-step-num">1</div>
-        <div class="reddit-step-text">Wejdź na <a href="https://programmablesearchengine.google.com/" target="_blank">programmablesearchengine.google.com</a> → <strong>Dodaj</strong> → zaznacz <strong>„Wyszukaj w całej sieci"</strong> → skopiuj <strong>Identyfikator wyszukiwarki (cx)</strong></div>
-      </div>
-      <div class="reddit-step">
-        <div class="reddit-step-num">2</div>
-        <div class="reddit-step-text">Wejdź na <a href="https://console.cloud.google.com/apis/library/customsearch.googleapis.com" target="_blank">Google Cloud Console</a> → włącz <strong>Custom Search API</strong> → <strong>Dane logowania</strong> → <strong>Utwórz dane logowania</strong> → <strong>Klucz API</strong></div>
-      </div>
-      <div class="reddit-step">
-        <div class="reddit-step-num">3</div>
-        <div class="reddit-step-text">Wklej oba klucze poniżej i kliknij <strong>Testuj</strong></div>
-      </div>
-      <div class="reddit-step" style="border-color:rgba(234,179,8,0.4);background:rgba(234,179,8,0.07)">
-        <div class="reddit-step-num" style="background:#ca8a04">⚠</div>
-        <div class="reddit-step-text"><strong>Limit:</strong> 100 zapytań/dobę bezpłatnie. Każde aktywne źródło Google to osobne zapytanie — włącz tylko te, których naprawdę używasz.</div>
-      </div>
-    </div>
-    <div class="form-row">
-      <label class="form-label">Klucz API</label>
-      <input class="form-input" id="google-api-key" placeholder="np. AIzaSyB…" autocomplete="off">
-    </div>
-    <div class="form-row" style="margin-top:10px">
-      <label class="form-label">Identyfikator wyszukiwarki (cx)</label>
-      <input class="form-input" id="google-cx" placeholder="np. 017576662512468239146:omuauf9t8to" autocomplete="off">
-    </div>
-    <div class="reddit-test-row">
-      <button class="btn-cancel" style="font-size:0.78rem;padding:7px 14px" onclick="testGoogleConnection()">⚡ Testuj połączenie</button>
-      <span class="reddit-test-status" id="google-test-status"></span>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeGoogleModal()">Anuluj</button>
-      <button class="btn-save" onclick="saveGoogleConfig()">Zapisz</button>
-    </div>
-  </div>
-</div>
 
 <!-- SOURCE SEARCH MODAL -->
 <div class="modal-overlay" id="src-search-modal-overlay">
@@ -2286,41 +2106,23 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
   </div>
 </div>
 
-<!-- LOGIN MODAL -->
+<!-- DEFAULT LOGIN MODAL -->
 <div class="modal-overlay" id="login-modal-overlay">
   <div class="modal login-modal">
-    <div id="login-form-view">
-      <div class="modal-title">Logowanie</div>
-      <div class="modal-sub">Zaloguj się aby korzystać z pełnych możliwości</div>
-      <div class="form-row">
-        <label class="form-label">Email</label>
-        <input class="form-input" id="login-email" type="email" placeholder="jan@firma.pl" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">Hasło</label>
-        <input class="form-input" id="login-password" type="password" placeholder="••••••••"
-          onkeydown="if(event.key==='Enter') doLogin()" />
-      </div>
-      <div id="login-error" style="display:none;color:var(--red);font-size:0.75rem;margin-top:-6px;margin-bottom:8px"></div>
-      <div class="modal-footer">
-        <button class="btn-cancel" onclick="closeLoginModal()">Anuluj</button>
-        <button class="btn-save" onclick="doLogin()">Zaloguj</button>
-      </div>
+    <div class="modal-title">🔐 Domyślne dane logowania</div>
+    <div class="modal-sub">Wartości domyślne wstępnie wypełniające pola login i hasło przy dodawaniu danych do portali</div>
+    <div class="form-row">
+      <label class="form-label">Domyślny login (email)</label>
+      <input class="form-input" id="login-email" type="email" placeholder="jan@firma.pl" autocomplete="off" />
     </div>
-    <div id="login-logged-view" style="display:none">
-      <div class="modal-title">Konto</div>
-      <div class="modal-sub" style="margin-bottom:16px">Jesteś zalogowany</div>
-      <div class="login-user-row">
-        <div class="login-avatar" id="login-avatar">?</div>
-        <div>
-          <div class="login-user-name" id="login-user-name">—</div>
-          <div class="login-user-email" id="login-user-email">—</div>
-        </div>
-      </div>
-      <div class="modal-footer" style="margin-top:16px">
-        <button class="btn-cancel" onclick="closeLoginModal()">Zamknij</button>
-        <button class="btn-save" style="background:var(--red)" onclick="doLogout()">Wyloguj</button>
-      </div>
+    <div class="form-row" style="margin-top:10px">
+      <label class="form-label">Domyślne hasło</label>
+      <input class="form-input" id="login-password" type="password" placeholder="••••••••"
+        onkeydown="if(event.key==='Enter') saveDefaultLogin()" autocomplete="off" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeLoginModal()">Anuluj</button>
+      <button class="btn-save" onclick="saveDefaultLogin()">Zapisz</button>
     </div>
   </div>
 </div>
@@ -3094,7 +2896,42 @@ function quickSearch(q) {
   doSearch();
 }
 
-async function doSearch() {
+const MOCK_RESULTS = [
+  { source: 'Wykop.pl', icon: '🔺', type: 'social', color: '#fde8f0',
+    title: 'Szukam polecenia na szkolenie z Excela dla całego działu',
+    snippet: 'Hej, mamy w firmie 15 osób które <mark>potrzebują szkoleń</mark> z Excela (poziom średniozaawansowany). Budżet ok. 500zł/os. Czy ktoś przechodził przez coś podobnego i może polecić sprawdzone centrum szkoleniowe?',
+    url: 'https://wykop.pl/link/przyklad', date: '2024-02-15', relevance: 95, keyword: 'szkolenia' },
+  { source: '4programmers.net', icon: '👨‍💻', type: 'it', color: '#f0e8fc',
+    title: 'Potrzebuję kogoś do wdrożenia systemu CRM – mała firma',
+    snippet: 'Prowadzę 10-osobową firmę usługową i <mark>szukam</mark> kogoś kto pomoże nam wdrożyć i skonfigurować CRM (najchętniej HubSpot lub Pipedrive). Płatne zlecenie, możliwa długoterminowa współpraca.',
+    url: 'https://4programmers.net/Forum/przyklad', date: '2024-02-18', relevance: 88, keyword: 'CRM wdrożenie' },
+  { source: 'OLX – Usługi', icon: '📋', type: 'ogloszenia', color: '#fef3e2',
+    title: 'Poszukuję dostawcy materiałów biurowych – umowa długoterminowa',
+    snippet: 'Firma z Wrocławia <mark>poszukuje</mark> rzetelnego dostawcy <mark>artykułów biurowych</mark>. Miesięczne zamówienia ok. 2000-3000 PLN. Interesuje nas faktura VAT i dostawa pod biuro.',
+    url: 'https://olx.pl/oferta/przyklad', date: '2024-02-20', relevance: 97, keyword: 'artykuły biurowe' },
+  { source: 'Bankier.pl Forum', icon: '🏦', type: 'biznes', color: '#e8f5f5',
+    title: 'Czy ktoś może polecić agencję SEO dla e-commerce?',
+    snippet: 'Prowadzę sklep internetowy z elektroniką. <mark>Szukam</mark> agencji SEO która ma doświadczenie z e-commerce i rozumie specyfikę branży. Budżet od 3000 PLN/miesiąc, mile widziane case studies.',
+    url: 'https://forum.bankier.pl/przyklad', date: '2024-02-19', relevance: 82, keyword: 'agencja SEO' },
+  { source: 'Reddit r/Polska', icon: '🤖', type: 'social', color: '#fde8f0',
+    title: 'Polecacie kogoś do stałej obsługi księgowej? Startup, B2B',
+    snippet: 'Zakładam spółkę z o.o. i <mark>szukam</mark> biura rachunkowego które ogarnie startup – faktury, ZUS, KPiR. Chodzi mi o kogoś z doświadczeniem ze startupami, nie klasyczne biuro.',
+    url: 'https://reddit.com/r/Polska/przyklad', date: '2024-02-21', relevance: 90, keyword: 'księgowość' },
+  { source: 'Freelancer.pl', icon: '🎯', type: 'ogloszenia', color: '#fef3e2',
+    title: 'Zlecę tłumaczenie dokumentacji technicznej EN→PL',
+    snippet: 'Mam ok. 80 stron dokumentacji technicznej z branży mechanicznej. <mark>Szukam</mark> tłumacza z doświadczeniem w tłumaczeniach technicznych. Termin: 2 tygodnie. Pytajcie o szczegóły.',
+    url: 'https://freelancer.pl/zlecenia/przyklad', date: '2024-02-17', relevance: 78, keyword: 'tłumaczenie' },
+  { source: 'LinkedIn PL', icon: '💼', type: 'social', color: '#fde8f0',
+    title: 'Looking for a content marketing agency – B2B tech',
+    snippet: 'We are a Polish SaaS company <mark>looking for</mark> a content marketing agency experienced in B2B tech. We need blog posts, case studies and LinkedIn content. DM me if interested.',
+    url: 'https://linkedin.com/posts/przyklad', date: '2024-02-22', relevance: 85, keyword: 'content marketing' },
+  { source: 'Elektroda.pl', icon: '⚡', type: 'forum', color: '#e8f0fc',
+    title: 'Szukam serwisu laptopów dla firmy – Poznań lub zdalnie',
+    snippet: 'Mamy flotę ok. 30 laptopów służbowych. <mark>Potrzebuję</mark> solidnego partnera serwisowego który odbierze sprzęt, naprawi i odda w rozsądnym czasie. Pytanie czy ktoś ma sprawdzone miejsce?',
+    url: 'https://elektroda.pl/rtvforum/topic/przyklad', date: '2024-02-16', relevance: 72, keyword: 'serwis laptopów' },
+];
+
+function doSearch() {
   if (searching) return;
   const query = document.getElementById('main-query').value.trim();
   if (!query) { document.getElementById('main-query').focus(); return; }
@@ -3111,30 +2948,23 @@ async function doSearch() {
   document.getElementById('progress-bar').classList.add('active');
 
   const activeCount = SOURCES.filter(s => s.enabled).length;
-  const redditCfg = loadRedditConfig();
-  const redditActive = SOURCES.some(s => s.enabled && (s.engine === 'reddit' || s.id === 11));
-  const googleCfg = loadGoogleConfig();
-  const googleActive = SOURCES.some(s => s.enabled && (s.engine === 'google' || s.engine === 'google_site'));
+  const delay = 1200 + Math.random() * 800;
 
-  const redditPromise = (redditActive && redditCfg.clientId)
-    ? searchRedditAPI(query).catch(() => [])
-    : Promise.resolve([]);
+  setTimeout(() => {
+    const shuffled = [...MOCK_RESULTS].sort(() => Math.random() - 0.5);
+    currentResults = shuffled.slice(0, 4 + Math.floor(Math.random() * 4));
+    currentResults = currentResults.map((r, i) => ({
+      ...r,
+      relevance: Math.max(65, r.relevance - i * 3 + Math.floor(Math.random() * 10))
+    })).sort((a, b) => b.relevance - a.relevance);
 
-  const googlePromise = (googleActive && googleCfg.apiKey && googleCfg.cx)
-    ? searchGoogleAPI(query).catch(() => [])
-    : Promise.resolve([]);
+    searching = false;
+    btn.disabled = false;
+    icon.textContent = '🔍';
+    document.getElementById('progress-bar').classList.remove('active');
 
-  const [redditResults, googleResults] = await Promise.all([redditPromise, googlePromise]);
-
-  currentResults = [...redditResults, ...googleResults]
-    .sort((a, b) => b.relevance - a.relevance);
-
-  searching = false;
-  btn.disabled = false;
-  icon.textContent = '🔍';
-  document.getElementById('progress-bar').classList.remove('active');
-
-  renderResults(query, activeCount);
+    renderResults(query, activeCount);
+  }, delay);
 }
 
 function safeUrl(u) {
@@ -3148,16 +2978,10 @@ function renderResults(query, sourceCount) {
   updateBulkBar();
 
   if (!currentResults.length) {
-    const redditCfg = loadRedditConfig();
-    const googleCfg = loadGoogleConfig();
-    const hasApi = redditCfg.clientId || (googleCfg.apiKey && googleCfg.cx);
     list.innerHTML = `<div class="empty-state" style="padding:40px 20px">
-      <div class="icon">${hasApi ? '🔍' : '🔑'}</div>
-      <h3>${hasApi ? 'Brak wyników' : 'Brak skonfigurowanego API'}</h3>
-      <p>${hasApi
-        ? `Zapytanie „${query}" nie zwróciło wyników. Spróbuj innych słów kluczowych lub włącz więcej źródeł.`
-        : 'Skonfiguruj Reddit API lub Google Custom Search API w zakładce <strong>Silniki wyszukiwań</strong>, aby rozpocząć wyszukiwanie.'
-      }</p>
+      <div class="icon">🔍</div>
+      <h3>Brak wyników</h3>
+      <p>Zapytanie „${query}" nie zwróciło wyników. Spróbuj innych słów kluczowych lub włącz więcej źródeł.</p>
     </div>`;
     document.getElementById('results-section').style.display = 'block';
     document.getElementById('results-title').textContent = `Wyniki dla: „${query}"`;
@@ -3176,7 +3000,7 @@ function renderResults(query, sourceCount) {
       </div>
       <div class="result-source-icon" style="background:${r.color}">${r.icon}</div>
       <div class="result-body">
-        <div class="result-source-label">${r.source} ${typeBadge(r.type)}${r.isReal ? '<span class="real-badge">LIVE</span>' : ''}</div>
+        <div class="result-source-label">${r.source} ${typeBadge(r.type)}</div>
         <div class="result-title"><a href="${safeUrl(r.url)}" target="_blank">${r.title}</a></div>
         <div class="result-snippet">${r.snippet}</div>
         <div class="result-footer">
@@ -3229,257 +3053,6 @@ function saveLead(idx, btn) {
   btn.style.borderColor = 'rgba(26,122,74,0.3)';
   document.getElementById('saved-count').textContent = savedLeads.length;
   document.getElementById('stat-saved').textContent = savedLeads.length;
-}
-
-// =====================
-// REDDIT API
-// =====================
-function loadRedditConfig() {
-  if (securitySettings.keysStorage === 'ram') return _ramApiKeys.reddit || { clientId: '', token: null, tokenExpiry: null };
-  return JSON.parse(localStorage.getItem('lh_reddit') || JSON.stringify({ clientId: '', token: null, tokenExpiry: null }));
-}
-function saveRedditConfigToStorage(cfg) {
-  if (securitySettings.keysStorage === 'ram') { _ramApiKeys.reddit = cfg; return; }
-  localStorage.setItem('lh_reddit', JSON.stringify(cfg));
-}
-
-async function getRedditToken() {
-  const cfg = loadRedditConfig();
-  if (!cfg.clientId) throw new Error('Brak Client ID');
-  if (cfg.token && cfg.tokenExpiry && Date.now() < cfg.tokenExpiry - 300000) return cfg.token;
-  const resp = await fetch('https://www.reddit.com/api/v1/access_token', {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Basic ' + btoa(cfg.clientId + ':'),
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: 'grant_type=https://oauth.reddit.com/grants/installed_client&device_id=DO_NOT_TRACK_THIS_DEVICE'
-  });
-  if (!resp.ok) throw new Error('Błąd autoryzacji: ' + resp.status);
-  const data = await resp.json();
-  if (!data.access_token) throw new Error(data.message || 'Brak tokenu');
-  cfg.token = data.access_token;
-  cfg.tokenExpiry = Date.now() + (data.expires_in || 86400) * 1000;
-  saveRedditConfigToStorage(cfg);
-  return cfg.token;
-}
-
-async function searchRedditAPI(query) {
-  const token = await getRedditToken();
-  const headers = { 'Authorization': `Bearer ${token}`, 'User-Agent': 'LeadHunter/1.0.0-alfa' };
-  const redditSources = SOURCES.filter(s => s.enabled && (s.engine === 'reddit' || s.id === 11));
-  if (!redditSources.length) return [];
-
-  const subreddits = [];
-  redditSources.forEach(s => {
-    (s.subforums || []).forEach(url => {
-      const m = url.match(/\/r\/([^\/]+)/);
-      if (m) subreddits.push(m[1]);
-    });
-  });
-  if (!subreddits.length) subreddits.push('all');
-
-  const results = [];
-  for (const sub of subreddits) {
-    try {
-      const url = `https://oauth.reddit.com/r/${sub}/search.json?q=${encodeURIComponent(query)}&restrict_sr=1&sort=new&limit=10&t=year`;
-      const resp = await fetch(url, { headers });
-      if (!resp.ok) continue;
-      const json = await resp.json();
-      const posts = json?.data?.children || [];
-      posts.forEach(({ data: p }) => {
-        const snippet = (p.selftext || p.title || '').slice(0, 220);
-        results.push({
-          id: p.id,
-          source: `Reddit r/${sub}`,
-          icon: '🤖',
-          color: '#fde8f0',
-          type: 'social',
-          title: p.title,
-          url: `https://www.reddit.com${p.permalink}`,
-          snippet: snippet || '(brak treści)',
-          date: new Date(p.created_utc * 1000).toLocaleDateString('pl-PL'),
-          keyword: query,
-          relevance: Math.min(98, 60 + Math.round((p.score || 0) / 5)),
-          isReal: true
-        });
-      });
-    } catch(e) { /* ignoruj błędy pojedynczego subredditu */ }
-  }
-  return results;
-}
-
-function openRedditModal() {
-  const cfg = loadRedditConfig();
-  document.getElementById('reddit-client-id').value = cfg.clientId || '';
-  document.getElementById('reddit-test-status').textContent = '';
-  document.getElementById('reddit-modal-overlay').classList.add('open');
-  setTimeout(() => document.getElementById('reddit-client-id').focus(), 100);
-}
-
-function closeRedditModal() {
-  document.getElementById('reddit-modal-overlay').classList.remove('open');
-}
-
-async function testRedditConnection() {
-  const clientId = document.getElementById('reddit-client-id').value.trim();
-  const statusEl = document.getElementById('reddit-test-status');
-  if (!clientId) { statusEl.textContent = '⚠ Wpisz Client ID'; return; }
-  statusEl.textContent = '⏳ Łączenie…';
-  const cfg = loadRedditConfig();
-  const oldClientId = cfg.clientId;
-  cfg.clientId = clientId;
-  cfg.token = null;
-  saveRedditConfigToStorage(cfg);
-  try {
-    await getRedditToken();
-    statusEl.textContent = '✅ Połączono!';
-    statusEl.style.color = '#10b981';
-  } catch(e) {
-    statusEl.textContent = '❌ ' + e.message;
-    statusEl.style.color = '#ef4444';
-    cfg.clientId = oldClientId;
-    cfg.token = null;
-    saveRedditConfigToStorage(cfg);
-  }
-}
-
-function saveRedditConfig() {
-  const clientId = document.getElementById('reddit-client-id').value.trim();
-  const cfg = loadRedditConfig();
-  cfg.clientId = clientId;
-  cfg.token = null;
-  cfg.tokenExpiry = null;
-  saveRedditConfigToStorage(cfg);
-  closeRedditModal();
-  updateRedditApiBar();
-}
-
-function updateRedditApiBar() {
-  const cfg = loadRedditConfig();
-  const dot = document.getElementById('reddit-api-dot');
-  const sub = document.getElementById('reddit-api-sub');
-  const btn = document.getElementById('reddit-api-config-btn');
-  if (!dot || !sub || !btn) return;
-  if (cfg.clientId) {
-    dot.classList.add('active');
-    sub.textContent = `Client ID: ${cfg.clientId.slice(0,6)}… · token ${cfg.tokenExpiry && Date.now() < cfg.tokenExpiry ? 'ważny' : 'wygasły'}`;
-    btn.textContent = 'Edytuj';
-    btn.className = 'reddit-api-btn edit';
-  } else {
-    dot.classList.remove('active');
-    sub.textContent = 'Nie skonfigurowano — wyniki będą symulowane';
-    btn.textContent = 'Skonfiguruj';
-    btn.className = 'reddit-api-btn setup';
-  }
-}
-
-// =====================
-// GOOGLE CUSTOM SEARCH API
-// =====================
-function loadGoogleConfig() {
-  if (securitySettings.keysStorage === 'ram') return _ramApiKeys.google || { apiKey: '', cx: '' };
-  return JSON.parse(localStorage.getItem('lh_google') || JSON.stringify({ apiKey: '', cx: '' }));
-}
-function saveGoogleConfigToStorage(cfg) {
-  if (securitySettings.keysStorage === 'ram') { _ramApiKeys.google = cfg; return; }
-  localStorage.setItem('lh_google', JSON.stringify(cfg));
-}
-
-async function searchGoogleAPI(query) {
-  const cfg = loadGoogleConfig();
-  if (!cfg.apiKey || !cfg.cx) return [];
-  const sources = SOURCES.filter(s => s.enabled && (s.engine === 'google' || s.engine === 'google_site'));
-  if (!sources.length) return [];
-
-  const fetches = sources.map(async s => {
-    const domain = s.baseUrl ? s.baseUrl.replace(/https?:\/\/(www\.)?/, '').split('/')[0] : '';
-    let url = `https://www.googleapis.com/customsearch/v1?key=${encodeURIComponent(cfg.apiKey)}&cx=${encodeURIComponent(cfg.cx)}&q=${encodeURIComponent(query)}&num=5`;
-    if (s.engine === 'google_site' && domain) url += `&siteSearch=${encodeURIComponent(domain)}`;
-    try {
-      const resp = await fetch(url);
-      if (!resp.ok) return [];
-      const data = await resp.json();
-      return (data.items || []).map(item => ({
-        id: item.cacheId || item.link,
-        source: s.name,
-        icon: s.icon,
-        color: s.color,
-        type: s.type,
-        title: item.title,
-        url: /^https?:\/\//i.test(item.link) ? item.link : 'https://' + item.link,
-        snippet: (item.snippet || '').replace(/\n/g, ' ').slice(0, 220),
-        date: new Date().toLocaleDateString('pl-PL'),
-        keyword: query,
-        relevance: Math.min(97, 72 + Math.floor(Math.random() * 20)),
-        isReal: true
-      }));
-    } catch(e) { return []; }
-  });
-
-  const results = await Promise.allSettled(fetches);
-  return results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
-}
-
-function openGoogleModal() {
-  const cfg = loadGoogleConfig();
-  document.getElementById('google-api-key').value = cfg.apiKey || '';
-  document.getElementById('google-cx').value = cfg.cx || '';
-  document.getElementById('google-test-status').textContent = '';
-  document.getElementById('google-modal-overlay').classList.add('open');
-  setTimeout(() => document.getElementById('google-api-key').focus(), 100);
-}
-
-function closeGoogleModal() {
-  document.getElementById('google-modal-overlay').classList.remove('open');
-}
-
-async function testGoogleConnection() {
-  const apiKey = document.getElementById('google-api-key').value.trim();
-  const cx = document.getElementById('google-cx').value.trim();
-  const statusEl = document.getElementById('google-test-status');
-  if (!apiKey) { statusEl.textContent = '⚠ Wpisz klucz API'; return; }
-  if (!cx) { statusEl.textContent = '⚠ Wpisz identyfikator CX'; return; }
-  statusEl.textContent = '⏳ Łączenie…';
-  statusEl.style.color = 'var(--text-dim)';
-  try {
-    const url = `https://www.googleapis.com/customsearch/v1?key=${encodeURIComponent(apiKey)}&cx=${encodeURIComponent(cx)}&q=test&num=1`;
-    const resp = await fetch(url);
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error?.message || 'HTTP ' + resp.status);
-    statusEl.textContent = '✅ Połączono!';
-    statusEl.style.color = '#10b981';
-  } catch(e) {
-    statusEl.textContent = '❌ ' + e.message;
-    statusEl.style.color = '#ef4444';
-  }
-}
-
-function saveGoogleConfig() {
-  const apiKey = document.getElementById('google-api-key').value.trim();
-  const cx = document.getElementById('google-cx').value.trim();
-  saveGoogleConfigToStorage({ apiKey, cx });
-  closeGoogleModal();
-  updateGoogleApiBar();
-}
-
-function updateGoogleApiBar() {
-  const cfg = loadGoogleConfig();
-  const dot = document.getElementById('google-api-dot');
-  const sub = document.getElementById('google-api-sub');
-  const btn = document.getElementById('google-api-config-btn');
-  if (!dot || !sub || !btn) return;
-  if (cfg.apiKey && cfg.cx) {
-    dot.classList.add('active');
-    sub.textContent = `Klucz: ${cfg.apiKey.slice(0,8)}… · CX: ${cfg.cx.slice(0,10)}…`;
-    btn.textContent = 'Edytuj';
-    btn.className = 'google-api-btn edit';
-  } else {
-    dot.classList.remove('active');
-    sub.textContent = 'Nie skonfigurowano — wyniki będą symulowane';
-    btn.textContent = 'Skonfiguruj';
-    btn.className = 'google-api-btn setup';
-  }
 }
 
 // =====================
@@ -3792,7 +3365,7 @@ function cloneSource(id) {
 // IMPORT / EXPORT
 // =====================
 async function exportSources() {
-  const needsEncryption = securitySettings.exportKeys || securitySettings.exportPass;
+  const needsEncryption = securitySettings.exportPass;
   let password = null;
   if (needsEncryption) {
     password = prompt('Podaj hasło szyfrowania danych wrażliwych:\n(bez niego nie odczytasz tych danych po imporcie)');
@@ -3806,10 +3379,6 @@ async function exportSources() {
     keywordSets: KEYWORD_SETS,
     scripts: SCRIPTS,
   };
-
-  if (securitySettings.exportKeys && password) {
-    data.apiKeys = await encryptData({ reddit: loadRedditConfig(), google: loadGoogleConfig() }, password);
-  }
 
   if (securitySettings.exportPass && password) {
     data.credentials = await encryptData(loadCreds(), password);
@@ -3922,32 +3491,18 @@ document.getElementById('login-modal-overlay').addEventListener('click', functio
 document.getElementById('src-cred-modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeSrcCredModal();
 });
-document.getElementById('reddit-modal-overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeRedditModal();
-});
-document.getElementById('google-modal-overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeGoogleModal();
-});
 
 // =====================
 // SOURCE CREDENTIALS
 // =====================
-function getCredsKey() {
-  // Per-user storage key
-  const uid = currentUser ? currentUser.email : '__guest__';
-  return `lh_creds_${uid}`;
-}
-
 function loadCreds() {
-  const key = getCredsKey();
-  if (securitySettings.passStorage === 'ram') return _ramCreds[key] || {};
-  return JSON.parse(localStorage.getItem(key) || '{}');
+  if (securitySettings.passStorage === 'ram') return _ramCreds['lh_creds'] || {};
+  return JSON.parse(localStorage.getItem('lh_creds') || '{}');
 }
 
 function saveCreds(creds) {
-  const key = getCredsKey();
-  if (securitySettings.passStorage === 'ram') { _ramCreds[key] = creds; return; }
-  localStorage.setItem(key, JSON.stringify(creds));
+  if (securitySettings.passStorage === 'ram') { _ramCreds['lh_creds'] = creds; return; }
+  localStorage.setItem('lh_creds', JSON.stringify(creds));
 }
 
 function getSourceCred(sourceId) {
@@ -3970,13 +3525,10 @@ function srcLoginBtnHTML(sourceId) {
 let srcCredEditingId = null;
 
 function openSrcCredModal(sourceId) {
-  if (!currentUser) {
-    alert('Zaloguj się do systemu, aby zarządzać loginami do źródeł.');
-    return;
-  }
   srcCredEditingId = sourceId;
   const s = SOURCES.find(x => x.id === sourceId);
   const cred = getSourceCred(sourceId);
+  const def  = loadDefaultLogin();
 
   document.getElementById('src-cred-info').innerHTML = `
     <div class="src-cred-icon" style="background:${s.color||'#e8f0fc'}">${s.icon}</div>
@@ -3984,8 +3536,8 @@ function openSrcCredModal(sourceId) {
       <div class="src-cred-name">${s.name}</div>
       <div class="src-cred-url">${s.baseUrl || ''}</div>
     </div>`;
-  document.getElementById('src-cred-login').value = cred ? cred.login : (currentUser ? currentUser.email : '');
-  document.getElementById('src-cred-pass').value  = cred ? cred.pass  : (currentUser ? currentUser.pass  : '');
+  document.getElementById('src-cred-login').value = cred ? cred.login : (def.email || '');
+  document.getElementById('src-cred-pass').value  = cred ? cred.pass  : (def.pass  || '');
   document.getElementById('src-cred-pass').type = 'password';
   document.getElementById('pass-toggle-btn').textContent = '👁';
   document.getElementById('src-cred-modal-overlay').classList.add('open');
@@ -4005,10 +3557,6 @@ function togglePassVis() {
 }
 
 function updateCredsBadge() {
-  if (!currentUser) {
-    document.getElementById('creds-count').style.display = 'none';
-    return;
-  }
   const count = Object.keys(loadCreds()).length;
   const badge = document.getElementById('creds-count');
   badge.textContent = count;
@@ -4057,19 +3605,12 @@ function renderCredentials() {
   const container = document.getElementById('creds-content');
   const notice = document.getElementById('creds-notice');
 
-  if (!currentUser) {
-    notice.style.display = 'flex';
-    container.innerHTML = `<div class="empty-state"><div class="icon">🔐</div><h3>Wymagane logowanie</h3><p>Zaloguj się do systemu (przycisk w prawym górnym rogu),<br>aby zarządzać loginami do poszczególnych źródeł.</p></div>`;
-    return;
-  }
-
   notice.style.display = 'none';
   ['status','active'].forEach(m => {
     const b = document.getElementById('cg-btn-'+m);
     if (b) b.classList.toggle('active', credsGroupBy === m);
   });
   const creds = loadCreds();
-  const initials = currentUser.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
 
   function makeRow(s) {
     const cred = creds[s.id];
@@ -4127,13 +3668,6 @@ function renderCredentials() {
   }
 
   container.innerHTML = `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-      <div class="login-avatar" style="width:30px;height:30px;font-size:0.75rem">${initials}</div>
-      <div>
-        <div style="font-weight:700;font-size:0.85rem">${currentUser.name}</div>
-        <div style="font-size:0.65rem;font-family:'JetBrains Mono',monospace;color:var(--text-dim)">${currentUser.email}</div>
-      </div>
-    </div>
     <table class="creds-table">
       <thead><tr>
         <th style="width:44px"></th>
@@ -4563,8 +4097,6 @@ function deleteEngineSource(id) {
 function renderEngines() {
   const container = document.getElementById('engines-content');
   const order = ['internal','google','google_site','reddit','bing','duckduckgo','search','api'];
-  const redditCfg = loadRedditConfig();
-  const googleCfg = loadGoogleConfig();
 
   const cards = order.map(key => {
     const meta = ENGINE_META[key] || { label: key, color: '#999' };
@@ -4586,20 +4118,12 @@ function renderEngines() {
         </div>`;
     }).join('');
 
-    const isReddit = key === 'reddit';
-    const isGoogle = key === 'google' || key === 'google_site';
-    const apiConfigured = (isReddit && redditCfg.clientId) || (isGoogle && googleCfg.apiKey && googleCfg.cx);
-    const cfgBtn = (isReddit || isGoogle)
-      ? `<button class="engine-cfg-btn ${apiConfigured ? 'configured' : ''}" onclick="${isReddit ? 'openRedditModal' : 'openGoogleModal'}()" title="${apiConfigured ? 'Skonfigurowano — kliknij aby edytować' : 'Skonfiguruj API'}">🔑</button>`
-      : '';
-
     return `
       <div class="engine-card">
         <div class="engine-card-header">
           <div class="engine-card-dot" style="background:${meta.color};box-shadow:0 0 6px ${meta.color}88"></div>
           <div class="engine-card-name">${meta.label}</div>
           <div class="engine-card-count">${sources.length} źródeł</div>
-          ${cfgBtn}
         </div>
         <div class="engine-source-list">${rows}</div>
       </div>`;
@@ -4611,65 +4135,46 @@ function renderEngines() {
 }
 
 // =====================
-// LOGIN
+// DEFAULT LOGIN
 // =====================
-let currentUser = JSON.parse(localStorage.getItem('lh_user') || 'null');
+let _ramDefaultLogin = null;
 
-function updateLoginUI() {
-  const lamp = document.getElementById('login-lamp');
-  const label = document.getElementById('login-btn-label');
-  if (currentUser) {
-    lamp.className = 'login-lamp lamp-logged-in';
-    label.textContent = currentUser.name.split(' ')[0];
-  } else {
-    lamp.className = 'login-lamp lamp-logged-out';
-    label.textContent = 'Zaloguj się';
-  }
+function loadDefaultLogin() {
+  if (securitySettings.passStorage === 'ram') return _ramDefaultLogin || { email: '', pass: '' };
+  return JSON.parse(localStorage.getItem('lh_default_login') || '{}');
+}
+
+function saveDefaultLoginToStorage(cfg) {
+  if (securitySettings.passStorage === 'ram') { _ramDefaultLogin = cfg; return; }
+  localStorage.setItem('lh_default_login', JSON.stringify(cfg));
 }
 
 function openLoginModal() {
-  const overlay = document.getElementById('login-modal-overlay');
-  overlay.classList.add('open');
-  if (currentUser) {
-    document.getElementById('login-form-view').style.display = 'none';
-    document.getElementById('login-logged-view').style.display = 'block';
-    const initials = currentUser.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
-    document.getElementById('login-avatar').textContent = initials;
-    document.getElementById('login-user-name').textContent = currentUser.name;
-    document.getElementById('login-user-email').textContent = currentUser.email;
-  } else {
-    document.getElementById('login-form-view').style.display = 'block';
-    document.getElementById('login-logged-view').style.display = 'none';
-    setTimeout(() => document.getElementById('login-email').focus(), 100);
-  }
+  const def = loadDefaultLogin();
+  document.getElementById('login-email').value    = def.email || '';
+  document.getElementById('login-password').value = def.pass  || '';
+  document.getElementById('login-modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('login-email').focus(), 100);
+  updateLoginBtn();
 }
 
 function closeLoginModal() {
   document.getElementById('login-modal-overlay').classList.remove('open');
-  document.getElementById('login-error').style.display = 'none';
 }
 
-function doLogin() {
+function saveDefaultLogin() {
   const email = document.getElementById('login-email').value.trim();
   const pass  = document.getElementById('login-password').value;
-  const err   = document.getElementById('login-error');
-  if (!email || !pass) { err.textContent = 'Uzupełnij email i hasło.'; err.style.display='block'; return; }
-  if (pass.length < 4) { err.textContent = 'Hasło jest za krótkie.'; err.style.display='block'; return; }
-  // Demo: accept any valid-looking credentials
-  const name = email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-  currentUser = { name, email, pass };
-  localStorage.setItem('lh_user', JSON.stringify(currentUser));
-  updateLoginUI();
-  updateCredsBadge();
+  saveDefaultLoginToStorage({ email, pass });
+  updateLoginBtn();
   closeLoginModal();
 }
 
-function doLogout() {
-  currentUser = null;
-  localStorage.removeItem('lh_user');
-  updateLoginUI();
-  updateCredsBadge();
-  closeLoginModal();
+function updateLoginBtn() {
+  const def = loadDefaultLogin();
+  const btn = document.getElementById('login-btn');
+  if (!btn) return;
+  btn.classList.toggle('configured', !!(def.email || def.pass));
 }
 
 // =====================
@@ -4920,25 +4425,19 @@ function toggleTheme() {
 // SECURITY SETTINGS
 // =====================
 let securitySettings = JSON.parse(localStorage.getItem('lh_security') || JSON.stringify({
-  keysStorage: 'localStorage',
-  passStorage:  'localStorage',
-  exportKeys:   false,
-  exportPass:   false
+  passStorage: 'localStorage',
+  exportPass:  false
 }));
 
-// RAM storage containers (cleared on page reload)
-let _ramApiKeys = { reddit: null, google: null };
-let _ramCreds   = {};
+// RAM storage for credentials (cleared on page reload)
+let _ramCreds = {};
 
 function toggleSecurityPanel(e) {
   e.stopPropagation();
   const panel = document.getElementById('security-panel');
   if (!panel.classList.contains('open')) {
-    const s = securitySettings;
-    document.querySelector(`input[name="sec-keys"][value="${s.keysStorage}"]`).checked = true;
-    document.querySelector(`input[name="sec-pass"][value="${s.passStorage}"]`).checked  = true;
-    document.getElementById('sec-export-keys').checked = s.exportKeys;
-    document.getElementById('sec-export-pass').checked = s.exportPass;
+    document.querySelector(`input[name="sec-pass"][value="${securitySettings.passStorage}"]`).checked = true;
+    document.getElementById('sec-export-pass').checked = securitySettings.exportPass;
   }
   panel.classList.toggle('open');
 }
@@ -4948,10 +4447,8 @@ function closeSecurityPanel() {
 }
 
 function onSecurityChange() {
-  securitySettings.keysStorage = document.querySelector('input[name="sec-keys"]:checked')?.value || 'localStorage';
-  securitySettings.passStorage  = document.querySelector('input[name="sec-pass"]:checked')?.value  || 'localStorage';
-  securitySettings.exportKeys   = document.getElementById('sec-export-keys').checked;
-  securitySettings.exportPass   = document.getElementById('sec-export-pass').checked;
+  securitySettings.passStorage = document.querySelector('input[name="sec-pass"]:checked')?.value || 'localStorage';
+  securitySettings.exportPass  = document.getElementById('sec-export-pass').checked;
   localStorage.setItem('lh_security', JSON.stringify(securitySettings));
   updateSecurityBtn();
 }
@@ -4959,7 +4456,7 @@ function onSecurityChange() {
 function updateSecurityBtn() {
   const btn = document.getElementById('security-btn');
   if (!btn) return;
-  const isRam = securitySettings.keysStorage === 'ram' || securitySettings.passStorage === 'ram';
+  const isRam = securitySettings.passStorage === 'ram';
   btn.classList.toggle('active', isRam);
   btn.title = isRam ? 'Bezpieczeństwo: tryb RAM aktywny' : 'Ustawienia bezpieczeństwa';
 }
@@ -4998,7 +4495,7 @@ async function decryptData(enc, password) {
 document.addEventListener('DOMContentLoaded', function() {
   applyTheme(currentTheme);
   document.getElementById('saved-count').textContent = savedLeads.length;
-  updateLoginUI();
+  updateLoginBtn();
   updateCredsBadge();
   renderSources();
   renderQuickQueries();
