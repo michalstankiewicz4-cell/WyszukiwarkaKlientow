@@ -409,6 +409,7 @@ body {
 .badge-ogloszenia { background: #fef3e2; color: #b07800; }
 .badge-it { background: #f0e8fc; color: #6a25a8; }
 .badge-biznes { background: #e8f5f5; color: #1a7a7a; }
+.badge-wyszukiwarka { background: #e0f2fe; color: #0369a1; }
 
 .source-toggle {
   position: relative;
@@ -889,6 +890,7 @@ html[data-theme="dark"] .badge-portal { background: rgba(26,122,74,0.22); color:
 html[data-theme="dark"] .badge-ogloszenia { background: rgba(176,120,0,0.22); color: #d4a017; }
 html[data-theme="dark"] .badge-it { background: rgba(106,37,168,0.22); color: #a44fd4; }
 html[data-theme="dark"] .badge-biznes { background: rgba(26,122,122,0.22); color: #2da8a8; }
+html[data-theme="dark"] .badge-wyszukiwarka { background: rgba(3,105,161,0.22); color: #38bdf8; }
 html[data-theme="dark"] .result-item.selected {
   background: linear-gradient(135deg, var(--surface) 0%, rgba(232,93,38,0.09) 100%);
 }
@@ -2034,7 +2036,7 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
         </div>
         <div class="manage-view-toggle">
           <button class="manage-view-btn" id="cg-btn-status" onclick="setCredsGroup('status',this)">Wg statusu</button>
-          <button class="manage-view-btn" id="cg-btn-name" onclick="setCredsGroup('name',this)">Wg nazwy</button>
+          <button class="manage-view-btn" id="cg-btn-active" onclick="setCredsGroup('active',this)">Wg aktywności</button>
         </div>
       </div>
       <div class="creds-notice" id="creds-notice">
@@ -2207,6 +2209,7 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
         <option value="ogloszenia">Serwis ogłoszeniowy</option>
         <option value="it">Forum IT</option>
         <option value="biznes">Forum biznesowe</option>
+        <option value="wyszukiwarka">Wyszukiwarka</option>
       </select>
     </div>
     <div class="form-row">
@@ -2218,6 +2221,7 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
         <option value="reddit">Reddit API</option>
         <option value="bing">Bing</option>
         <option value="duckduckgo">DuckDuckGo</option>
+        <option value="search">Wyszukiwarka</option>
         <option value="api">API</option>
       </select>
     </div>
@@ -2373,6 +2377,7 @@ const ENGINES = [
   { value: 'google_site', label: 'Google (site:)' },
   { value: 'bing',        label: 'Bing' },
   { value: 'duckduckgo',  label: 'DuckDuckGo' },
+  { value: 'search',      label: 'Wyszukiwarka' },
   { value: 'api',         label: 'API' },
 ];
 
@@ -2472,8 +2477,8 @@ function getSortedSources() {
 // RENDER SOURCES
 // =====================
 function typeBadge(t) {
-  const map = { forum:'badge-forum', social:'badge-social', portal:'badge-portal', ogloszenia:'badge-ogloszenia', it:'badge-it', biznes:'badge-biznes' };
-  const labels = { forum:'Forum', social:'Social', portal:'Portal', ogloszenia:'Ogłoszenia', it:'IT', biznes:'Biznes' };
+  const map = { forum:'badge-forum', social:'badge-social', portal:'badge-portal', ogloszenia:'badge-ogloszenia', it:'badge-it', biznes:'badge-biznes', wyszukiwarka:'badge-wyszukiwarka' };
+  const labels = { forum:'Forum', social:'Social', portal:'Portal', ogloszenia:'Ogłoszenia', it:'IT', biznes:'Biznes', wyszukiwarka:'Wyszukiwarka' };
   return `<span class="source-type-badge ${map[t]||'badge-forum'}">${labels[t]||t}</span>`;
 }
 
@@ -2647,7 +2652,7 @@ function sourceCardHTML(s, fullSettings = false) {
       <div class="source-info">
         <div class="source-name">${s.name}</div>
         ${typeBadge(s.type)}
-        ${s.baseUrl ? `<a class="source-base-url" href="${s.baseUrl}" target="_blank" onclick="event.stopPropagation()">🔗 ${s.baseUrl.replace('https://','').replace('www.','')}</a>` : ''}
+        ${s.baseUrl ? `<a class="source-base-url" href="${safeUrl(s.baseUrl)}" target="_blank" onclick="event.stopPropagation()">🔗 ${s.baseUrl.replace(/^https?:\/\//,'').replace(/^www\./,'')}</a>` : ''}
       </div>
       ${toggleHTML}
       <button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">
@@ -2815,7 +2820,7 @@ function sourceListTableHTML(sources = null) {
         <div>
           <div class="slt-name">${s.name}</div>
           ${typeBadge(s.type)}
-          ${s.baseUrl ? `<br><a class="source-base-url" href="${s.baseUrl}" target="_blank">🔗 ${s.baseUrl.replace('https://','').replace('www.','').substring(0,25)}</a>` : ''}
+          ${s.baseUrl ? `<br><a class="source-base-url" href="${safeUrl(s.baseUrl)}" target="_blank">🔗 ${s.baseUrl.replace(/^https?:\/\//,'').replace(/^www\./,'').substring(0,25)}</a>` : ''}
         </div>
       </div>
     `;
@@ -3105,6 +3110,11 @@ async function doSearch() {
   renderResults(query, activeCount);
 }
 
+function safeUrl(u) {
+  if (!u) return '#';
+  return /^https?:\/\//i.test(u) ? u : 'https://' + u;
+}
+
 function renderResults(query, sourceCount) {
   const list = document.getElementById('results-list');
   selectedIndices.clear();
@@ -3140,7 +3150,7 @@ function renderResults(query, sourceCount) {
       <div class="result-source-icon" style="background:${r.color}">${r.icon}</div>
       <div class="result-body">
         <div class="result-source-label">${r.source} ${typeBadge(r.type)}${r.isReal ? '<span class="real-badge">LIVE</span>' : ''}</div>
-        <div class="result-title"><a href="${r.url}" target="_blank">${r.title}</a></div>
+        <div class="result-title"><a href="${safeUrl(r.url)}" target="_blank">${r.title}</a></div>
         <div class="result-snippet">${r.snippet}</div>
         <div class="result-footer">
           <span class="result-date">📅 ${r.date}</span>
@@ -3150,7 +3160,7 @@ function renderResults(query, sourceCount) {
             <div class="relevance-track"><div class="relevance-fill" style="width:${r.relevance}%"></div></div>
           </div>
           <div class="result-actions">
-            <button class="result-btn" onclick="copyLink('${r.url}', this)">📋 Kopiuj</button>
+            <button class="result-btn" onclick="copyLink('${safeUrl(r.url)}', this)">📋 Kopiuj</button>
             <button class="result-btn primary" onclick="saveLead(${i}, this)" id="save-btn-${i}">🔖 Zapisz lead</button>
           </div>
         </div>
@@ -3366,7 +3376,7 @@ async function searchGoogleAPI(query) {
         color: s.color,
         type: s.type,
         title: item.title,
-        url: item.link,
+        url: /^https?:\/\//i.test(item.link) ? item.link : 'https://' + item.link,
         snippet: (item.snippet || '').replace(/\n/g, ' ').slice(0, 220),
         date: new Date().toLocaleDateString('pl-PL'),
         keyword: query,
@@ -3922,8 +3932,8 @@ function openSrcCredModal(sourceId) {
       <div class="src-cred-name">${s.name}</div>
       <div class="src-cred-url">${s.baseUrl || ''}</div>
     </div>`;
-  document.getElementById('src-cred-login').value = cred ? cred.login : '';
-  document.getElementById('src-cred-pass').value  = cred ? cred.pass  : '';
+  document.getElementById('src-cred-login').value = cred ? cred.login : (currentUser ? currentUser.email : '');
+  document.getElementById('src-cred-pass').value  = cred ? cred.pass  : (currentUser ? currentUser.pass  : '');
   document.getElementById('src-cred-pass').type = 'password';
   document.getElementById('pass-toggle-btn').textContent = '👁';
   document.getElementById('src-cred-modal-overlay').classList.add('open');
@@ -3985,7 +3995,7 @@ function setCredsGroup(mode, btn) {
     btn.classList.remove('active');
   } else {
     credsGroupBy = mode;
-    document.querySelectorAll('#cg-btn-status,#cg-btn-name').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#cg-btn-status,#cg-btn-active').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   }
   renderCredentials();
@@ -4002,7 +4012,7 @@ function renderCredentials() {
   }
 
   notice.style.display = 'none';
-  ['status','name'].forEach(m => {
+  ['status','active'].forEach(m => {
     const b = document.getElementById('cg-btn-'+m);
     if (b) b.classList.toggle('active', credsGroupBy === m);
   });
@@ -4017,7 +4027,7 @@ function renderCredentials() {
         <td><div class="slt-icon" style="background:${s.color||'#e8f0fc'}">${s.icon}</div></td>
         <td>
           <div class="creds-source-name">${s.name}</div>
-          ${s.baseUrl ? `<a class="source-base-url" href="${s.baseUrl}" target="_blank">🔗 ${s.baseUrl.replace('https://','').replace('www.','')}</a>` : ''}
+          ${s.baseUrl ? `<a class="source-base-url" href="${safeUrl(s.baseUrl)}" target="_blank">🔗 ${s.baseUrl.replace(/^https?:\/\//,'').replace(/^www\./,'')}</a>` : ''}
         </td>
         <td>${cred ? `<span class="creds-login-val">${cred.login}</span>` : '<span class="creds-empty">—</span>'}</td>
         <td>${cred && cred.pass ? `<span class="creds-pass-val">${maskedPass}</span>` : '<span class="creds-empty">—</span>'}</td>
@@ -4049,16 +4059,17 @@ function renderCredentials() {
       rows += makeGroupHeader('Niezalogowane', loggedOut.length, 'status-unset');
       rows += loggedOut.map(makeRow).join('');
     }
-  } else if (credsGroupBy === 'name') {
-    const nameMap = {};
-    SOURCES.forEach(s => {
-      if (!nameMap[s.name]) nameMap[s.name] = [];
-      nameMap[s.name].push(s);
-    });
-    Object.entries(nameMap).sort((a,b) => a[0].localeCompare(b[0], 'pl')).forEach(([name, sources]) => {
-      rows += makeGroupHeader(name, sources.length);
-      rows += sources.map(makeRow).join('');
-    });
+  } else if (credsGroupBy === 'active') {
+    const active   = SOURCES.filter(s => s.enabled);
+    const inactive = SOURCES.filter(s => !s.enabled);
+    if (active.length) {
+      rows += makeGroupHeader('Aktywne', active.length, 'status-set');
+      rows += active.map(makeRow).join('');
+    }
+    if (inactive.length) {
+      rows += makeGroupHeader('Nieaktywne', inactive.length, 'status-unset');
+      rows += inactive.map(makeRow).join('');
+    }
   } else {
     rows = SOURCES.map(makeRow).join('');
   }
@@ -4158,10 +4169,10 @@ function saveKeywordSets() {
 function syncKeywordSetsToSources() {
   SOURCES.forEach(src => {
     const linked = KEYWORD_SETS.filter(ks => ks.links.some(l => l.sourceId === src.id));
-    if (!linked.length) return;
     const merged = [...new Set(linked.flatMap(ks => ks.phrases))];
     src.keywords = merged.join(', ');
   });
+  saveSources();
 }
 
 function getSourceKwSetsHTML(sourceId) {
@@ -4203,7 +4214,8 @@ function renderKeywords() {
     const shown = set.phrases.slice(0, 6).map(p => `<span class="kw-phrase">${p}</span>`).join('');
     const more  = set.phrases.length > 6 ? `<span class="kw-phrase kw-phrase-more">+${set.phrases.length - 6} więcej</span>` : '';
     const linkedRows = set.links.map(l => {
-      const src = SOURCES.find(s => s.id === l.sourceId);
+      const src = SOURCES.find(s => s.id === l.sourceId)
+               || (l.sourceName ? SOURCES.find(s => s.name === l.sourceName) : null);
       if (!src) return '';
       const sub = l.subforum
         ? l.subforum.replace(/https?:\/\/(www\.)?/,'').replace(/\/$/,'').split('/').slice(-2).join('/')
@@ -4244,7 +4256,14 @@ function openKwModal(id = null) {
   document.getElementById('kw-modal-name').value = set ? set.name : '';
   document.getElementById('kw-modal-phrases').value = set ? set.phrases.join('\n') : '';
   const linksMap = {};
-  if (set) set.links.forEach(l => { linksMap[l.sourceId] = l.subforum; });
+  if (set) set.links.forEach(l => {
+    linksMap[l.sourceId] = l.subforum;
+    // też po nazwie jako fallback
+    if (l.sourceName) {
+      const byName = SOURCES.find(s => s.name === l.sourceName && !(s.id in linksMap));
+      if (byName) linksMap[byName.id] = l.subforum;
+    }
+  });
   const rows = SOURCES.map(s => {
     const checked = s.id in linksMap;
     if (!s.subforums) s.subforums = s.subforum ? [s.subforum] : [''];
@@ -4281,8 +4300,9 @@ function saveKwSet() {
   const links = [];
   document.querySelectorAll('.kw-src-cb:checked').forEach(cb => {
     const sourceId = parseInt(cb.dataset.id);
+    const src = SOURCES.find(s => s.id === sourceId);
     const sel = document.getElementById(`kwsub-${sourceId}`);
-    links.push({ sourceId, subforum: sel ? sel.value : '' });
+    links.push({ sourceId, sourceName: src ? src.name : '', subforum: sel ? sel.value : '' });
   });
   if (editingKwId) {
     const set = KEYWORD_SETS.find(s => s.id === editingKwId);
@@ -4473,6 +4493,7 @@ const ENGINE_META = {
   reddit:      { label: 'Reddit API',                   color: '#ff4500' },
   bing:        { label: 'Bing',                         color: '#008272' },
   duckduckgo:  { label: 'DuckDuckGo',                   color: '#DE5833' },
+  search:      { label: 'Wyszukiwarka',                 color: '#0ea5e9' },
   api:         { label: 'API',                          color: '#10b981' },
 };
 
@@ -4489,7 +4510,7 @@ function deleteEngineSource(id) {
 
 function renderEngines() {
   const container = document.getElementById('engines-content');
-  const order = ['internal','google','google_site','reddit','bing','duckduckgo','api'];
+  const order = ['internal','google','google_site','reddit','bing','duckduckgo','search','api'];
   const redditCfg = loadRedditConfig();
   const googleCfg = loadGoogleConfig();
 
@@ -4509,7 +4530,7 @@ function renderEngines() {
             ${apiInfo ? `<div class="engine-source-url" title="${s.apiUrl}">⚡ ${apiInfo}</div>` : domain ? `<div class="engine-source-url" title="${s.baseUrl}">${domain}</div>` : ''}
           </div>
           <div class="engine-source-status ${s.enabled ? 'on' : 'off'}" title="${s.enabled ? 'Aktywne' : 'Nieaktywne'}"></div>
-          <button class="engine-source-del" onclick="deleteEngineSource(${s.id})" title="Usuń źródło">✕</button>
+          <button class="engine-source-del" onclick="deleteEngineSource(${s.id})" title="Usuń źródło">🗑</button>
         </div>`;
     }).join('');
 
@@ -4584,7 +4605,7 @@ function doLogin() {
   if (pass.length < 4) { err.textContent = 'Hasło jest za krótkie.'; err.style.display='block'; return; }
   // Demo: accept any valid-looking credentials
   const name = email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-  currentUser = { name, email };
+  currentUser = { name, email, pass };
   localStorage.setItem('lh_user', JSON.stringify(currentUser));
   updateLoginUI();
   updateCredsBadge();
