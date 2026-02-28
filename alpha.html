@@ -2061,26 +2061,11 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
     </div>
     <div class="form-row">
       <label class="form-label">Silnik wyszukiwania</label>
-      <select class="form-select" id="new-engine" onchange="document.getElementById('new-api-fields').style.display=this.value==='api'?'':'none'">
-        <option value="internal">Wewnętrzna wyszukiwarka</option>
+      <select class="form-select" id="new-engine">
         <option value="google">Google Custom Search (cała sieć)</option>
         <option value="google_site">Google Custom Search (site:)</option>
-        <option value="reddit">Reddit API</option>
-        <option value="bing">Bing</option>
-        <option value="duckduckgo">DuckDuckGo</option>
-        <option value="search">Wyszukiwarka</option>
-        <option value="api">API</option>
+        <option value="reddit">Reddit (publiczne API)</option>
       </select>
-    </div>
-    <div id="new-api-fields" style="display:none">
-      <div class="form-row">
-        <label class="form-label">URL endpointu API</label>
-        <input class="form-input" type="text" id="new-api-url" placeholder="https://api.example.com/search">
-      </div>
-      <div class="form-row">
-        <label class="form-label">Klucz API <span style="font-weight:400;color:var(--text-dim)">(opcjonalnie)</span></label>
-        <input class="form-input" type="password" id="new-api-key" placeholder="sk-...">
-      </div>
     </div>
     <div class="form-row">
       <label class="form-label">Główny URL serwisu</label>
@@ -2224,15 +2209,15 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
 // =====================
 let savedLeads = JSON.parse(localStorage.getItem('lh_saved') || '[]');
 
-const ENGINES = [
-  { value: 'internal',    label: 'Wewnętrzna wyszukiwarka' },
-  { value: 'google',      label: 'Google' },
-  { value: 'google_site', label: 'Google (site:)' },
-  { value: 'bing',        label: 'Bing' },
-  { value: 'duckduckgo',  label: 'DuckDuckGo' },
-  { value: 'search',      label: 'Wyszukiwarka' },
-  { value: 'api',         label: 'API' },
-];
+// =====================
+// ENGINES — jedyne źródło prawdy
+// =====================
+const ENGINE_META = {
+  google:      { label: 'Google Custom Search',         color: '#4285F4' },
+  google_site: { label: 'Google Custom Search (site:)', color: '#34A853' },
+  reddit:      { label: 'Reddit',                       color: '#ff4500' },
+};
+const ENGINES = Object.entries(ENGINE_META).map(([value, { label }]) => ({ value, label }));
 
 const SOURCES = JSON.parse(localStorage.getItem('lh_sources') || '[]');
 let nextId = SOURCES.length ? Math.max(...SOURCES.map(s => s.id)) + 1 : 1;
@@ -2462,15 +2447,9 @@ function sourceCardHTML(s, fullSettings = false) {
         ${srcLoginBtnHTML(s.id)}
       </div>
       <div class="field-label" style="margin-top:6px">Silnik wyszukiwania</div>
-      <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value);toggleApiFields(${s.id},this.value)">
-        ${ENGINES.map(e => `<option value="${e.value}" ${(s.engine||'internal')===e.value?'selected':''}>${e.label}</option>`).join('')}
+      <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value)">
+        ${ENGINES.map(e => `<option value="${e.value}" ${(s.engine||'google')===e.value?'selected':''}>${e.label}</option>`).join('')}
       </select>
-      <div id="api-fields-${s.id}" style="${(s.engine||'')!=='api'?'display:none':''}">
-        <div class="field-label" style="margin-top:8px">URL endpointu API</div>
-        <input class="field-input" type="text" placeholder="https://api.example.com/search" value="${s.apiUrl||''}" oninput="updateSource(${s.id},'apiUrl',this.value)">
-        <div class="field-label" style="margin-top:8px">Klucz API <span style="font-weight:400;color:var(--text-dim)">(opcjonalnie)</span></div>
-        <input class="field-input" type="password" placeholder="sk-..." value="${s.apiKey||''}" oninput="updateSource(${s.id},'apiKey',this.value)">
-      </div>
       <div class="field-label" style="margin-top:10px">Podfora / sekcje ${countLabel}</div>
       <div class="subforum-list" id="sflist-${s.id}">
         ${s.subforums.map((url, idx) => subforumRowHTML(s.id, idx, url)).join('')}
@@ -2704,15 +2683,9 @@ function sourceListTableHTML(sources = null) {
         <td colspan="8">
           <div class="slt-settings-inner">
             <div class="field-label">Silnik wyszukiwania</div>
-            <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value);toggleApiFields(${s.id},this.value)">
-              ${ENGINES.map(e => `<option value="${e.value}" ${(s.engine||'internal')===e.value?'selected':''}>${e.label}</option>`).join('')}
+            <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value)">
+              ${ENGINES.map(e => `<option value="${e.value}" ${(s.engine||'google')===e.value?'selected':''}>${e.label}</option>`).join('')}
             </select>
-            <div id="api-fields-${s.id}" style="${(s.engine||'')!=='api'?'display:none':''}">
-              <div class="field-label" style="margin-top:8px">URL endpointu API</div>
-              <input class="field-input" type="text" placeholder="https://api.example.com/search" value="${s.apiUrl||''}" oninput="updateSource(${s.id},'apiUrl',this.value)">
-              <div class="field-label" style="margin-top:8px">Klucz API <span style="font-weight:400;color:var(--text-dim)">(opcjonalnie)</span></div>
-              <input class="field-input" type="password" placeholder="sk-..." value="${s.apiKey||''}" oninput="updateSource(${s.id},'apiKey',this.value)">
-            </div>
             <div class="field-label" style="margin-top:10px">Podfora / sekcje</div>
             <div class="subforum-list" id="sflist-${s.id}">
               ${s.subforums.map((url, idx) => subforumRowHTML(s.id, idx, url)).join('')}
@@ -2973,6 +2946,7 @@ async function doSearch() {
 
   const activeCount  = SOURCES.filter(s => s.enabled).length;
   const googleActive = SOURCES.some(s => s.enabled && (s.engine === 'google' || s.engine === 'google_site'));
+  const redditActive = SOURCES.some(s => s.enabled && s.engine === 'reddit');
   const googleKey    = loadGoogleKey();
   const googleCx     = loadGoogleCx();
 
@@ -2985,11 +2959,20 @@ async function doSearch() {
     renderResults(query, activeCount);
   };
 
-  if (googleActive && googleKey && googleCx) {
-    try {
-      finish(await searchGoogleCSE(query, googleKey, googleCx));
-    } catch (err) {
-      console.warn('Google CSE błąd, używam mock-ów:', err);
+  const promises = [];
+  if (googleActive && googleKey && googleCx) promises.push(searchGoogleCSE(query, googleKey, googleCx));
+  if (redditActive) promises.push(searchRedditPublic(query));
+
+  if (promises.length) {
+    const settled = await Promise.allSettled(promises);
+    const results = settled
+      .filter(r => r.status === 'fulfilled')
+      .flatMap(r => r.value)
+      .sort((a, b) => b.relevance - a.relevance);
+    if (results.length) {
+      finish(results);
+    } else {
+      console.warn('Wszystkie API zwróciły błąd, używam mock-ów');
       useMockSearch(finish);
     }
   } else {
@@ -3028,6 +3011,28 @@ async function searchGoogleCSE(query, apiKey, cx) {
     relevance: Math.max(60, 95 - i * 3),
     keyword: query,
   }));
+}
+
+async function searchRedditPublic(query) {
+  const url = `https://www.reddit.com/search.json?q=${encodeURIComponent(query)}&limit=10&sort=relevance&type=link`;
+  const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
+  if (!resp.ok) throw new Error(`Reddit HTTP ${resp.status}`);
+  const data = await resp.json();
+  return (data?.data?.children || []).map((item, i) => {
+    const p = item.data;
+    return {
+      source: `Reddit r/${p.subreddit}`,
+      icon: '🔺',
+      type: 'social',
+      color: '#fde8f0',
+      title: p.title,
+      snippet: p.selftext ? p.selftext.slice(0, 220) : `r/${p.subreddit} · ${p.score} pkt`,
+      url: `https://www.reddit.com${p.permalink}`,
+      date: new Date(p.created_utc * 1000).toISOString().split('T')[0],
+      relevance: Math.max(60, 90 - i * 3),
+      keyword: query,
+    };
+  });
 }
 
 function safeUrl(u) {
@@ -3355,10 +3360,7 @@ function saveNewSource() {
   document.getElementById('new-baseurl').value = '';
   document.getElementById('new-url').value = '';
   document.getElementById('new-icon').value = '';
-  document.getElementById('new-engine').value = 'internal';
-  document.getElementById('new-api-url').value = '';
-  document.getElementById('new-api-key').value = '';
-  document.getElementById('new-api-fields').style.display = 'none';
+  document.getElementById('new-engine').value = 'google';
   renderSources();
   renderSourcesManage();
 
@@ -4144,20 +4146,6 @@ document.getElementById('script-modal-overlay').addEventListener('click', functi
   if (e.target === this) closeScriptModal();
 });
 
-// =====================
-// ENGINES
-// =====================
-const ENGINE_META = {
-  internal:    { label: 'Wewnętrzna wyszukiwarka',      color: '#6c63ff' },
-  google:      { label: 'Google Custom Search',          color: '#4285F4' },
-  google_site: { label: 'Google Custom Search (site:)',  color: '#34A853' },
-  reddit:      { label: 'Reddit API',                   color: '#ff4500' },
-  bing:        { label: 'Bing',                         color: '#008272' },
-  duckduckgo:  { label: 'DuckDuckGo',                   color: '#DE5833' },
-  search:      { label: 'Wyszukiwarka',                 color: '#0ea5e9' },
-  api:         { label: 'API',                          color: '#10b981' },
-};
-
 function deleteEngineSource(id) {
   const s = SOURCES.find(x => x.id === id);
   if (!s) return;
@@ -4171,7 +4159,7 @@ function deleteEngineSource(id) {
 
 function renderEngines() {
   const container = document.getElementById('engines-content');
-  const order = ['internal','google','google_site','reddit','bing','duckduckgo','search','api'];
+  const order = ['google','google_site','reddit'];
 
   const cards = order.map(key => {
     const meta = ENGINE_META[key] || { label: key, color: '#999' };
@@ -4202,6 +4190,12 @@ function renderEngines() {
         <button onclick="openGoogleCfg()" style="font-family:'Outfit',sans-serif;font-size:0.7rem;font-weight:600;padding:3px 10px;border:1px solid var(--border2);border-radius:5px;background:transparent;color:var(--text-dim);cursor:pointer">🔑 Konfiguruj</button>
       </div>` : '';
 
+    const redditBanner = key === 'reddit' ? `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);font-size:0.72rem">
+        <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:#10b981;box-shadow:0 0 4px #10b98199"></div>
+        <span style="flex:1;color:var(--text-mid)">API publiczne — bez konfiguracji</span>
+      </div>` : '';
+
     return `
       <div class="engine-card">
         <div class="engine-card-header">
@@ -4209,7 +4203,7 @@ function renderEngines() {
           <div class="engine-card-name">${meta.label}</div>
           <div class="engine-card-count">${sources.length} źródeł</div>
         </div>
-        ${googleBanner}
+        ${googleBanner}${redditBanner}
         <div class="engine-source-list">${rows}</div>
       </div>`;
   }).join('');
@@ -4478,11 +4472,6 @@ document.addEventListener('click', function(e) {
 // =====================
 // API FIELDS TOGGLE
 // =====================
-function toggleApiFields(id, engine) {
-  const el = document.getElementById('api-fields-' + id);
-  if (el) el.style.display = engine === 'api' ? '' : 'none';
-}
-
 // =====================
 // INFO PANEL
 // =====================
