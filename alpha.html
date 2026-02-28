@@ -775,6 +775,10 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
 @keyframes modalIn { from { opacity:0; transform: scale(0.96); } to { opacity:1; transform: none; } }
 .modal-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
 .modal-sub { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 20px; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.modal-header .modal-title { margin-bottom: 0; }
+.modal-close { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text-mid); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.12s; flex-shrink: 0; }
+.modal-close:hover { border-color: #ef4444; color: #ef4444; background: rgba(239,68,68,0.08); }
 .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
 .btn-cancel {
   font-family: 'Outfit', sans-serif;
@@ -954,31 +958,32 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
   70%  { box-shadow: 0 0 0 6px rgba(16,185,129,0); }
   100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
 }
-.schedule-panel {
+/* Shared topbar panel style (schedule, security, info) */
+.topbar-panel {
   display: none; position: absolute;
   top: calc(100% + 10px); right: 0;
-  width: 300px;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 14px; box-shadow: var(--shadow-lg);
   z-index: 300; animation: modalIn 0.18s ease; overflow: hidden;
 }
-.schedule-panel.open { display: block; }
-.schedule-panel-header {
+.topbar-panel.open { display: block; }
+.topbar-panel-header {
   padding: 14px 18px 12px;
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
 }
-.schedule-panel-title {
+.topbar-panel-title {
   font-size: 0.88rem; font-weight: 800; color: var(--text);
   display: flex; align-items: center; gap: 7px;
 }
-.schedule-panel-close {
+.topbar-panel-close {
   background: none; border: none; cursor: pointer;
   font-size: 1rem; color: var(--text-dim); padding: 2px 5px;
   border-radius: 4px; transition: color 0.12s; line-height: 1;
 }
-.schedule-panel-close:hover { color: var(--text); }
-.schedule-panel-body { padding: 16px 18px; }
+.topbar-panel-close:hover { color: var(--text); }
+.topbar-panel-body { padding: 16px 18px; }
+.schedule-panel { width: 300px; }
 .sched-row { margin-bottom: 13px; }
 .sched-row:last-child { margin-bottom: 0; }
 .sched-label {
@@ -1090,38 +1095,33 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
   40%  { opacity: 0.45; transform: scale(1.08); }
   100% { opacity: 0; transform: scale(1.22); }
 }
-.info-panel {
-  display: none;
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  width: 320px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: var(--shadow-lg);
-  z-index: 300;
-  animation: modalIn 0.18s ease;
-  overflow: hidden;
+/* SECURITY PANEL */
+.security-btn {
+  width: 36px; height: 36px; border-radius: 8px;
+  border: 1px solid var(--border2); background: var(--surface2);
+  color: var(--text-mid); cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
 }
-.info-panel.open { display: block; }
-.info-panel-header {
-  padding: 16px 20px 12px;
-  background: linear-gradient(135deg, rgba(232,93,38,0.1) 0%, transparent 100%);
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.info-panel-title {
-  font-size: 0.88rem; font-weight: 800; color: var(--text);
-  display: flex; align-items: center; gap: 7px;
-}
-.info-panel-close {
-  background: none; border: none; cursor: pointer;
-  font-size: 1rem; color: var(--text-dim); padding: 2px 5px;
-  border-radius: 4px; transition: color 0.12s;
-  line-height: 1;
-}
-.info-panel-close:hover { color: var(--text); }
+.security-btn:hover { border-color: #10b981; background: rgba(16,185,129,0.1); color: #10b981; }
+.security-btn.active { border-color: #10b981; background: rgba(16,185,129,0.1); color: #10b981; }
+.security-panel { width: 360px; }
+.sec-section { margin-bottom: 20px; }
+.sec-section:last-child { margin-bottom: 0; }
+.sec-section-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 10px; }
+.sec-radio-row { display: flex; align-items: flex-start; gap: 10px; padding: 9px 12px; border: 1px solid var(--border2); border-radius: 8px; cursor: pointer; margin-bottom: 6px; transition: border-color 0.15s, background 0.15s; }
+.sec-radio-row:hover { border-color: var(--accent); background: var(--accent-light); }
+.sec-radio-row input[type=radio] { margin-top: 2px; accent-color: var(--accent); flex-shrink: 0; }
+.sec-radio-label { font-size: 0.82rem; font-weight: 700; color: var(--text); display: block; }
+.sec-radio-desc { font-size: 0.68rem; color: var(--text-dim); display: block; margin-top: 1px; }
+.sec-check-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--border2); border-radius: 8px; cursor: pointer; margin-bottom: 6px; font-size: 0.82rem; font-weight: 600; color: var(--text); transition: border-color 0.15s, background 0.15s; }
+.sec-check-row:hover { border-color: var(--accent); background: var(--accent-light); }
+.sec-check-row input[type=checkbox] { accent-color: var(--accent); }
+.sec-note { font-size: 0.68rem; color: var(--text-dim); margin-top: 8px; padding: 8px 10px; background: var(--surface2); border-radius: 6px; border-left: 3px solid #f59e0b; }
+.sec-ram-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.6rem; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); margin-left: 6px; vertical-align: middle; }
+
+.info-panel { width: 320px; }
+.info-panel .topbar-panel-header { background: linear-gradient(135deg, rgba(232,93,38,0.1) 0%, transparent 100%); }
 .info-panel-body { padding: 16px 20px; }
 .info-row {
   display: flex; gap: 10px; align-items: baseline;
@@ -1764,12 +1764,12 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
     <div class="topbar-controls">
       <div class="schedule-btn-wrap">
         <button class="schedule-btn" id="schedule-btn" onclick="toggleSchedulePanel(event)" title="Automatyczne wyszukiwanie">⏱</button>
-        <div class="schedule-panel" id="schedule-panel">
-          <div class="schedule-panel-header">
-            <div class="schedule-panel-title">⏱ Automatyczne wyszukiwanie</div>
-            <button class="schedule-panel-close" onclick="closeSchedulePanel()">✕</button>
+        <div class="topbar-panel schedule-panel" id="schedule-panel">
+          <div class="topbar-panel-header">
+            <div class="topbar-panel-title">⏱ Automatyczne wyszukiwanie</div>
+            <button class="topbar-panel-close" onclick="closeSchedulePanel()">✕</button>
           </div>
-          <div class="schedule-panel-body">
+          <div class="topbar-panel-body">
             <div class="sched-toggle-row">
               <span class="sched-toggle-label">Włącz harmonogram</span>
               <label class="sched-toggle">
@@ -1807,11 +1807,38 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
         </div>
       </div>
       <div class="info-btn-wrap">
+        <button class="security-btn" id="security-btn" onclick="toggleSecurityPanel(event)" title="Ustawienia bezpieczeństwa">🔒</button>
+        <div class="topbar-panel security-panel" id="security-panel">
+          <div class="topbar-panel-header">
+            <div class="topbar-panel-title">🔒 Bezpieczeństwo</div>
+            <button class="topbar-panel-close" onclick="closeSecurityPanel()">✕</button>
+          </div>
+          <div class="topbar-panel-body">
+            <div class="sec-section">
+              <div class="sec-section-title">📦 Klucze API (Reddit, Google)</div>
+              <label class="sec-radio-row"><input type="radio" name="sec-keys" value="localStorage" onchange="onSecurityChange()"><div><span class="sec-radio-label">localStorage</span><span class="sec-radio-desc">Trwałe — przeżywają odświeżenie strony</span></div></label>
+              <label class="sec-radio-row"><input type="radio" name="sec-keys" value="ram" onchange="onSecurityChange()"><div><span class="sec-radio-label">RAM <span class="sec-ram-badge">bezpieczniejsze</span></span><span class="sec-radio-desc">Czyszczone po zamknięciu lub odświeżeniu</span></div></label>
+            </div>
+            <div class="sec-section">
+              <div class="sec-section-title">🔑 Hasła do portali</div>
+              <label class="sec-radio-row"><input type="radio" name="sec-pass" value="localStorage" onchange="onSecurityChange()"><div><span class="sec-radio-label">localStorage</span><span class="sec-radio-desc">Trwałe — przeżywają odświeżenie strony</span></div></label>
+              <label class="sec-radio-row"><input type="radio" name="sec-pass" value="ram" onchange="onSecurityChange()"><div><span class="sec-radio-label">RAM <span class="sec-ram-badge">bezpieczniejsze</span></span><span class="sec-radio-desc">Czyszczone po zamknięciu lub odświeżeniu</span></div></label>
+            </div>
+            <div class="sec-section">
+              <div class="sec-section-title">📤 Eksport — zaszyfrowane dane</div>
+              <label class="sec-check-row"><input type="checkbox" id="sec-export-keys" onchange="onSecurityChange()"><span>Dołącz klucze API (zaszyfrowane)</span></label>
+              <label class="sec-check-row"><input type="checkbox" id="sec-export-pass" onchange="onSecurityChange()"><span>Dołącz hasła do portali (zaszyfrowane)</span></label>
+              <div class="sec-note">⚠ Przy eksporcie zostaniesz poproszony o hasło szyfrowania.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="info-btn-wrap">
         <button class="info-btn" onclick="toggleInfoPanel(event)" id="info-btn" title="Informacje o autorze">ℹ</button>
-        <div class="info-panel" id="info-panel">
-          <div class="info-panel-header">
-            <div class="info-panel-title">👤 Autor &amp; Kontakt <span style="font-size:0.6rem;font-family:'JetBrains Mono',monospace;color:var(--accent);background:var(--accent-light);border:1px solid rgba(232,93,38,0.25);border-radius:4px;padding:1px 6px;font-weight:700;margin-left:4px">v1.0.0-alfa</span></div>
-            <button class="info-panel-close" onclick="closeInfoPanel()">✕</button>
+        <div class="topbar-panel info-panel" id="info-panel">
+          <div class="topbar-panel-header">
+            <div class="topbar-panel-title">👤 Autor &amp; Kontakt <span style="font-size:0.6rem;font-family:'JetBrains Mono',monospace;color:var(--accent);background:var(--accent-light);border:1px solid rgba(232,93,38,0.25);border-radius:4px;padding:1px 6px;font-weight:700;margin-left:4px">v1.0.0-alfa</span></div>
+            <button class="topbar-panel-close" onclick="closeInfoPanel()">✕</button>
           </div>
           <div class="info-panel-body">
             <div class="info-row">
@@ -3208,9 +3235,11 @@ function saveLead(idx, btn) {
 // REDDIT API
 // =====================
 function loadRedditConfig() {
+  if (securitySettings.keysStorage === 'ram') return _ramApiKeys.reddit || { clientId: '', token: null, tokenExpiry: null };
   return JSON.parse(localStorage.getItem('lh_reddit') || JSON.stringify({ clientId: '', token: null, tokenExpiry: null }));
 }
 function saveRedditConfigToStorage(cfg) {
+  if (securitySettings.keysStorage === 'ram') { _ramApiKeys.reddit = cfg; return; }
   localStorage.setItem('lh_reddit', JSON.stringify(cfg));
 }
 
@@ -3349,9 +3378,11 @@ function updateRedditApiBar() {
 // GOOGLE CUSTOM SEARCH API
 // =====================
 function loadGoogleConfig() {
+  if (securitySettings.keysStorage === 'ram') return _ramApiKeys.google || { apiKey: '', cx: '' };
   return JSON.parse(localStorage.getItem('lh_google') || JSON.stringify({ apiKey: '', cx: '' }));
 }
 function saveGoogleConfigToStorage(cfg) {
+  if (securitySettings.keysStorage === 'ram') { _ramApiKeys.google = cfg; return; }
   localStorage.setItem('lh_google', JSON.stringify(cfg));
 }
 
@@ -3760,15 +3791,32 @@ function cloneSource(id) {
 // =====================
 // IMPORT / EXPORT
 // =====================
-function exportSources() {
+async function exportSources() {
+  const needsEncryption = securitySettings.exportKeys || securitySettings.exportPass;
+  let password = null;
+  if (needsEncryption) {
+    password = prompt('Podaj hasło szyfrowania danych wrażliwych:\n(bez niego nie odczytasz tych danych po imporcie)');
+    if (!password) return;
+  }
+
   const data = {
     version: 3,
     exportedAt: new Date().toISOString(),
     sources: SOURCES,
     keywordSets: KEYWORD_SETS,
-    credentials: loadCreds(),
     scripts: SCRIPTS,
   };
+
+  if (securitySettings.exportKeys && password) {
+    data.apiKeys = await encryptData({ reddit: loadRedditConfig(), google: loadGoogleConfig() }, password);
+  }
+
+  if (securitySettings.exportPass && password) {
+    data.credentials = await encryptData(loadCreds(), password);
+  } else {
+    data.credentials = loadCreds();
+  }
+
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
@@ -3891,11 +3939,15 @@ function getCredsKey() {
 }
 
 function loadCreds() {
-  return JSON.parse(localStorage.getItem(getCredsKey()) || '{}');
+  const key = getCredsKey();
+  if (securitySettings.passStorage === 'ram') return _ramCreds[key] || {};
+  return JSON.parse(localStorage.getItem(key) || '{}');
 }
 
 function saveCreds(creds) {
-  localStorage.setItem(getCredsKey(), JSON.stringify(creds));
+  const key = getCredsKey();
+  if (securitySettings.passStorage === 'ram') { _ramCreds[key] = creds; return; }
+  localStorage.setItem(key, JSON.stringify(creds));
 }
 
 function getSourceCred(sourceId) {
@@ -4839,6 +4891,14 @@ document.addEventListener('click', function(e) {
   }
 });
 
+document.addEventListener('click', function(e) {
+  const panel = document.getElementById('security-panel');
+  const btn   = document.getElementById('security-btn');
+  if (panel && panel.classList.contains('open') && !btn.contains(e.target) && !panel.contains(e.target)) {
+    panel.classList.remove('open');
+  }
+});
+
 // =====================
 // THEME
 // =====================
@@ -4857,6 +4917,82 @@ function toggleTheme() {
 }
 
 // =====================
+// SECURITY SETTINGS
+// =====================
+let securitySettings = JSON.parse(localStorage.getItem('lh_security') || JSON.stringify({
+  keysStorage: 'localStorage',
+  passStorage:  'localStorage',
+  exportKeys:   false,
+  exportPass:   false
+}));
+
+// RAM storage containers (cleared on page reload)
+let _ramApiKeys = { reddit: null, google: null };
+let _ramCreds   = {};
+
+function toggleSecurityPanel(e) {
+  e.stopPropagation();
+  const panel = document.getElementById('security-panel');
+  if (!panel.classList.contains('open')) {
+    const s = securitySettings;
+    document.querySelector(`input[name="sec-keys"][value="${s.keysStorage}"]`).checked = true;
+    document.querySelector(`input[name="sec-pass"][value="${s.passStorage}"]`).checked  = true;
+    document.getElementById('sec-export-keys').checked = s.exportKeys;
+    document.getElementById('sec-export-pass').checked = s.exportPass;
+  }
+  panel.classList.toggle('open');
+}
+
+function closeSecurityPanel() {
+  document.getElementById('security-panel').classList.remove('open');
+}
+
+function onSecurityChange() {
+  securitySettings.keysStorage = document.querySelector('input[name="sec-keys"]:checked')?.value || 'localStorage';
+  securitySettings.passStorage  = document.querySelector('input[name="sec-pass"]:checked')?.value  || 'localStorage';
+  securitySettings.exportKeys   = document.getElementById('sec-export-keys').checked;
+  securitySettings.exportPass   = document.getElementById('sec-export-pass').checked;
+  localStorage.setItem('lh_security', JSON.stringify(securitySettings));
+  updateSecurityBtn();
+}
+
+function updateSecurityBtn() {
+  const btn = document.getElementById('security-btn');
+  if (!btn) return;
+  const isRam = securitySettings.keysStorage === 'ram' || securitySettings.passStorage === 'ram';
+  btn.classList.toggle('active', isRam);
+  btn.title = isRam ? 'Bezpieczeństwo: tryb RAM aktywny' : 'Ustawienia bezpieczeństwa';
+}
+
+// Web Crypto helpers
+async function encryptData(data, password) {
+  const enc  = new TextEncoder();
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv   = crypto.getRandomValues(new Uint8Array(12));
+  const km   = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+  const key  = await crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+    km, { name: 'AES-GCM', length: 256 }, false, ['encrypt']
+  );
+  const buf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(JSON.stringify(data)));
+  const b64 = arr => btoa(String.fromCharCode(...new Uint8Array(arr)));
+  return { _encrypted: true, alg: 'AES-GCM-PBKDF2', salt: b64(salt), iv: b64(iv), data: b64(buf) };
+}
+
+async function decryptData(enc, password) {
+  const te  = new TextEncoder();
+  const dec = new TextDecoder();
+  const b   = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const km  = await crypto.subtle.importKey('raw', te.encode(password), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: b(enc.salt), iterations: 100000, hash: 'SHA-256' },
+    km, { name: 'AES-GCM', length: 256 }, false, ['decrypt']
+  );
+  const buf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b(enc.iv) }, key, b(enc.data));
+  return JSON.parse(dec.decode(buf));
+}
+
+// =====================
 // INIT
 // =====================
 document.addEventListener('DOMContentLoaded', function() {
@@ -4866,11 +5002,13 @@ document.addEventListener('DOMContentLoaded', function() {
   updateCredsBadge();
   renderSources();
   renderQuickQueries();
+  updateSecurityBtn();
   updateScheduleUI();
   const initCfg = loadSchedule();
   if (initCfg.enabled) startScheduleTimer();
 });
 </script>
+
 
 <!-- AUTO-SEARCH TOAST -->
 <div class="autosearch-toast" id="autosearch-toast">
