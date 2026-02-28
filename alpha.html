@@ -1721,13 +1721,13 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
           </div>
           <div class="topbar-panel-body">
             <div class="sec-section">
-              <div class="sec-section-title">🔑 Hasła do portali</div>
+              <div class="sec-section-title">🔑 Hasła i klucze API</div>
               <label class="sec-radio-row"><input type="radio" name="sec-pass" value="localStorage" onchange="onSecurityChange()"><div><span class="sec-radio-label">localStorage</span><span class="sec-radio-desc">Trwałe — przeżywają odświeżenie strony</span></div></label>
               <label class="sec-radio-row"><input type="radio" name="sec-pass" value="ram" onchange="onSecurityChange()"><div><span class="sec-radio-label">RAM <span class="sec-ram-badge">bezpieczniejsze</span></span><span class="sec-radio-desc">Czyszczone po zamknięciu lub odświeżeniu</span></div></label>
             </div>
             <div class="sec-section">
               <div class="sec-section-title">📤 Eksport — zaszyfrowane dane</div>
-              <label class="sec-check-row"><input type="checkbox" id="sec-export-pass" onchange="onSecurityChange()"><span>Dołącz hasła do portali (zaszyfrowane)</span></label>
+              <label class="sec-check-row"><input type="checkbox" id="sec-export-pass" onchange="onSecurityChange()"><span>Dołącz hasła i klucze API (zaszyfrowane)</span></label>
               <div class="sec-note">⚠ Przy eksporcie zostaniesz poproszony o hasło szyfrowania.</div>
             </div>
           </div>
@@ -2123,6 +2123,30 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeLoginModal()">Anuluj</button>
       <button class="btn-save" onclick="saveDefaultLogin()">Zapisz</button>
+    </div>
+  </div>
+</div>
+
+<!-- GOOGLE CONFIG MODAL -->
+<div class="modal-overlay" id="google-cfg-overlay">
+  <div class="modal" style="width:400px">
+    <div class="modal-title">🔍 Google Custom Search API</div>
+    <div class="modal-sub">Klucz API przechowywany zgodnie z ustawieniami bezpieczeństwa. CX zawsze w localStorage.</div>
+    <div class="form-row">
+      <label class="form-label">API Key</label>
+      <div style="position:relative">
+        <input class="form-input" id="gcfg-key" type="password" placeholder="AIzaSy..." autocomplete="off" style="padding-right:40px" />
+        <button class="pass-toggle-btn" onclick="this.previousElementSibling.type=this.previousElementSibling.type==='password'?'text':'password'">👁</button>
+      </div>
+    </div>
+    <div class="form-row" style="margin-top:10px">
+      <label class="form-label">Search Engine ID (CX) <span style="font-weight:400;color:var(--text-dim)">(nie szyfrowany)</span></label>
+      <input class="form-input" id="gcfg-cx" type="text" placeholder="b34b906380685435a" autocomplete="off"
+        onkeydown="if(event.key==='Enter') saveGoogleCfg()" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeGoogleCfg()">Anuluj</button>
+      <button class="btn-save" onclick="saveGoogleCfg()">Zapisz</button>
     </div>
   </div>
 </div>
@@ -2931,13 +2955,13 @@ const MOCK_RESULTS = [
     url: 'https://elektroda.pl/rtvforum/topic/przyklad', date: '2024-02-16', relevance: 72, keyword: 'serwis laptopów' },
 ];
 
-function doSearch() {
+async function doSearch() {
   if (searching) return;
   const query = document.getElementById('main-query').value.trim();
   if (!query) { document.getElementById('main-query').focus(); return; }
 
   searching = true;
-  const btn = document.getElementById('search-btn');
+  const btn  = document.getElementById('search-btn');
   const icon = document.getElementById('search-btn-icon');
   btn.disabled = true;
   icon.textContent = '⏳';
@@ -2947,24 +2971,63 @@ function doSearch() {
   document.getElementById('stats-strip').style.display = 'none';
   document.getElementById('progress-bar').classList.add('active');
 
-  const activeCount = SOURCES.filter(s => s.enabled).length;
-  const delay = 1200 + Math.random() * 800;
+  const activeCount  = SOURCES.filter(s => s.enabled).length;
+  const googleActive = SOURCES.some(s => s.enabled && (s.engine === 'google' || s.engine === 'google_site'));
+  const googleKey    = loadGoogleKey();
+  const googleCx     = loadGoogleCx();
 
-  setTimeout(() => {
-    const shuffled = [...MOCK_RESULTS].sort(() => Math.random() - 0.5);
-    currentResults = shuffled.slice(0, 4 + Math.floor(Math.random() * 4));
-    currentResults = currentResults.map((r, i) => ({
-      ...r,
-      relevance: Math.max(65, r.relevance - i * 3 + Math.floor(Math.random() * 10))
-    })).sort((a, b) => b.relevance - a.relevance);
-
+  const finish = (results) => {
+    currentResults = results;
     searching = false;
     btn.disabled = false;
     icon.textContent = '🔍';
     document.getElementById('progress-bar').classList.remove('active');
-
     renderResults(query, activeCount);
-  }, delay);
+  };
+
+  if (googleActive && googleKey && googleCx) {
+    try {
+      finish(await searchGoogleCSE(query, googleKey, googleCx));
+    } catch (err) {
+      console.warn('Google CSE błąd, używam mock-ów:', err);
+      useMockSearch(finish);
+    }
+  } else {
+    useMockSearch(finish);
+  }
+}
+
+function useMockSearch(finish) {
+  setTimeout(() => {
+    const shuffled = [...MOCK_RESULTS].sort(() => Math.random() - 0.5);
+    const results = shuffled
+      .slice(0, 4 + Math.floor(Math.random() * 4))
+      .map((r, i) => ({ ...r, relevance: Math.max(65, r.relevance - i * 3 + Math.floor(Math.random() * 10)) }))
+      .sort((a, b) => b.relevance - a.relevance);
+    finish(results);
+  }, 1200 + Math.random() * 800);
+}
+
+async function searchGoogleCSE(query, apiKey, cx) {
+  const url = `https://www.googleapis.com/customsearch/v1?key=${encodeURIComponent(apiKey)}&cx=${encodeURIComponent(cx)}&q=${encodeURIComponent(query)}&num=10`;
+  const resp = await fetch(url);
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err?.error?.message || `HTTP ${resp.status}`);
+  }
+  const data = await resp.json();
+  return (data.items || []).map((item, i) => ({
+    source: 'Google',
+    icon: '🔍',
+    type: 'wyszukiwarka',
+    color: '#e8f0fc',
+    title: item.title,
+    snippet: item.snippet || '',
+    url: item.link,
+    date: '',
+    relevance: Math.max(60, 95 - i * 3),
+    keyword: query,
+  }));
 }
 
 function safeUrl(u) {
@@ -3382,9 +3445,12 @@ async function exportSources() {
 
   if (securitySettings.exportPass && password) {
     data.credentials = await encryptData(loadCreds(), password);
+    data.googleKey   = await encryptData({ key: loadGoogleKey() }, password);
   } else {
     data.credentials = loadCreds();
+    data.googleKey   = loadGoogleKey();
   }
+  data.googleCx = loadGoogleCx();
 
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
@@ -3416,6 +3482,8 @@ function importSources() {
       const importedKwSets   = parsed.keywordSets || null;
       const importedCreds    = parsed.credentials || null;
       const importedScripts  = parsed.scripts || null;
+      const importedGoogleKey = parsed.googleKey || null;
+      const importedGoogleCx  = parsed.googleCx  || null;
 
       try {
         if (!Array.isArray(importedSources) || importedSources.length === 0) throw new Error('Brak źródeł w pliku');
@@ -3461,6 +3529,10 @@ function importSources() {
         saveCreds({ ...existing, ...importedCreds });
       }
 
+      // --- Google API ---
+      if (importedGoogleKey && typeof importedGoogleKey === 'string') saveGoogleKey(importedGoogleKey);
+      if (importedGoogleCx)  saveGoogleCx(importedGoogleCx);
+
       // --- Skrypty (zastąp) ---
       if (importedScripts) {
         SCRIPTS.splice(0, SCRIPTS.length, ...importedScripts);
@@ -3487,6 +3559,9 @@ document.getElementById('modal-overlay').addEventListener('click', function(e) {
 });
 document.getElementById('login-modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeLoginModal();
+});
+document.getElementById('google-cfg-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeGoogleCfg();
 });
 document.getElementById('src-cred-modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeSrcCredModal();
@@ -4118,6 +4193,15 @@ function renderEngines() {
         </div>`;
     }).join('');
 
+    const isGoogleEngine = key === 'google' || key === 'google_site';
+    const googleConfigured = isGoogleEngine && !!(loadGoogleKey() && loadGoogleCx());
+    const googleBanner = isGoogleEngine ? `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);font-size:0.72rem">
+        <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:${googleConfigured ? '#10b981' : 'var(--text-dim)'}${googleConfigured ? ';box-shadow:0 0 4px #10b98199' : ''}"></div>
+        <span style="flex:1;color:var(--text-mid)">API Key: ${googleConfigured ? '••••••••' : 'nieskonfigurowany'}</span>
+        <button onclick="openGoogleCfg()" style="font-family:'Outfit',sans-serif;font-size:0.7rem;font-weight:600;padding:3px 10px;border:1px solid var(--border2);border-radius:5px;background:transparent;color:var(--text-dim);cursor:pointer">🔑 Konfiguruj</button>
+      </div>` : '';
+
     return `
       <div class="engine-card">
         <div class="engine-card-header">
@@ -4125,6 +4209,7 @@ function renderEngines() {
           <div class="engine-card-name">${meta.label}</div>
           <div class="engine-card-count">${sources.length} źródeł</div>
         </div>
+        ${googleBanner}
         <div class="engine-source-list">${rows}</div>
       </div>`;
   }).join('');
@@ -4138,6 +4223,26 @@ function renderEngines() {
 // DEFAULT LOGIN
 // =====================
 let _ramDefaultLogin = null;
+
+// =====================
+// GOOGLE API KEY
+// =====================
+let _ramGoogleKey = null;
+
+function loadGoogleKey() {
+  if (securitySettings.passStorage === 'ram') return _ramGoogleKey || '';
+  return localStorage.getItem('lh_google_key') || '';
+}
+function saveGoogleKey(key) {
+  if (securitySettings.passStorage === 'ram') { _ramGoogleKey = key; return; }
+  if (key) localStorage.setItem('lh_google_key', key);
+  else localStorage.removeItem('lh_google_key');
+}
+function loadGoogleCx() { return localStorage.getItem('lh_google_cx') || ''; }
+function saveGoogleCx(cx) {
+  if (cx) localStorage.setItem('lh_google_cx', cx);
+  else localStorage.removeItem('lh_google_cx');
+}
 
 function loadDefaultLogin() {
   if (securitySettings.passStorage === 'ram') return _ramDefaultLogin || { email: '', pass: '' };
@@ -4175,6 +4280,22 @@ function updateLoginBtn() {
   const btn = document.getElementById('login-btn');
   if (!btn) return;
   btn.classList.toggle('configured', !!(def.email || def.pass));
+}
+
+function openGoogleCfg() {
+  document.getElementById('gcfg-key').value = loadGoogleKey();
+  document.getElementById('gcfg-cx').value  = loadGoogleCx();
+  document.getElementById('google-cfg-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('gcfg-key').focus(), 100);
+}
+function closeGoogleCfg() {
+  document.getElementById('google-cfg-overlay').classList.remove('open');
+}
+function saveGoogleCfg() {
+  saveGoogleKey(document.getElementById('gcfg-key').value.trim());
+  saveGoogleCx(document.getElementById('gcfg-cx').value.trim());
+  closeGoogleCfg();
+  renderEngines();
 }
 
 // =====================
