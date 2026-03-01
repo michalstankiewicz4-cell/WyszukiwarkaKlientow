@@ -433,6 +433,22 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
 }
 .source-card-body.open { display: block; padding-top: 12px; }
 
+.src-edit-name {
+  flex: 1; min-width: 80px; font-family: 'Outfit', sans-serif; font-size: 0.85rem;
+  font-weight: 700; padding: 3px 7px; border: 1px solid var(--border2);
+  border-radius: 6px; background: var(--surface2); color: var(--text);
+}
+.src-edit-type {
+  font-family: 'Outfit', sans-serif; font-size: 0.72rem; padding: 3px 6px;
+  border: 1px solid var(--border2); border-radius: 6px;
+  background: var(--surface2); color: var(--text); cursor: pointer;
+}
+.src-edit-url {
+  flex: 1; min-width: 100px; font-family: 'Outfit', sans-serif; font-size: 0.72rem;
+  padding: 3px 7px; border: 1px solid var(--border2); border-radius: 6px;
+  background: var(--surface2); color: var(--text);
+}
+
 .field-label {
   font-size: 0.65rem;
   font-weight: 600;
@@ -1598,6 +1614,9 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
 .engine-source-del:hover { background: rgba(239,68,68,0.12); color: #ef4444; }
 .engine-empty { padding: 18px 16px; font-size: 0.75rem; color: var(--text-dim); font-style: italic; }
 
+.source-edit-btn { font-family: 'Outfit', sans-serif; font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border: 1px solid var(--border2); border-radius: 5px; background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
+.source-edit-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.source-edit-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 .clone-btn { font-family: 'Outfit', sans-serif; font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border: 1px solid var(--border2); border-radius: 5px; background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
 .clone-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 .delete-src-btn { font-family: 'Outfit', sans-serif; font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border: 1px solid var(--border2); border-radius: 5px; background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
@@ -2436,8 +2455,6 @@ function sourceCardHTML(s, fullSettings = false) {
       <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value)">
         ${ENGINES.map(e => `<option value="${e.value}" ${(s.engine||'google')===e.value?'selected':''}>${e.label}</option>`).join('')}
       </select>
-      <div class="field-label" style="margin-top:10px">Główny URL serwisu</div>
-      <input class="field-input" type="url" value="${s.baseUrl||''}" placeholder="https://example.com" oninput="updateBaseUrl(${s.id},this.value)" style="width:100%;box-sizing:border-box" />
       <div class="field-label" style="margin-top:10px">Podfora / sekcje ${countLabel}</div>
       <div class="subforum-list" id="sflist-${s.id}">
         ${s.subforums.map((url, idx) => subforumRowHTML(s.id, idx, url)).join('')}
@@ -2475,7 +2492,7 @@ function sourceCardHTML(s, fullSettings = false) {
         <div class="source-icon" style="background:${iconBg}">${s.icon}</div>
         <div style="display:flex;align-items:center;gap:6px">
           ${toggleHTML}
-          ${fullSettings ? `<button class="clone-btn" onclick="cloneSource(${s.id})" title="Klonuj źródło">⧉</button><button class="delete-src-btn" onclick="deleteSource(${s.id})" title="Usuń źródło">🗑</button>` : ''}
+          ${fullSettings ? `<button class="source-edit-btn" id="sedit-${s.id}" onclick="toggleSourceEdit(${s.id})" title="Edytuj nazwę, typ i URL">✏️</button><button class="clone-btn" onclick="cloneSource(${s.id})" title="Klonuj źródło">⧉</button><button class="delete-src-btn" onclick="deleteSource(${s.id})" title="Usuń źródło">🗑</button>` : ''}
           <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}" style="position:static"></div>
           <button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">${s.favorite ? '⭐' : '☆'}</button>
         </div>
@@ -2743,6 +2760,48 @@ function updateBaseUrl(id, val) {
       link.remove();
     }
   });
+}
+
+function updateSourceType(id, type) {
+  const s = SOURCES.find(x => x.id === id);
+  if (!s) return;
+  s.type = type;
+  s.color = (SOURCE_TYPES[type] || SOURCE_TYPES.forum).color;
+  saveSources();
+}
+
+function toggleSourceEdit(id) {
+  const card = document.getElementById(`scard-${id}`);
+  const top = card.querySelector('.source-card-top');
+  const btn = document.getElementById(`sedit-${id}`);
+  const s = SOURCES.find(x => x.id === id);
+  if (!s) return;
+
+  if (top.classList.contains('editing')) {
+    // switch back to view mode
+    top.classList.remove('editing');
+    btn.classList.remove('active');
+    btn.title = 'Edytuj nazwę, typ i URL';
+    top.innerHTML = `
+      <div class="source-name">${s.name}</div>
+      ${typeBadge(s.type)}
+      ${s.baseUrl ? `<a class="source-base-url" href="${safeUrl(s.baseUrl)}" target="_blank" onclick="event.stopPropagation()">🔗 ${s.baseUrl.replace(/^https?:\/\//, '').replace(/^www\./, '')}</a>` : ''}
+    `;
+  } else {
+    // switch to edit mode
+    top.classList.add('editing');
+    btn.classList.add('active');
+    btn.title = 'Zatwierdź';
+    const typeOptions = Object.entries(SOURCE_TYPES)
+      .map(([v, m]) => `<option value="${v}" ${s.type === v ? 'selected' : ''}>${m.label}</option>`)
+      .join('');
+    top.innerHTML = `
+      <input class="src-edit-name" value="${(s.name || '').replace(/"/g, '&quot;')}" oninput="updateSource(${id},'name',this.value)" placeholder="Nazwa źródła" />
+      <select class="src-edit-type" onchange="updateSourceType(${id},this.value)">${typeOptions}</select>
+      <input class="src-edit-url" type="url" value="${s.baseUrl || ''}" oninput="updateBaseUrl(${id},this.value)" placeholder="https://..." />
+    `;
+    top.querySelector('.src-edit-name').focus();
+  }
 }
 
 function updateSubforum(sourceId, idx, val) {
