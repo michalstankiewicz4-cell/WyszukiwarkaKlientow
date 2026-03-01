@@ -2459,7 +2459,7 @@ function sourceCardHTML(s, fullSettings = false) {
       </div>
       <div class="field-label" style="margin-top:6px">Silnik wyszukiwania</div>
       <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value)">
-        ${ENGINES.map(e => `<option value="${e.value}" ${(s.engine||'google')===e.value?'selected':''}>${e.label}</option>`).join('')}
+        <option value="" ${!s.engine?'selected':''}>Brak</option>${ENGINES.map(e => `<option value="${e.value}" ${s.engine===e.value?'selected':''}>${e.label}</option>`).join('')}
       </select>
       <div class="field-label" style="margin-top:10px">Podfora / sekcje ${countLabel}</div>
       <div class="subforum-list" id="sflist-${s.id}">
@@ -2683,7 +2683,7 @@ function sourceListTableHTML(sources = null) {
           <div class="slt-settings-inner">
             <div class="field-label">Silnik wyszukiwania</div>
             <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value)">
-              ${ENGINES.map(e => `<option value="${e.value}" ${(s.engine||'google')===e.value?'selected':''}>${e.label}</option>`).join('')}
+              <option value="" ${!s.engine?'selected':''}>Brak</option>${ENGINES.map(e => `<option value="${e.value}" ${s.engine===e.value?'selected':''}>${e.label}</option>`).join('')}
             </select>
             <div class="field-label" style="margin-top:10px">Podfora / sekcje</div>
             <div class="subforum-list" id="sflist-${s.id}">
