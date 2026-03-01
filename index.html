@@ -62,6 +62,7 @@ body {
   color: var(--text);
   font-family: 'Outfit', sans-serif;
   min-height: 100vh;
+  zoom: 0.8;
 }
 
 /* LAYOUT */
@@ -232,26 +233,6 @@ body {
 .search-btn:active { transform: none; }
 .search-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-.search-tags {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 12px;
-  align-items: center;
-}
-.search-tag-label { font-size: 0.72rem; color: var(--text-dim); }
-.preset-tag {
-  font-size: 0.75rem;
-  padding: 4px 12px;
-  border: 1px solid var(--border2);
-  border-radius: 20px;
-  background: var(--surface2);
-  color: var(--text-mid);
-  cursor: pointer;
-  transition: all 0.12s;
-  font-family: 'Outfit', sans-serif;
-}
-.preset-tag:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 
 /* SOURCES GRID */
 .sources-header {
@@ -298,12 +279,13 @@ body {
   transition: all 0.12s;
 }
 .add-source-btn:hover { border-color: var(--accent); color: var(--accent); }
-.io-btn { font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 600; padding: 6px 12px; background: var(--surface); border: 1px solid var(--border2); color: var(--text-dim); border-radius: 6px; cursor: pointer; transition: all 0.12s; display:flex; align-items:center; gap:5px; }
+.io-btn { font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 600; height: 36px; padding: 0 12px; box-sizing: border-box; background: var(--surface); border: 1px solid var(--border2); color: var(--text-dim); border-radius: 6px; cursor: pointer; transition: all 0.12s; display:flex; align-items:center; gap:5px; }
 .io-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 
 .sources-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  align-items: start;
   gap: 14px;
   margin-bottom: 32px;
 }
@@ -336,23 +318,31 @@ body {
 
 .source-card-header {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 8px;
   padding: 14px 16px 10px;
-  position: relative;
+}
+.source-card-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.source-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .favorite-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
   background: none;
   border: none;
-  font-size: 1rem;
+  font-size: 0.8rem;
   cursor: pointer;
-  padding: 4px;
+  padding: 2px 3px;
   border-radius: 4px;
   transition: all 0.12s;
   opacity: 0.4;
+  line-height: 1;
 }
 .favorite-btn:hover { opacity: 1; background: rgba(0,0,0,0.05); }
 .favorite-btn.active { opacity: 1; color: #f59e0b; }
@@ -409,6 +399,7 @@ body {
 .badge-ogloszenia { background: #fef3e2; color: #b07800; }
 .badge-it { background: #f0e8fc; color: #6a25a8; }
 .badge-biznes { background: #e8f5f5; color: #1a7a7a; }
+.badge-wyszukiwarka { background: #e0f2fe; color: #0369a1; }
 
 .source-toggle {
   position: relative;
@@ -441,6 +432,27 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
   display: none;
 }
 .source-card-body.open { display: block; padding-top: 12px; }
+
+.src-edit-name {
+  flex: 1; min-width: 80px; font-family: 'Outfit', sans-serif; font-size: 0.85rem;
+  font-weight: 700; padding: 3px 7px; border: 1px solid var(--border2);
+  border-radius: 6px; background: var(--surface2); color: var(--text);
+}
+.src-edit-type {
+  font-family: 'Outfit', sans-serif; font-size: 0.72rem; padding: 3px 6px;
+  border: 1px solid var(--border2); border-radius: 6px;
+  background: var(--surface2); color: var(--text); cursor: pointer;
+}
+.src-edit-url {
+  flex: 1; min-width: 100px; font-family: 'Outfit', sans-serif; font-size: 0.72rem;
+  padding: 3px 7px; border: 1px solid var(--border2); border-radius: 6px;
+  background: var(--surface2); color: var(--text);
+}
+.src-edit-icon {
+  width: 34px; height: 34px; border: 1px solid var(--border2); border-radius: 8px;
+  background: var(--surface2); text-align: center; font-size: 1.1rem;
+  padding: 0; flex-shrink: 0; cursor: text; color: var(--text);
+}
 
 .field-label {
   font-size: 0.65rem;
@@ -774,6 +786,10 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
 @keyframes modalIn { from { opacity:0; transform: scale(0.96); } to { opacity:1; transform: none; } }
 .modal-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
 .modal-sub { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 20px; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.modal-header .modal-title { margin-bottom: 0; }
+.modal-close { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text-mid); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.12s; flex-shrink: 0; }
+.modal-close:hover { border-color: #ef4444; color: #ef4444; background: rgba(239,68,68,0.08); }
 .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
 .btn-cancel {
   font-family: 'Outfit', sans-serif;
@@ -889,6 +905,7 @@ html[data-theme="dark"] .badge-portal { background: rgba(26,122,74,0.22); color:
 html[data-theme="dark"] .badge-ogloszenia { background: rgba(176,120,0,0.22); color: #d4a017; }
 html[data-theme="dark"] .badge-it { background: rgba(106,37,168,0.22); color: #a44fd4; }
 html[data-theme="dark"] .badge-biznes { background: rgba(26,122,122,0.22); color: #2da8a8; }
+html[data-theme="dark"] .badge-wyszukiwarka { background: rgba(3,105,161,0.22); color: #38bdf8; }
 html[data-theme="dark"] .result-item.selected {
   background: linear-gradient(135deg, var(--surface) 0%, rgba(232,93,38,0.09) 100%);
 }
@@ -897,8 +914,17 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
 
 /* THEME TOGGLE & LANG SWITCHER */
 .topbar-controls {
-  display: flex; align-items: center; gap: 8px; margin-left: auto;
+  display: flex; align-items: center; gap: 12px; margin-left: auto;
 }
+.topbar-section { display: flex; align-items: center; gap: 8px; }
+.topbar-divider { width: 1px; height: 22px; background: var(--border2); flex-shrink: 0; }
+.clear-db-btn {
+  font-size: 0.75rem; height: 36px; padding: 0 12px; border-radius: 8px;
+  border: 1px solid #f87171; background: transparent; color: #f87171;
+  cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 500;
+  transition: all 0.12s; box-sizing: border-box; white-space: nowrap;
+}
+.clear-db-btn:hover { background: #fee2e2; border-color: #ef4444; color: #ef4444; }
 .theme-toggle {
   width: 36px; height: 36px;
   border-radius: 8px;
@@ -952,31 +978,32 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
   70%  { box-shadow: 0 0 0 6px rgba(16,185,129,0); }
   100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
 }
-.schedule-panel {
+/* Shared topbar panel style (schedule, security, info) */
+.topbar-panel {
   display: none; position: absolute;
   top: calc(100% + 10px); right: 0;
-  width: 300px;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 14px; box-shadow: var(--shadow-lg);
   z-index: 300; animation: modalIn 0.18s ease; overflow: hidden;
 }
-.schedule-panel.open { display: block; }
-.schedule-panel-header {
+.topbar-panel.open { display: block; }
+.topbar-panel-header {
   padding: 14px 18px 12px;
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
 }
-.schedule-panel-title {
+.topbar-panel-title {
   font-size: 0.88rem; font-weight: 800; color: var(--text);
   display: flex; align-items: center; gap: 7px;
 }
-.schedule-panel-close {
+.topbar-panel-close {
   background: none; border: none; cursor: pointer;
   font-size: 1rem; color: var(--text-dim); padding: 2px 5px;
   border-radius: 4px; transition: color 0.12s; line-height: 1;
 }
-.schedule-panel-close:hover { color: var(--text); }
-.schedule-panel-body { padding: 16px 18px; }
+.topbar-panel-close:hover { color: var(--text); }
+.topbar-panel-body { padding: 16px 18px; }
+.schedule-panel { width: 300px; }
 .sched-row { margin-bottom: 13px; }
 .sched-row:last-child { margin-bottom: 0; }
 .sched-label {
@@ -1088,38 +1115,33 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
   40%  { opacity: 0.45; transform: scale(1.08); }
   100% { opacity: 0; transform: scale(1.22); }
 }
-.info-panel {
-  display: none;
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  width: 320px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: var(--shadow-lg);
-  z-index: 300;
-  animation: modalIn 0.18s ease;
-  overflow: hidden;
+/* SECURITY PANEL */
+.security-btn {
+  width: 36px; height: 36px; border-radius: 8px;
+  border: 1px solid var(--border2); background: var(--surface2);
+  color: var(--text-mid); cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
 }
-.info-panel.open { display: block; }
-.info-panel-header {
-  padding: 16px 20px 12px;
-  background: linear-gradient(135deg, rgba(232,93,38,0.1) 0%, transparent 100%);
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.info-panel-title {
-  font-size: 0.88rem; font-weight: 800; color: var(--text);
-  display: flex; align-items: center; gap: 7px;
-}
-.info-panel-close {
-  background: none; border: none; cursor: pointer;
-  font-size: 1rem; color: var(--text-dim); padding: 2px 5px;
-  border-radius: 4px; transition: color 0.12s;
-  line-height: 1;
-}
-.info-panel-close:hover { color: var(--text); }
+.security-btn:hover { border-color: #10b981; background: rgba(16,185,129,0.1); color: #10b981; }
+.security-btn.active { border-color: #10b981; background: rgba(16,185,129,0.1); color: #10b981; }
+.security-panel { width: 360px; }
+.sec-section { margin-bottom: 20px; }
+.sec-section:last-child { margin-bottom: 0; }
+.sec-section-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 10px; }
+.sec-radio-row { display: flex; align-items: flex-start; gap: 10px; padding: 9px 12px; border: 1px solid var(--border2); border-radius: 8px; cursor: pointer; margin-bottom: 6px; transition: border-color 0.15s, background 0.15s; }
+.sec-radio-row:hover { border-color: var(--accent); background: var(--accent-light); }
+.sec-radio-row input[type=radio] { margin-top: 2px; accent-color: var(--accent); flex-shrink: 0; }
+.sec-radio-label { font-size: 0.82rem; font-weight: 700; color: var(--text); display: block; }
+.sec-radio-desc { font-size: 0.68rem; color: var(--text-dim); display: block; margin-top: 1px; }
+.sec-check-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--border2); border-radius: 8px; cursor: pointer; margin-bottom: 6px; font-size: 0.82rem; font-weight: 600; color: var(--text); transition: border-color 0.15s, background 0.15s; }
+.sec-check-row:hover { border-color: var(--accent); background: var(--accent-light); }
+.sec-check-row input[type=checkbox] { accent-color: var(--accent); }
+.sec-note { font-size: 0.68rem; color: var(--text-dim); margin-top: 8px; padding: 8px 10px; background: var(--surface2); border-radius: 6px; border-left: 3px solid #f59e0b; }
+.sec-ram-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.6rem; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); margin-left: 6px; vertical-align: middle; }
+
+.info-panel { width: 320px; }
+.info-panel .topbar-panel-header { background: linear-gradient(135deg, rgba(232,93,38,0.1) 0%, transparent 100%); }
 .info-panel-body { padding: 16px 20px; }
 .info-row {
   display: flex; gap: 10px; align-items: baseline;
@@ -1431,35 +1453,10 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
   color: var(--text-mid); transition: all 0.15s; white-space: nowrap;
 }
 .login-btn:hover { border-color: var(--accent); color: var(--accent); }
-.login-lamp {
-  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-  position: relative;
-}
-.login-lamp::after {
-  content: ''; position: absolute; inset: -3px; border-radius: 50%;
-  opacity: 0.35; animation: lpulse 2s ease-in-out infinite;
-}
-@keyframes lpulse { 0%,100%{transform:scale(1);opacity:0.35} 50%{transform:scale(1.7);opacity:0.1} }
-.lamp-logged-out { background: var(--red); box-shadow: 0 0 6px var(--red); }
-.lamp-logged-out::after { background: var(--red); }
-.lamp-logged-in  { background: var(--green); box-shadow: 0 0 6px var(--green); }
-.lamp-logged-in::after  { background: var(--green); }
+.login-btn.configured { border-color: #10b981; color: #10b981; background: rgba(16,185,129,0.06); }
 
 /* LOGIN MODAL */
 .login-modal { width: 400px; }
-.login-user-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 14px; background: var(--green-bg);
-  border: 1px solid rgba(26,122,74,0.2); border-radius: 8px; margin-bottom: 4px;
-}
-.login-avatar {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: var(--green); color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 800; font-size: 0.9rem; flex-shrink: 0;
-}
-.login-user-name { font-weight: 700; font-size: 0.88rem; color: var(--text); }
-.login-user-email { font-size: 0.7rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
 
 /* SOURCE LOGIN BUTTON */
 .src-login-btn {
@@ -1556,6 +1553,13 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
 .kw-source-row { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
 .kw-source-row:last-child { border-bottom: none; }
 .kw-source-row:hover { background: var(--bg); }
+.src-script-order-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
+.src-script-order-row { display: flex; align-items: center; gap: 6px; padding: 5px 8px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; }
+.src-script-order-name { flex: 1; font-size: 0.78rem; font-weight: 600; color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.src-script-order-badge { font-size: 0.62rem; color: var(--text-dim); flex-shrink: 0; }
+.src-script-mv-btn { width: 20px; height: 20px; border: 1px solid var(--border2); border-radius: 4px; background: transparent; color: var(--text-dim); cursor: pointer; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0; line-height: 1; }
+.src-script-mv-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.src-script-mv-btn:disabled { opacity: 0.25; cursor: default; }
 .kw-source-row input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
 .kw-src-name { font-size: 0.8rem; font-weight: 600; flex: 1; }
 .kw-sub-select { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; padding: 3px 7px; border: 1px solid var(--border2); border-radius: 5px; background: var(--surface); color: var(--text-mid); max-width: 170px; }
@@ -1601,12 +1605,23 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
 .script-textarea:focus { border-color: var(--accent); }
 
 /* ENGINES PAGE */
-.engines-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+.engines-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 700px) { .engines-grid { grid-template-columns: 1fr; } }
 .engine-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
 .engine-card-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
 .engine-card-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .engine-card-name { font-weight: 700; font-size: 0.88rem; flex: 1; }
 .engine-card-count { font-size: 0.68rem; font-weight: 700; background: var(--border2); color: var(--text-dim); padding: 2px 8px; border-radius: 9px; }
+.engine-cfg-btn { border: none; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; padding: 3px 8px; font-size: 0.75rem; cursor: pointer; color: var(--text-dim); transition: all 0.15s; }
+.engine-cfg-btn:hover { border-color: var(--accent); color: var(--accent); }
+.engine-instructions { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.engine-instructions-title { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 8px; }
+.engine-step { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; font-size: 0.73rem; color: var(--text-mid); line-height: 1.4; }
+.engine-step:last-child { margin-bottom: 0; }
+.engine-step-num { width: 16px; height: 16px; border-radius: 50%; background: var(--border2); color: var(--text-dim); font-size: 0.6rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.engine-sources-section { padding: 10px 16px 14px; }
+.engine-sources-title { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 8px; }
+.engine-no-sources { font-size: 0.73rem; color: var(--text-dim); font-style: italic; }
 .engine-source-list { padding: 6px 0; }
 .engine-source-row { display: flex; align-items: center; gap: 10px; padding: 7px 16px; transition: background 0.1s; }
 .engine-source-row:hover { background: var(--bg); }
@@ -1616,9 +1631,18 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
 .engine-source-status { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 .engine-source-status.on  { background: var(--green); box-shadow: 0 0 4px var(--green); }
 .engine-source-status.off { background: var(--text-dim); }
+.engine-source-del { width: 22px; height: 22px; border-radius: 5px; border: none; background: transparent; color: var(--text-dim); font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+.engine-source-del:hover { background: rgba(239,68,68,0.12); color: #ef4444; }
 .engine-empty { padding: 18px 16px; font-size: 0.75rem; color: var(--text-dim); font-style: italic; }
-.clone-btn { font-family: 'Outfit', sans-serif; font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border: 1px solid var(--border2); border-radius: 5px; background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
-.clone-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+.source-edit-btn, .clone-btn, .delete-src-btn {
+  width: 26px; height: 26px; padding: 0; border: 1px solid var(--border2); border-radius: 5px;
+  background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.12s;
+  display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0;
+}
+.source-edit-btn:hover, .clone-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.source-edit-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.delete-src-btn:hover { border-color: #ef4444; color: #ef4444; background: rgba(239,68,68,0.07); }
 
 /* SOURCE CRED MODAL */
 .src-cred-modal { width: 420px; }
@@ -1647,46 +1671,9 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
   </div>
   <nav class="sidebar-nav">
     <div class="nav-section-label">Nawigacja</div>
-    <button class="nav-item active" onclick="showPage('search')">
-      <span class="nav-icon">🔍</span> Szukaj klientów
-    </button>
-    <button class="nav-item" onclick="showPage('saved')">
-      <span class="nav-icon">🔖</span> Zapisane leady
-      <span class="nav-badge" id="saved-count">0</span>
-    </button>
-    <button class="nav-item" onclick="showPage('sources')">
-      <span class="nav-icon">⚙️</span> Zarządzaj źródłami
-    </button>
-    <button class="nav-item" onclick="showPage('keywords')">
-      <span class="nav-icon">🏷️</span> Frazy i słowa kluczowe
-    </button>
-    <button class="nav-item" onclick="showPage('engines')">
-      <span class="nav-icon">🔎</span> Silniki wyszukiwań
-    </button>
-    <button class="nav-item" onclick="showPage('scripts')">
-      <span class="nav-icon">📜</span> Skrypty
-    </button>
-    <button class="nav-item" onclick="showPage('credentials')">
-      <span class="nav-icon">🔐</span> Loginy do źródeł
-      <span class="nav-badge" id="creds-count" style="display:none">0</span>
-    </button>
-
+    <div id="sidebar-nav-items"></div>
     <div class="nav-section-label" style="margin-top:8px">Szybkie zapytania</div>
-    <button class="nav-item" onclick="quickSearch('szukam szkoleń')">
-      <span class="nav-icon">📚</span> Szkolenia
-    </button>
-    <button class="nav-item" onclick="quickSearch('szukam dostawcy artykułów biurowych')">
-      <span class="nav-icon">🖊️</span> Art. biurowe
-    </button>
-    <button class="nav-item" onclick="quickSearch('szukam programisty freelancer')">
-      <span class="nav-icon">💻</span> IT / Dev
-    </button>
-    <button class="nav-item" onclick="quickSearch('polecacie agencję marketingową')">
-      <span class="nav-icon">📣</span> Marketing
-    </button>
-    <button class="nav-item" onclick="quickSearch('szukam ksiegowej rachunkowość')">
-      <span class="nav-icon">📊</span> Księgowość
-    </button>
+    <div id="quick-queries-list"></div>
   </nav>
 </aside>
 
@@ -1698,14 +1685,29 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
       <div class="page-subtitle" id="page-subtitle">Przeszukuj fora i serwisy społecznościowe</div>
     </div>
     <div class="topbar-controls">
-      <div class="schedule-btn-wrap">
-        <button class="schedule-btn" id="schedule-btn" onclick="toggleSchedulePanel(event)" title="Automatyczne wyszukiwanie">⏱</button>
-        <div class="schedule-panel" id="schedule-panel">
-          <div class="schedule-panel-header">
-            <div class="schedule-panel-title">⏱ Automatyczne wyszukiwanie</div>
-            <button class="schedule-panel-close" onclick="closeSchedulePanel()">✕</button>
+      <!-- Sekcja 1: I/O -->
+      <div class="topbar-section">
+        <button class="io-btn" onclick="exportSources()" title="Eksportuj źródła do pliku JSON">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M3 6.5l3.5 3.5 3.5-3.5M1 11h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Eksport
+        </button>
+        <button class="io-btn" onclick="importSources()" title="Importuj źródła z pliku JSON">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12V4M3 6.5L6.5 3 10 6.5M1 1h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Import
+        </button>
+        <button class="clear-db-btn" onclick="clearAllData()" title="Wyczyść całą bazę danych">🗑 Wyczyść bazę</button>
+      </div>
+      <div class="topbar-divider"></div>
+      <!-- Sekcja 2: Ustawienia -->
+      <div class="topbar-section">
+        <div class="schedule-btn-wrap">
+          <button class="schedule-btn" id="schedule-btn" onclick="toggleSchedulePanel(event)" title="Automatyczne wyszukiwanie">⏱</button>
+          <div class="topbar-panel schedule-panel" id="schedule-panel">
+          <div class="topbar-panel-header">
+            <div class="topbar-panel-title">⏱ Automatyczne wyszukiwanie</div>
+            <button class="topbar-panel-close" onclick="closeSchedulePanel()">✕</button>
           </div>
-          <div class="schedule-panel-body">
+          <div class="topbar-panel-body">
             <div class="sched-toggle-row">
               <span class="sched-toggle-label">Włącz harmonogram</span>
               <label class="sched-toggle">
@@ -1741,74 +1743,83 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
             </div>
           </div>
         </div>
-      </div>
-      <div class="info-btn-wrap">
-        <button class="info-btn" onclick="toggleInfoPanel(event)" id="info-btn" title="Informacje o autorze">ℹ</button>
-        <div class="info-panel" id="info-panel">
-          <div class="info-panel-header">
-            <div class="info-panel-title">👤 Autor &amp; Kontakt <span style="font-size:0.6rem;font-family:'JetBrains Mono',monospace;color:var(--accent);background:var(--accent-light);border:1px solid rgba(232,93,38,0.25);border-radius:4px;padding:1px 6px;font-weight:700;margin-left:4px">v1.0.0-alfa</span></div>
-            <button class="info-panel-close" onclick="closeInfoPanel()">✕</button>
-          </div>
-          <div class="info-panel-body">
-            <div class="info-row">
-              <span class="info-label">Autor</span>
-              <span class="info-val">Michał Stankiewicz</span>
+        </div>
+        <div class="info-btn-wrap">
+          <button class="security-btn" id="security-btn" onclick="toggleSecurityPanel(event)" title="Ustawienia bezpieczeństwa">🔒</button>
+          <div class="topbar-panel security-panel" id="security-panel">
+            <div class="topbar-panel-header">
+              <div class="topbar-panel-title">🔒 Bezpieczeństwo</div>
+              <button class="topbar-panel-close" onclick="closeSecurityPanel()">✕</button>
             </div>
-            <div class="info-row">
-              <span class="info-label">Tel</span>
-              <span class="info-val"><a href="tel:+48797486355">+48 797 486 355</a></span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Mail</span>
-              <span class="info-val"><a href="mailto:michalstankiewicz@onet.eu">michalstankiewicz@onet.eu</a></span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Info</span>
-              <span class="info-val">Aplikację można dostosować na życzenie. Program jest darmowy — free to use.</span>
-            </div>
-            <div class="info-divider"></div>
-            <div class="info-donation">
-              <div class="info-donation-title">☕ Wesprzyj jeśli chcesz</div>
-              <div class="info-donation-row">Nie czuj się zobowiązany ❤️ 🙂</div>
-              <div class="info-donation-row" style="margin-top:8px">Michał Stankiewicz<br>02-585 Warszawa · PKO BP</div>
-              <div class="info-donation-row" style="margin-top:6px; font-size:0.72rem; color:var(--text-dim)">Tytuł przelewu: <strong style="color:var(--text)">"Wyszukiwarka klientów"</strong></div>
-              <div class="info-donation-iban" onclick="copyIban(this)" title="Kliknij aby skopiować">
-                <span>PL55 1020 1097 0000 7902 0226 5353</span>
-                <span class="copy-hint">📋 kopiuj</span>
+            <div class="topbar-panel-body">
+              <div class="sec-section">
+                <div class="sec-section-title">🔑 Hasła i klucze API</div>
+                <label class="sec-radio-row"><input type="radio" name="sec-pass" value="localStorage" onchange="onSecurityChange()"><div><span class="sec-radio-label">localStorage</span><span class="sec-radio-desc">Trwałe — przeżywają odświeżenie strony</span></div></label>
+                <label class="sec-radio-row"><input type="radio" name="sec-pass" value="ram" onchange="onSecurityChange()"><div><span class="sec-radio-label">RAM <span class="sec-ram-badge">bezpieczniejsze</span></span><span class="sec-radio-desc">Czyszczone po zamknięciu lub odświeżeniu</span></div></label>
               </div>
-              <div class="info-donation-alts">
-                <div class="info-donation-alt-label">lub</div>
-                <div class="info-donation-alt-btns">
-                  <div class="info-donation-blik" onclick="copyBlik(this)" title="Kliknij aby skopiować numer BLIK">
-                    <span class="blik-logo">BLIK</span>
-                    <span class="blik-number">797 486 355</span>
-                    <span class="copy-hint">📋 kopiuj</span>
+              <div class="sec-section">
+                <div class="sec-section-title">📤 Eksport — zaszyfrowane dane</div>
+                <label class="sec-check-row"><input type="checkbox" id="sec-export-pass" onchange="onSecurityChange()"><span>Dołącz hasła i klucze API (zaszyfrowane)</span></label>
+                <div class="sec-note">⚠ Przy eksporcie zostaniesz poproszony o hasło szyfrowania.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="login-btn" id="login-btn" onclick="openLoginModal()" title="Domyślne dane logowania do portali">
+          🔐 <span id="login-btn-label">Domyślne dane</span>
+        </button>
+        <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle-btn" title="Przełącz motyw (jasny / ciemny)">
+          <span id="theme-icon">🌙</span>
+        </button>
+      </div>
+      <div class="topbar-divider"></div>
+      <!-- Sekcja 3: Język i info -->
+      <div class="topbar-section">
+        <div class="lang-switcher" title="Zmiana języka – wkrótce dostępna">
+          <span>🌐</span>
+          <span>PL</span>
+          <span class="lang-arrow">▾</span>
+        </div>
+        <div class="info-btn-wrap">
+          <button class="info-btn" onclick="toggleInfoPanel(event)" id="info-btn" title="Informacje o autorze">ℹ</button>
+          <div class="topbar-panel info-panel" id="info-panel">
+            <div class="topbar-panel-header">
+              <div class="topbar-panel-title">👤 Autor &amp; Kontakt <span style="font-size:0.6rem;font-family:'JetBrains Mono',monospace;color:var(--accent);background:var(--accent-light);border:1px solid rgba(232,93,38,0.25);border-radius:4px;padding:1px 6px;font-weight:700;margin-left:4px">v1.0.0-alfa</span></div>
+              <button class="topbar-panel-close" onclick="closeInfoPanel()">✕</button>
+            </div>
+            <div class="info-panel-body">
+              <div class="info-row"><span class="info-label">Autor</span><span class="info-val">Michał Stankiewicz</span></div>
+              <div class="info-row"><span class="info-label">Tel</span><span class="info-val"><a href="tel:+48797486355">+48 797 486 355</a></span></div>
+              <div class="info-row"><span class="info-label">Mail</span><span class="info-val"><a href="mailto:michalstankiewicz@onet.eu">michalstankiewicz@onet.eu</a></span></div>
+              <div class="info-row"><span class="info-label">Info</span><span class="info-val">Aplikację można dostosować na życzenie. Program jest darmowy — free to use.</span></div>
+              <div class="info-divider"></div>
+              <div class="info-donation">
+                <div class="info-donation-title">☕ Wesprzyj jeśli chcesz</div>
+                <div class="info-donation-row">Nie czuj się zobowiązany ❤️ 🙂</div>
+                <div class="info-donation-row" style="margin-top:8px">Michał Stankiewicz<br>02-585 Warszawa · PKO BP</div>
+                <div class="info-donation-row" style="margin-top:6px;font-size:0.72rem;color:var(--text-dim)">Tytuł przelewu: <strong style="color:var(--text)">"Wyszukiwarka klientów"</strong></div>
+                <div class="info-donation-iban" onclick="copyIban(this)" title="Kliknij aby skopiować">
+                  <span>PL55 1020 1097 0000 7902 0226 5353</span>
+                  <span class="copy-hint">📋 kopiuj</span>
+                </div>
+                <div class="info-donation-alts">
+                  <div class="info-donation-alt-label">lub</div>
+                  <div class="info-donation-alt-btns">
+                    <div class="info-donation-blik" onclick="copyBlik(this)" title="Kliknij aby skopiować numer BLIK">
+                      <span class="blik-logo">BLIK</span><span class="blik-number">797 486 355</span><span class="copy-hint">📋 kopiuj</span>
+                    </div>
+                    <a class="info-donation-patronite" href="https://patronite.pl/michalstankiewicz" target="_blank" rel="noopener">
+                      <span>❤️</span><span>Patronite</span><span style="font-size:0.6rem;opacity:0.7">↗</span>
+                    </a>
                   </div>
-                  <a class="info-donation-patronite" href="https://patronite.pl/michalstankiewicz" target="_blank" rel="noopener">
-                    <span>❤️</span>
-                    <span>Patronite</span>
-                    <span style="font-size:0.6rem;opacity:0.7">↗</span>
-                  </a>
                 </div>
               </div>
+              <div class="info-note">Jeżeli wspierasz moją pracę — dziękuję! 🙏</div>
             </div>
-            <div class="info-note">Jeżeli wspierasz moją pracę — dziękuję! 🙏</div>
           </div>
         </div>
       </div>
-      <div class="lang-switcher" title="Zmiana języka – wkrótce dostępna">
-        <span>🌐</span>
-        <span>PL</span>
-        <span class="lang-arrow">▾</span>
-      </div>
-      <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle-btn" title="Przełącz motyw (jasny / ciemny)">
-        <span id="theme-icon">🌙</span>
-      </button>
     </div>
-    <button class="login-btn" id="login-btn" onclick="openLoginModal()">
-      <div class="login-lamp lamp-logged-out" id="login-lamp"></div>
-      <span id="login-btn-label">Zaloguj się</span>
-    </button>
   </div>
 
   <div class="content">
@@ -1825,15 +1836,6 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
           <button class="search-btn" onclick="doSearch()" id="search-btn">
             <span id="search-btn-icon">🔍</span> Szukaj
           </button>
-        </div>
-        <div class="search-tags">
-          <span class="search-tag-label">Przykłady:</span>
-          <span class="preset-tag" onclick="setQuery('szukam szkoleń z Excela')">Szkolenia Excel</span>
-          <span class="preset-tag" onclick="setQuery('potrzebuję artykułów biurowych hurt')">Art. biurowe</span>
-          <span class="preset-tag" onclick="setQuery('polecacie programistę PHP freelancer')">PHP dev</span>
-          <span class="preset-tag" onclick="setQuery('szukam agencji SEO dla firmy')">Agencja SEO</span>
-          <span class="preset-tag" onclick="setQuery('potrzebuję tłumacza angielski')">Tłumacz</span>
-          <span class="preset-tag" onclick="setQuery('szukam dostawcy kawy do biura')">Kawa do biura</span>
         </div>
       </div>
 
@@ -1920,14 +1922,6 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
               Lista
             </button>
           </div>
-          <button class="io-btn" onclick="exportSources()">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M3 6.5l3.5 3.5 3.5-3.5M1 11h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Eksport
-          </button>
-          <button class="io-btn" onclick="importSources()">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12V4M3 6.5L6.5 3 10 6.5M1 1h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Import
-          </button>
           <button class="search-source-btn" onclick="openSrcSearchModal()">🔍 Szukaj źródeł</button>
           <button class="add-source-btn" onclick="openAddModal()">+ Dodaj źródło</button>
         </div>
@@ -1972,12 +1966,12 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
         </div>
         <div class="manage-view-toggle">
           <button class="manage-view-btn" id="cg-btn-status" onclick="setCredsGroup('status',this)">Wg statusu</button>
-          <button class="manage-view-btn" id="cg-btn-name" onclick="setCredsGroup('name',this)">Wg nazwy</button>
+          <button class="manage-view-btn" id="cg-btn-active" onclick="setCredsGroup('active',this)">Wg aktywności</button>
         </div>
       </div>
-      <div class="creds-notice" id="creds-notice">
+      <div class="creds-notice" id="creds-notice" style="display:none">
         <span class="creds-notice-icon">🔒</span>
-        <span>Hasła są przechowywane lokalnie w przeglądarce i powiązane z Twoim kontem użytkownika. Zaloguj się do systemu, aby zarządzać swoimi loginami.</span>
+        <span>Hasła są przechowywane lokalnie w przeglądarce. Tryb przechowywania możesz zmienić w ustawieniach bezpieczeństwa 🔒.</span>
       </div>
       <div id="creds-content"></div>
     </div>
@@ -2012,6 +2006,7 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
     </div>
   </div>
 </div>
+
 
 <!-- SOURCE SEARCH MODAL -->
 <div class="modal-overlay" id="src-search-modal-overlay">
@@ -2051,59 +2046,22 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <div class="modal-title">Dodaj nowe źródło</div>
-    <div class="modal-sub">Skonfiguruj nowe miejsce przeszukiwania</div>
+    <div class="modal-sub">Podstawowe informacje — resztę skonfigurujesz w ustawieniach źródła</div>
     <div class="form-row">
       <label class="form-label">Nazwa źródła</label>
-      <input class="form-input" id="new-name" placeholder="np. Forum Moje Forum" />
+      <input class="form-input" id="new-name" placeholder="np. Forum Moje Forum" onkeydown="if(event.key==='Enter')saveNewSource()" />
     </div>
     <div class="form-row">
       <label class="form-label">Typ</label>
-      <select class="form-select" id="new-type">
-        <option value="forum">Forum</option>
-        <option value="social">Social media</option>
-        <option value="portal">Portal informacyjny</option>
-        <option value="ogloszenia">Serwis ogłoszeniowy</option>
-        <option value="it">Forum IT</option>
-        <option value="biznes">Forum biznesowe</option>
-      </select>
-    </div>
-    <div class="form-row">
-      <label class="form-label">Silnik wyszukiwania</label>
-      <select class="form-select" id="new-engine" onchange="document.getElementById('new-api-fields').style.display=this.value==='api'?'':'none'">
-        <option value="internal">Wewnętrzna wyszukiwarka</option>
-        <option value="google">Google</option>
-        <option value="google_site">Google (site:)</option>
-        <option value="bing">Bing</option>
-        <option value="duckduckgo">DuckDuckGo</option>
-        <option value="api">API</option>
-      </select>
-    </div>
-    <div id="new-api-fields" style="display:none">
-      <div class="form-row">
-        <label class="form-label">URL endpointu API</label>
-        <input class="form-input" type="text" id="new-api-url" placeholder="https://api.example.com/search">
-      </div>
-      <div class="form-row">
-        <label class="form-label">Klucz API <span style="font-weight:400;color:var(--text-dim)">(opcjonalnie)</span></label>
-        <input class="form-input" type="password" id="new-api-key" placeholder="sk-...">
-      </div>
+      <select class="form-select" id="new-type"></select>
     </div>
     <div class="form-row">
       <label class="form-label">Główny URL serwisu</label>
-      <input class="form-input" id="new-baseurl" placeholder="https://forum.example.com" />
-    </div>
-    <div class="form-row">
-      <label class="form-label">URL podforum / sekcji (opcjonalnie)</label>
-      <input class="form-input" id="new-url" placeholder="https://forum.example.com/kategoria/" />
+      <input class="form-input" id="new-baseurl" placeholder="https://forum.example.com" onkeydown="if(event.key==='Enter')saveNewSource()" />
     </div>
     <div class="form-row">
       <label class="form-label">Ikona (emoji)</label>
-      <input class="form-input" id="new-icon" placeholder="🌐" maxlength="2" style="width:80px" />
-    </div>
-    <div class="form-row">
-      <label class="form-label">Zestawy fraz i słów kluczowych</label>
-      <div class="kw-source-picker" id="new-kw-sets-picker"></div>
-      <div class="kw-hint">Frazy z zaznaczonych zestawów będą używane podczas wyszukiwania w tym źródle.</div>
+      <input class="form-input" id="new-icon" placeholder="🌐" maxlength="2" style="width:80px" onkeydown="if(event.key==='Enter')saveNewSource()" />
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Anuluj</button>
@@ -2112,41 +2070,47 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
   </div>
 </div>
 
-<!-- LOGIN MODAL -->
+<!-- DEFAULT LOGIN MODAL -->
 <div class="modal-overlay" id="login-modal-overlay">
   <div class="modal login-modal">
-    <div id="login-form-view">
-      <div class="modal-title">Logowanie</div>
-      <div class="modal-sub">Zaloguj się aby korzystać z pełnych możliwości</div>
-      <div class="form-row">
-        <label class="form-label">Email</label>
-        <input class="form-input" id="login-email" type="email" placeholder="jan@firma.pl" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">Hasło</label>
-        <input class="form-input" id="login-password" type="password" placeholder="••••••••"
-          onkeydown="if(event.key==='Enter') doLogin()" />
-      </div>
-      <div id="login-error" style="display:none;color:var(--red);font-size:0.75rem;margin-top:-6px;margin-bottom:8px"></div>
-      <div class="modal-footer">
-        <button class="btn-cancel" onclick="closeLoginModal()">Anuluj</button>
-        <button class="btn-save" onclick="doLogin()">Zaloguj</button>
+    <div class="modal-title">🔐 Domyślne dane logowania</div>
+    <div class="modal-sub">Wartości domyślne wstępnie wypełniające pola login i hasło przy dodawaniu danych do portali</div>
+    <div class="form-row">
+      <label class="form-label">Domyślny login (email)</label>
+      <input class="form-input" id="login-email" type="email" placeholder="jan@firma.pl" autocomplete="off" />
+    </div>
+    <div class="form-row" style="margin-top:10px">
+      <label class="form-label">Domyślne hasło</label>
+      <input class="form-input" id="login-password" type="password" placeholder="••••••••"
+        onkeydown="if(event.key==='Enter') saveDefaultLogin()" autocomplete="off" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeLoginModal()">Anuluj</button>
+      <button class="btn-save" onclick="saveDefaultLogin()">Zapisz</button>
+    </div>
+  </div>
+</div>
+
+<!-- GOOGLE CONFIG MODAL -->
+<div class="modal-overlay" id="google-cfg-overlay">
+  <div class="modal" style="width:400px">
+    <div class="modal-title">🔍 Google Custom Search API</div>
+    <div class="modal-sub">Klucz API przechowywany zgodnie z ustawieniami bezpieczeństwa. CX zawsze w localStorage.</div>
+    <div class="form-row">
+      <label class="form-label">API Key</label>
+      <div style="position:relative">
+        <input class="form-input" id="gcfg-key" type="password" placeholder="AIzaSy..." autocomplete="off" style="padding-right:40px" />
+        <button class="pass-toggle-btn" onclick="this.previousElementSibling.type=this.previousElementSibling.type==='password'?'text':'password'">👁</button>
       </div>
     </div>
-    <div id="login-logged-view" style="display:none">
-      <div class="modal-title">Konto</div>
-      <div class="modal-sub" style="margin-bottom:16px">Jesteś zalogowany</div>
-      <div class="login-user-row">
-        <div class="login-avatar" id="login-avatar">?</div>
-        <div>
-          <div class="login-user-name" id="login-user-name">—</div>
-          <div class="login-user-email" id="login-user-email">—</div>
-        </div>
-      </div>
-      <div class="modal-footer" style="margin-top:16px">
-        <button class="btn-cancel" onclick="closeLoginModal()">Zamknij</button>
-        <button class="btn-save" style="background:var(--red)" onclick="doLogout()">Wyloguj</button>
-      </div>
+    <div class="form-row" style="margin-top:10px">
+      <label class="form-label">Search Engine ID (CX) <span style="font-weight:400;color:var(--text-dim)">(nie szyfrowany)</span></label>
+      <input class="form-input" id="gcfg-cx" type="text" placeholder="b34b906380685435a" autocomplete="off"
+        onkeydown="if(event.key==='Enter') saveGoogleCfg()" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeGoogleCfg()">Anuluj</button>
+      <button class="btn-save" onclick="saveGoogleCfg()">Zapisz</button>
     </div>
   </div>
 </div>
@@ -2155,28 +2119,22 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
 <div class="modal-overlay" id="script-modal-overlay">
   <div class="modal script-modal">
     <div class="modal-title" id="script-modal-title">Dodaj skrypt</div>
-    <div class="modal-sub">Skrypt dla niestandardowego wyszukiwania powiązany z silnikiem</div>
+    <div class="modal-sub">Skrypt do podpięcia pod wybrane źródła w ustawieniach źródła</div>
     <div class="modal-body">
       <div class="form-row">
         <label class="form-label">Nazwa skryptu</label>
         <input class="form-input" id="script-name" placeholder="np. OpenSearch API scraper">
       </div>
-      <div style="display:flex;gap:12px">
-        <div class="form-row" style="flex:1">
-          <label class="form-label">Silnik</label>
-          <select class="form-select" id="script-engine"></select>
-        </div>
-        <div class="form-row" style="flex:1">
-          <label class="form-label">Język</label>
-          <select class="form-select" id="script-language">
-            <option value="javascript">JavaScript</option>
-            <option value="python">Python</option>
-            <option value="bash">Bash</option>
-            <option value="curl">cURL</option>
-            <option value="php">PHP</option>
-            <option value="other">Inny</option>
-          </select>
-        </div>
+      <div class="form-row">
+        <label class="form-label">Język</label>
+        <select class="form-select" id="script-language">
+          <option value="javascript">JavaScript</option>
+          <option value="python">Python</option>
+          <option value="bash">Bash</option>
+          <option value="curl">cURL</option>
+          <option value="php">PHP</option>
+          <option value="other">Inny</option>
+        </select>
       </div>
       <div class="form-row">
         <label class="form-label">Opis <span style="font-weight:400;color:var(--text-dim)">(opcjonalnie)</span></label>
@@ -2224,110 +2182,77 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
 // =====================
 let savedLeads = JSON.parse(localStorage.getItem('lh_saved') || '[]');
 
-const ENGINES = [
-  { value: 'internal',    label: 'Wewnętrzna wyszukiwarka' },
-  { value: 'google',      label: 'Google' },
-  { value: 'google_site', label: 'Google (site:)' },
-  { value: 'bing',        label: 'Bing' },
-  { value: 'duckduckgo',  label: 'DuckDuckGo' },
-  { value: 'api',         label: 'API' },
-];
+// =====================
+// ENGINES — jedyne źródło prawdy
+// =====================
+const ENGINE_META = {
+  google:      { label: 'Google Custom Search',         color: '#4285F4' },
+  google_site: { label: 'Google Custom Search (site:)', color: '#34A853' },
+  reddit:      { label: 'Reddit',                       color: '#ff4500' },
+};
+const ENGINES = Object.entries(ENGINE_META).map(([value, { label }]) => ({ value, label }));
 
-const SOURCES = [
-  { id: 1, name: 'Elektroda.pl', type: 'forum', icon: '⚡', color: '#e8f0fc', enabled: true,
-    baseUrl: 'https://www.elektroda.pl', engine: 'internal',
-    subforums: [''], keywords: 'szukam, polecacie, potrzebuję, pomożecie',
-    desc: 'Forum techniczne i elektroniczne', favorite: false, dateAdded: '2024-01-15', loginRequired: true },
-  { id: 2, name: '4programmers.net', type: 'it', icon: '👨‍💻', color: '#f0e8fc', enabled: true,
-    baseUrl: 'https://4programmers.net', engine: 'internal',
-    subforums: ['https://4programmers.net/Forum/Praca', 'https://4programmers.net/Forum/Oferty'],
-    keywords: 'szukam, potrzebuję, pomoc, oferta',
-    desc: 'Forum programistyczne', favorite: true, dateAdded: '2024-01-18', loginRequired: true },
-  { id: 3, name: 'Forum.net.pl', type: 'forum', icon: '💬', color: '#e8f0fc', enabled: true,
-    baseUrl: 'https://forum.net.pl', engine: 'google_site',
-    subforums: [''], keywords: 'szukam, potrzebuję, polecacie',
-    desc: 'Forum ogólne', favorite: false, dateAdded: '2024-01-20', loginRequired: true },
-  { id: 4, name: 'Bankier.pl Forum', type: 'biznes', icon: '🏦', color: '#e8f5f5', enabled: true,
-    baseUrl: 'https://forum.bankier.pl', engine: 'internal',
-    subforums: ['https://forum.bankier.pl/'], keywords: 'szukam dostawcy, polecacie firmę, potrzebuję usługi',
-    desc: 'Forum finansowe i biznesowe', favorite: false, dateAdded: '2024-01-22', loginRequired: true },
-  { id: 5, name: 'GoldenLine', type: 'social', icon: '🟡', color: '#fde8f0', enabled: false,
-    baseUrl: 'https://www.goldenline.pl', engine: 'internal',
-    subforums: [''], keywords: 'szukam, hiring, rekrutacja, oferta',
-    desc: 'Polska sieć profesjonalistów', favorite: true, dateAdded: '2024-01-25', loginRequired: true },
-  { id: 6, name: 'LinkedIn PL', type: 'social', icon: '💼', color: '#fde8f0', enabled: true,
-    baseUrl: 'https://www.linkedin.com', engine: 'google',
-    subforums: [''], keywords: 'looking for, szukam, need vendor, potrzebuję',
-    desc: 'Sieć profesjonalistów', favorite: false, dateAdded: '2024-01-28', loginRequired: true },
-  { id: 7, name: 'Onet Wiadomości', type: 'portal', icon: '🔴', color: '#e8f5ee', enabled: false,
-    baseUrl: 'https://www.onet.pl', engine: 'internal',
-    subforums: ['https://wiadomosci.onet.pl/'], keywords: '',
-    desc: 'Portal informacyjny Onet', favorite: false, dateAdded: '2024-02-01', loginRequired: false },
-  { id: 8, name: 'WP.pl Finanse', type: 'portal', icon: '🌐', color: '#e8f5ee', enabled: false,
-    baseUrl: 'https://www.wp.pl', engine: 'internal',
-    subforums: ['https://finanse.wp.pl/'], keywords: '',
-    desc: 'Dział finansowy WP', favorite: false, dateAdded: '2024-02-05', loginRequired: false },
-  { id: 9, name: 'OLX – Usługi', type: 'ogloszenia', icon: '📋', color: '#fef3e2', enabled: true,
-    baseUrl: 'https://www.olx.pl', engine: 'internal',
-    subforums: ['https://www.olx.pl/uslugi/', 'https://www.olx.pl/elektronika/'],
-    keywords: 'szukam, poszukuję, potrzebuję',
-    desc: 'Ogłoszenia OLX – dział usług', favorite: false, dateAdded: '2024-02-08', loginRequired: false },
-  { id: 10, name: 'Oferteo.pl', type: 'ogloszenia', icon: '📝', color: '#fef3e2', enabled: true,
-    baseUrl: 'https://oferteo.pl', engine: 'internal',
-    subforums: ['https://oferteo.pl/'], keywords: '',
-    desc: 'Platforma zleceń i usług', favorite: true, dateAdded: '2024-02-10', loginRequired: false },
-  { id: 11, name: 'Reddit r/Polska', type: 'social', icon: '🤖', color: '#fde8f0', enabled: true,
-    baseUrl: 'https://www.reddit.com', engine: 'google_site',
-    subforums: ['https://reddit.com/r/Polska/', 'https://reddit.com/r/PracaIT/'],
-    keywords: 'szukam, potrzebuję, polecacie',
-    desc: 'Reddit – polska społeczność', favorite: false, dateAdded: '2024-02-12', loginRequired: true },
-  { id: 12, name: 'Wykop.pl', type: 'social', icon: '🔺', color: '#fde8f0', enabled: true,
-    baseUrl: 'https://www.wykop.pl', engine: 'internal',
-    subforums: [''], keywords: 'szukam, potrzebuję, polecacie',
-    desc: 'Społeczność Wykop.pl', favorite: false, dateAdded: '2024-02-15', loginRequired: true },
-  { id: 13, name: 'Freelancer.pl', type: 'ogloszenia', icon: '🎯', color: '#fef3e2', enabled: true,
-    baseUrl: 'https://freelancer.pl', engine: 'internal',
-    subforums: ['https://freelancer.pl/zlecenia/'], keywords: 'szukam wykonawcy, potrzebuję, zlecę',
-    desc: 'Platforma zleceń dla freelancerów', favorite: false, dateAdded: '2024-02-18', loginRequired: true },
-  { id: 14, name: 'inEDU.pl Forum', type: 'forum', icon: '🎓', color: '#e8f0fc', enabled: false,
-    baseUrl: 'https://www.inedu.pl', engine: 'google',
-    subforums: [''], keywords: 'szukam szkolenia, potrzebuję kursu',
-    desc: 'Forum edukacyjne', favorite: false, dateAdded: '2024-02-20', loginRequired: true },
-  { id: 15, name: 'Forum GazetaPrawna', type: 'biznes', icon: '⚖️', color: '#e8f5f5', enabled: false,
-    baseUrl: 'https://forum.gazetaprawna.pl', engine: 'google_site',
-    subforums: [''], keywords: 'szukam prawnika, potrzebuję porady, firma',
-    desc: 'Forum biznesowe Gazeta Prawna', favorite: false, dateAdded: '2024-02-22', loginRequired: true },
-];
-
-let nextId = 16;
+function engineSelectOptions(current) {
+  const none = `<option value="" ${!current ? 'selected' : ''}>Brak</option>`;
+  return none + ENGINES.map(e => `<option value="${e.value}" ${current === e.value ? 'selected' : ''}>${e.label}</option>`).join('');
+}
 
 // =====================
-// PAGES
+// SOURCE TYPES — jedyne źródło prawdy
 // =====================
+const SOURCE_TYPES = {
+  forum:        { label: 'Forum',             badge: 'badge-forum',        color: '#e8f0fc' },
+  social:       { label: 'Social media',      badge: 'badge-social',       color: '#fde8f0' },
+  portal:       { label: 'Portal',            badge: 'badge-portal',       color: '#e8f5ee' },
+  ogloszenia:   { label: 'Ogłoszenia',        badge: 'badge-ogloszenia',   color: '#fef3e2' },
+  it:           { label: 'IT',                badge: 'badge-it',           color: '#f0e8fc' },
+  biznes:       { label: 'Biznes',            badge: 'badge-biznes',       color: '#e8f5f5' },
+  wyszukiwarka: { label: 'Wyszukiwarka',      badge: 'badge-wyszukiwarka', color: '#e8f0fc' },
+};
+
+const SOURCES = JSON.parse(localStorage.getItem('lh_sources') || '[]');
+// migrate scriptId (single) → scriptIds (array)
+SOURCES.forEach(s => {
+  if (!s.scriptIds) s.scriptIds = s.scriptId ? [s.scriptId] : [];
+  delete s.scriptId;
+});
+let nextId = SOURCES.length ? Math.max(...SOURCES.map(s => s.id)) + 1 : 1;
+
+function saveSources() {
+  localStorage.setItem('lh_sources', JSON.stringify(SOURCES));
+}
+
+// =====================
+// PAGES — jedyne źródło prawdy dla nawigacji
+// =====================
+const PAGES = [
+  { id: 'search',      icon: '🔍', label: 'Szukaj klientów',       subtitle: 'Przeszukuj fora i serwisy społecznościowe',        badge: null,          render: null },
+  { id: 'saved',       icon: '🔖', label: 'Zapisane leady',         subtitle: 'Twoja lista potencjalnych klientów',               badge: 'saved-count', render: () => renderSaved() },
+  { id: 'sources',     icon: '⚙️', label: 'Zarządzaj źródłami',     subtitle: 'Konfiguruj i edytuj źródła danych',                badge: null,          render: () => renderSourcesManage() },
+  { id: 'keywords',    icon: '🏷️', label: 'Frazy i słowa kluczowe', subtitle: 'Zestawy fraz powiązane z wybranymi źródłami',       badge: null,          render: () => renderKeywords() },
+  { id: 'engines',     icon: '🔎', label: 'Silniki wyszukiwań',     subtitle: 'Źródła pogrupowane według metody wyszukiwania',     badge: null,          render: () => renderEngines() },
+  { id: 'scripts',     icon: '📜', label: 'Skrypty',                subtitle: 'Skrypty dla niestandardowych wyszukiwań',           badge: null,          render: () => renderScripts() },
+  { id: 'credentials', icon: '🔐', label: 'Loginy do źródeł',       subtitle: 'Zarządzaj danymi dostępowymi do każdego źródła',    badge: 'creds-count', render: () => renderCredentials() },
+];
+
+function renderNav() {
+  const container = document.getElementById('sidebar-nav-items');
+  container.innerHTML = PAGES.map((p, i) => `
+    <button class="nav-item${i === 0 ? ' active' : ''}" onclick="showPage('${p.id}')">
+      <span class="nav-icon">${p.icon}</span> ${p.label}
+      ${p.badge ? `<span class="nav-badge" id="${p.badge}" style="${p.badge === 'saved-count' ? '' : 'display:none'}">0</span>` : ''}
+    </button>`).join('');
+}
+
 function showPage(page) {
-  ['search','saved','sources','keywords','scripts','engines','credentials'].forEach(p => {
-    document.getElementById(`page-${p}`).style.display = p === page ? 'block' : 'none';
-  });
+  const p = PAGES.find(x => x.id === page);
+  if (!p) return;
+  PAGES.forEach(x => document.getElementById(`page-${x.id}`).style.display = x.id === page ? 'block' : 'none');
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   event.currentTarget.classList.add('active');
-  const titles = {
-    search:      ['Szukaj klientów',          'Przeszukuj fora i serwisy społecznościowe'],
-    saved:       ['Zapisane leady',            'Twoja lista potencjalnych klientów'],
-    sources:     ['Zarządzaj źródłami',        'Konfiguruj i edytuj źródła danych'],
-    keywords:    ['Frazy i słowa kluczowe',    'Zestawy fraz powiązane z wybranymi źródłami'],
-    scripts:     ['Skrypty',                   'Skrypty dla niestandardowych wyszukiwań'],
-    engines:     ['Silniki wyszukiwań',        'Źródła pogrupowane według metody wyszukiwania'],
-    credentials: ['Loginy do źródeł',          'Zarządzaj danymi dostępowymi do każdego źródła'],
-  };
-  document.getElementById('page-title').textContent = titles[page][0];
-  document.getElementById('page-subtitle').textContent = titles[page][1];
-
-  if (page === 'saved')       renderSaved();
-  if (page === 'sources')     renderSourcesManage();
-  if (page === 'keywords')    renderKeywords();
-  if (page === 'scripts')     renderScripts();
-  if (page === 'engines')     renderEngines();
-  if (page === 'credentials') renderCredentials();
+  document.getElementById('page-title').textContent = p.label;
+  document.getElementById('page-subtitle').textContent = p.subtitle;
+  p.render?.();
 }
 
 // =====================
@@ -2348,7 +2273,9 @@ function toggleFavorite(sourceId) {
   const source = SOURCES.find(s => s.id === sourceId);
   if (source) {
     source.favorite = !source.favorite;
+    saveSources();
     renderSources();
+    renderQuickQueries();
     if (document.getElementById('page-sources').style.display !== 'none') {
       renderSourcesManage();
     }
@@ -2388,9 +2315,8 @@ function getSortedSources() {
 // RENDER SOURCES
 // =====================
 function typeBadge(t) {
-  const map = { forum:'badge-forum', social:'badge-social', portal:'badge-portal', ogloszenia:'badge-ogloszenia', it:'badge-it', biznes:'badge-biznes' };
-  const labels = { forum:'Forum', social:'Social', portal:'Portal', ogloszenia:'Ogłoszenia', it:'IT', biznes:'Biznes' };
-  return `<span class="source-type-badge ${map[t]||'badge-forum'}">${labels[t]||t}</span>`;
+  const meta = SOURCE_TYPES[t] || SOURCE_TYPES.forum;
+  return `<span class="source-type-badge ${meta.badge}">${meta.label}</span>`;
 }
 
 function renderSources() {
@@ -2494,7 +2420,8 @@ function renderSources() {
 function toggleSource(id, val) {
   const s = SOURCES.find(x => x.id === id);
   if (s) s.enabled = val;
-  renderSources(); // refresh search page grid
+  saveSources();
+  renderSources();
 }
 
 function sourceCardHTML(s, fullSettings = false) {
@@ -2519,15 +2446,9 @@ function sourceCardHTML(s, fullSettings = false) {
         ${srcLoginBtnHTML(s.id)}
       </div>
       <div class="field-label" style="margin-top:6px">Silnik wyszukiwania</div>
-      <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value);toggleApiFields(${s.id},this.value)">
-        ${ENGINES.map(e => `<option value="${e.value}" ${(s.engine||'internal')===e.value?'selected':''}>${e.label}</option>`).join('')}
+      <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value)">
+        ${engineSelectOptions(s.engine)}
       </select>
-      <div id="api-fields-${s.id}" style="${(s.engine||'')!=='api'?'display:none':''}">
-        <div class="field-label" style="margin-top:8px">URL endpointu API</div>
-        <input class="field-input" type="text" placeholder="https://api.example.com/search" value="${s.apiUrl||''}" oninput="updateSource(${s.id},'apiUrl',this.value)">
-        <div class="field-label" style="margin-top:8px">Klucz API <span style="font-weight:400;color:var(--text-dim)">(opcjonalnie)</span></div>
-        <input class="field-input" type="password" placeholder="sk-..." value="${s.apiKey||''}" oninput="updateSource(${s.id},'apiKey',this.value)">
-      </div>
       <div class="field-label" style="margin-top:10px">Podfora / sekcje ${countLabel}</div>
       <div class="subforum-list" id="sflist-${s.id}">
         ${s.subforums.map((url, idx) => subforumRowHTML(s.id, idx, url)).join('')}
@@ -2535,10 +2456,10 @@ function sourceCardHTML(s, fullSettings = false) {
       <button class="subforum-add-btn" onclick="addSubforum(${s.id})">+ Dodaj kolejny link</button>
       <div class="field-label" style="margin-top:10px">Opis źródła <span style="font-weight:400;color:var(--text-dim)">(widoczny po najechaniu na kafelek)</span></div>
       <textarea class="field-input keywords-input" id="sdesc-${s.id}" placeholder="Krótki opis źródła..." maxlength="255" oninput="updateSource(${s.id},'desc',this.value)" style="min-height:52px;resize:vertical">${s.desc||''}</textarea>
-      <div class="field-label" style="margin-top:10px">Powiązane zestawy fraz</div>
-      <div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:3px">${getSourceKwSetsHTML(s.id)}</div>
-      <div class="field-label" style="margin-top:10px">Słowa kluczowe aktywne (z zestawów)</div>
-      <textarea class="field-input keywords-input" id="skw-${s.id}" placeholder="np. szukam, polecacie, potrzebuję..." oninput="updateSource(${s.id},'keywords',this.value)" title="Zarządzaj frazami przez zakładkę Frazy i słowa kluczowe">${s.keywords||''}</textarea>
+      <div class="field-label" style="margin-top:10px">Zestawy fraz i słów kluczowych</div>
+      ${srcKwPickerHTML(s.id)}
+      <div class="field-label" style="margin-top:10px">Skrypty <span style="font-weight:400;color:var(--text-dim)">(kolejność wykonania)</span></div>
+      <div id="src-script-wrap-${s.id}-card">${srcScriptPickerHTML(s.id)}</div>
     </div>` : '';
 
   const toggleHTML = fullSettings ? `
@@ -2558,18 +2479,20 @@ function sourceCardHTML(s, fullSettings = false) {
   return `
   <div class="source-card" id="scard-${s.id}"${cardTitle ? ` title="${cardTitle.replace(/"/g,'&quot;')}"` : ''}>
     <div class="source-card-header">
-      <div class="source-icon" style="background:${iconBg}">${s.icon}</div>
-      <div class="source-info">
+      <div class="source-card-top">
         <div class="source-name">${s.name}</div>
         ${typeBadge(s.type)}
-        ${s.baseUrl ? `<a class="source-base-url" href="${s.baseUrl}" target="_blank" onclick="event.stopPropagation()">🔗 ${s.baseUrl.replace('https://','').replace('www.','')}</a>` : ''}
+        ${s.baseUrl ? `<a class="source-base-url" href="${safeUrl(s.baseUrl)}" target="_blank" onclick="event.stopPropagation()">🔗 ${s.baseUrl.replace(/^https?:\/\//,'').replace(/^www\./,'')}</a>` : ''}
       </div>
-      ${toggleHTML}
-      <button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">
-        ${s.favorite ? '⭐' : '☆'}
-      </button>
-      ${fullSettings ? `<button class="clone-btn" onclick="cloneSource(${s.id})" title="Klonuj źródło">⧉</button>` : ''}
-      <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}"></div>
+      <div class="source-card-bottom">
+        <div class="source-icon" style="background:${iconBg}">${s.icon}</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          ${toggleHTML}
+          ${fullSettings ? `<button class="source-edit-btn" id="sedit-${s.id}" onclick="toggleSourceEdit(${s.id})" title="Edytuj nazwę, typ i URL">✏️</button><button class="clone-btn" onclick="cloneSource(${s.id})" title="Klonuj źródło">⧉</button><button class="delete-src-btn" onclick="deleteSource(${s.id})" title="Usuń źródło">🗑</button>` : ''}
+          <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}" style="position:static"></div>
+          <button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">${s.favorite ? '⭐' : '☆'}</button>
+        </div>
+      </div>
     </div>
     ${subforumsDisplay}
     ${settingsPanel}
@@ -2627,22 +2550,19 @@ function renderSourcesManage() {
             Lista
           </button>
         </div>
-        <button class="io-btn" onclick="exportSources()" title="Eksportuj źródła do pliku JSON">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M3 6.5l3.5 3.5 3.5-3.5M1 11h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Eksport
-        </button>
-        <button class="io-btn" onclick="importSources()" title="Importuj źródła z pliku JSON">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12V4M3 6.5L6.5 3 10 6.5M1 1h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Import
-        </button>
         <button class="search-source-btn" onclick="openSrcSearchModal()">🔍 Szukaj źródeł</button>
         <button class="add-source-btn" onclick="openAddModal()">+ Dodaj źródło</button>
       </div>`;
   }
 
+  if (!sortedSources.length) {
+    container.innerHTML = `<div class="empty-state"><div class="icon">📋</div><h3>Brak źródeł</h3><p>Kliknij „+ Dodaj źródło" aby dodać pierwsze źródło wyszukiwania.</p></div>`;
+    return;
+  }
+
   if (manageView === 'grid') {
     let html = '';
-    
+
     // Podziel na aktywne i nieaktywne
     const active = sortedSources.filter(s => s.enabled);
     const inactive = sortedSources.filter(s => !s.enabled);
@@ -2708,24 +2628,26 @@ function sourceListTableHTML(sources = null) {
       urlsHTML = `<span class="slt-url-chip" title="${filled[0]}">${filled[0]}</span>`;
       if (filled.length > 1) urlsHTML += `<span class="slt-url-more">+${filled.length - 1} więcej</span>`;
     }
-    const kwShort = s.keywords ? s.keywords : '—';
+    const linkedKwSets = KEYWORD_SETS.filter(ks => ks.links.some(l => l.sourceId === s.id));
+    const kwGroupsHTML = linkedKwSets.length
+      ? linkedKwSets.map(ks => `<span class="engine-badge" style="background:var(--surface2);color:var(--text-mid);border:1px solid var(--border2)">${ks.name}</span>`).join('')
+      : '<span style="color:var(--text-dim);font-size:0.7rem">—</span>';
     const engineLabel = (ENGINES.find(e => e.value === (s.engine||'internal')) || ENGINES[0]).label;
     const enabledHTML = `<label class="source-toggle" style="display:inline-block">
       <input type="checkbox" ${s.enabled?'checked':''} onchange="toggleSource(${s.id},this.checked)">
       <span class="toggle-slider"></span>
     </label>`;
     
-    const favoriteHTML = `<button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" style="position:static;opacity:1;margin-right:4px;font-size:0.8rem" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">
-      ${s.favorite ? '⭐' : '☆'}
-    </button>`;
-    
     const nameHTML = `
-      <div style="display:flex;align-items:center;gap:4px;min-width:120px">
-        ${favoriteHTML}
-        <div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div style="display:flex;align-items:center;gap:3px;flex-shrink:0">
+          <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}" style="position:static"></div>
+          <button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" style="position:static;font-size:0.8rem" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">${s.favorite ? '⭐' : '☆'}</button>
+        </div>
+        <div style="min-width:0">
           <div class="slt-name">${s.name}</div>
           ${typeBadge(s.type)}
-          ${s.baseUrl ? `<br><a class="source-base-url" href="${s.baseUrl}" target="_blank">🔗 ${s.baseUrl.replace('https://','').replace('www.','').substring(0,25)}</a>` : ''}
+          ${s.baseUrl ? `<br><a class="source-base-url" href="${safeUrl(s.baseUrl)}" target="_blank">🔗 ${s.baseUrl.replace(/^https?:\/\//,'').replace(/^www\./,'').substring(0,25)}</a>` : ''}
         </div>
       </div>
     `;
@@ -2737,33 +2659,27 @@ function sourceListTableHTML(sources = null) {
           ${nameHTML}
         </td>
         <td><div style="display:flex;flex-direction:column;gap:3px">${urlsHTML}</div></td>
-        <td><div class="slt-keywords" title="${s.keywords}">${kwShort}</div></td>
+        <td><div style="display:flex;flex-wrap:wrap;gap:3px">${kwGroupsHTML}</div></td>
         <td><span class="engine-badge">${engineLabel}</span></td>
         <td>
-          <div style="display:flex;align-items:center;gap:6px;min-width:80px">
-            <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}" style="position:static"></div>
-            <div style="font-size:0.7rem">${srcLoginBtnHTML(s.id)}</div>
-          </div>
+          <div style="font-size:0.7rem">${srcLoginBtnHTML(s.id)}</div>
         </td>
         <td style="text-align:center">${enabledHTML}</td>
-        <td style="white-space:nowrap">
-          <button class="slt-edit-btn" onclick="toggleListSettings(${s.id})" style="font-size:0.65rem;padding:3px 8px">⚙</button>
-          <button class="clone-btn" onclick="cloneSource(${s.id})" title="Klonuj źródło" style="margin-left:4px">⧉</button>
+        <td>
+          <div style="display:flex;align-items:center;gap:4px">
+            <button class="source-edit-btn" onclick="toggleListSettings(${s.id})" title="Ustawienia">⚙</button>
+            <button class="clone-btn" onclick="cloneSource(${s.id})" title="Klonuj źródło">⧉</button>
+            <button class="delete-src-btn" onclick="deleteSource(${s.id})" title="Usuń źródło">🗑</button>
+          </div>
         </td>
       </tr>
       <tr class="slt-settings-row" id="slts-${s.id}" style="display:none">
         <td colspan="8">
           <div class="slt-settings-inner">
             <div class="field-label">Silnik wyszukiwania</div>
-            <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value);toggleApiFields(${s.id},this.value)">
-              ${ENGINES.map(e => `<option value="${e.value}" ${(s.engine||'internal')===e.value?'selected':''}>${e.label}</option>`).join('')}
+            <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value)">
+              ${engineSelectOptions(s.engine)}
             </select>
-            <div id="api-fields-${s.id}" style="${(s.engine||'')!=='api'?'display:none':''}">
-              <div class="field-label" style="margin-top:8px">URL endpointu API</div>
-              <input class="field-input" type="text" placeholder="https://api.example.com/search" value="${s.apiUrl||''}" oninput="updateSource(${s.id},'apiUrl',this.value)">
-              <div class="field-label" style="margin-top:8px">Klucz API <span style="font-weight:400;color:var(--text-dim)">(opcjonalnie)</span></div>
-              <input class="field-input" type="password" placeholder="sk-..." value="${s.apiKey||''}" oninput="updateSource(${s.id},'apiKey',this.value)">
-            </div>
             <div class="field-label" style="margin-top:10px">Podfora / sekcje</div>
             <div class="subforum-list" id="sflist-${s.id}">
               ${s.subforums.map((url, idx) => subforumRowHTML(s.id, idx, url)).join('')}
@@ -2771,10 +2687,10 @@ function sourceListTableHTML(sources = null) {
             <button class="subforum-add-btn" onclick="addSubforum(${s.id})">+ Dodaj kolejny link</button>
             <div class="field-label" style="margin-top:10px">Opis źródła <span style="font-weight:400;color:var(--text-dim)">(widoczny po najechaniu na kafelek)</span></div>
             <textarea class="field-input keywords-input" id="sdesc-${s.id}" placeholder="Krótki opis źródła..." maxlength="255" oninput="updateSource(${s.id},'desc',this.value)" style="min-height:52px;resize:vertical">${s.desc||''}</textarea>
-            <div class="field-label" style="margin-top:10px">Powiązane zestawy fraz</div>
-            <div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:3px">${getSourceKwSetsHTML(s.id)}</div>
-            <div class="field-label" style="margin-top:10px">Słowa kluczowe aktywne (z zestawów)</div>
-            <textarea class="field-input keywords-input" id="skw-${s.id}" placeholder="np. szukam, polecacie, potrzebuję..." oninput="updateSource(${s.id},'keywords',this.value)">${s.keywords||''}</textarea>
+            <div class="field-label" style="margin-top:10px">Zestawy fraz i słów kluczowych</div>
+            ${srcKwPickerHTML(s.id)}
+            <div class="field-label" style="margin-top:10px">Skrypty <span style="font-weight:400;color:var(--text-dim)">(kolejność wykonania)</span></div>
+            <div id="src-script-wrap-${s.id}-list">${srcScriptPickerHTML(s.id)}</div>
           </div>
         </td>
       </tr>
@@ -2787,7 +2703,7 @@ function sourceListTableHTML(sources = null) {
         <th style="width:44px"></th>
         <th>Źródło</th>
         <th>Podfora</th>
-        <th>Słowa kluczowe</th>
+        <th>Grupy fraz</th>
         <th>Silnik</th>
         <th>Logowanie</th>
         <th style="text-align:center">Aktywne</th>
@@ -2818,7 +2734,96 @@ function toggleSettings(id) {
 
 function updateSource(id, field, val) {
   const s = SOURCES.find(x => x.id === id);
-  if (s) s[field] = val;
+  if (s) { s[field] = val; saveSources(); }
+}
+
+function updateBaseUrl(id, val) {
+  const s = SOURCES.find(x => x.id === id);
+  if (!s) return;
+  s.baseUrl = val;
+  saveSources();
+  // live-update the link in the card header (both grids)
+  document.querySelectorAll(`#scard-${id} .source-card-top`).forEach(top => {
+    let link = top.querySelector('.source-base-url');
+    if (val) {
+      const display = val.replace(/^https?:\/\//, '').replace(/^www\./, '');
+      if (link) {
+        link.href = val;
+        link.textContent = '🔗 ' + display;
+      } else {
+        const a = document.createElement('a');
+        a.className = 'source-base-url';
+        a.href = val;
+        a.target = '_blank';
+        a.onclick = (e) => e.stopPropagation();
+        a.textContent = '🔗 ' + display;
+        top.appendChild(a);
+      }
+    } else if (link) {
+      link.remove();
+    }
+  });
+}
+
+function updateSourceType(id, type) {
+  const s = SOURCES.find(x => x.id === id);
+  if (!s) return;
+  s.type = type;
+  s.color = (SOURCE_TYPES[type] || SOURCE_TYPES.forum).color;
+  saveSources();
+}
+
+function toggleSourceEdit(id) {
+  const btn = document.getElementById(`sedit-${id}`);
+  if (!btn) return;
+  const card = btn.closest('.source-card');
+  const top = card.querySelector('.source-card-top');
+  const s = SOURCES.find(x => x.id === id);
+  if (!s) return;
+
+  if (top.classList.contains('editing')) {
+    // switch back to view mode — restore icon div from input
+    const iconInput = card.querySelector('.src-edit-icon');
+    if (iconInput) {
+      const iconDiv = document.createElement('div');
+      iconDiv.className = 'source-icon';
+      iconDiv.style.background = s.color || '#e8f0fc';
+      iconDiv.textContent = s.icon;
+      iconInput.replaceWith(iconDiv);
+    }
+    top.classList.remove('editing');
+    btn.classList.remove('active');
+    btn.title = 'Edytuj nazwę, typ i URL';
+    top.innerHTML = `
+      <div class="source-name">${s.name}</div>
+      ${typeBadge(s.type)}
+      ${s.baseUrl ? `<a class="source-base-url" href="${safeUrl(s.baseUrl)}" target="_blank" onclick="event.stopPropagation()">🔗 ${s.baseUrl.replace(/^https?:\/\//, '').replace(/^www\./, '')}</a>` : ''}
+    `;
+  } else {
+    // switch to edit mode — replace icon div with input
+    const iconEl = card.querySelector('.source-icon');
+    top.classList.add('editing');
+    btn.classList.add('active');
+    btn.title = 'Zatwierdź';
+    const typeOptions = Object.entries(SOURCE_TYPES)
+      .map(([v, m]) => `<option value="${v}" ${s.type === v ? 'selected' : ''}>${m.label}</option>`)
+      .join('');
+    top.innerHTML = `
+      <input class="src-edit-name" value="${(s.name || '').replace(/"/g, '&quot;')}" oninput="updateSource(${id},'name',this.value)" placeholder="Nazwa źródła" />
+      <select class="src-edit-type" onchange="updateSourceType(${id},this.value)">${typeOptions}</select>
+      <input class="src-edit-url" type="url" value="${s.baseUrl || ''}" oninput="updateBaseUrl(${id},this.value)" placeholder="https://..." />
+    `;
+    if (iconEl) {
+      const iconInput = document.createElement('input');
+      iconInput.className = 'src-edit-icon';
+      iconInput.value = s.icon || '';
+      iconInput.maxLength = 2;
+      iconInput.title = 'Ikona (emoji)';
+      iconInput.oninput = () => updateSource(id, 'icon', iconInput.value);
+      iconEl.replaceWith(iconInput);
+    }
+    top.querySelector('.src-edit-name').focus();
+  }
 }
 
 function updateSubforum(sourceId, idx, val) {
@@ -2878,48 +2883,6 @@ function refreshSubforumCount(sourceId) {
 // =====================
 // SEARCH
 // =====================
-const MOCK_RESULTS = [
-  { source: 'Wykop.pl', icon: '🔺', type: 'social', color: '#fde8f0',
-    title: 'Szukam polecenia na szkolenie z Excela dla całego działu',
-    snippet: 'Hej, mamy w firmie 15 osób które <mark>potrzebują szkoleń</mark> z Excela (poziom średniozaawansowany). Budżet ok. 500zł/os. Czy ktoś przechodził przez coś podobnego i może polecić sprawdzone centrum szkoleniowe?',
-    url: 'https://wykop.pl/link/przykład',
-    date: '2024-02-15', relevance: 95, keyword: 'szkolenia' },
-  { source: '4programmers.net', icon: '👨‍💻', type: 'it', color: '#f0e8fc',
-    title: 'Potrzebuję kogoś do wdrożenia systemu CRM – mała firma',
-    snippet: 'Prowadzę 10-osobową firmę usługową i <mark>szukam</mark> kogoś kto pomoże nam wdrożyć i skonfigurować CRM (najchętniej HubSpot lub Pipedrive). Płatne zlecenie, możliwa długoterminowa współpraca.',
-    url: 'https://4programmers.net/Forum/przykład',
-    date: '2024-02-18', relevance: 88, keyword: 'CRM wdrożenie' },
-  { source: 'OLX – Usługi', icon: '📋', type: 'ogloszenia', color: '#fef3e2',
-    title: 'Poszukuję dostawcy materiałów biurowych – umowa długoterminowa',
-    snippet: 'Firma z Wrocławia <mark>poszukuje</mark> rzetelnego dostawcy <mark>artykułów biurowych</mark>. Miesięczne zamówienia ok. 2000-3000 PLN. Interesuje nas faktura VAT i dostawa pod biuro.',
-    url: 'https://olx.pl/oferta/przykład',
-    date: '2024-02-20', relevance: 97, keyword: 'artykuły biurowe' },
-  { source: 'Bankier.pl Forum', icon: '🏦', type: 'biznes', color: '#e8f5f5',
-    title: 'Czy ktoś może polecić agencję SEO dla e-commerce?',
-    snippet: 'Prowadzę sklep internetowy z elektroniką. <mark>Szukam</mark> agencji SEO która ma doświadczenie z e-commerce i rozumie specyfikę branży. Budżet od 3000 PLN/miesiąc, mile widziane case studies.',
-    url: 'https://forum.bankier.pl/przykład',
-    date: '2024-02-19', relevance: 82, keyword: 'agencja SEO' },
-  { source: 'Reddit r/Polska', icon: '🤖', type: 'social', color: '#fde8f0',
-    title: 'Polecacie kogoś do stałej obsługi księgowej? Startup, B2B',
-    snippet: 'Zakładam spółkę z o.o. i <mark>szukam</mark> biura rachunkowego które ogarnie startup – faktury, ZUS, KPiR. Chodzi mi o kogoś z doświadczeniem ze startupami, nie klasyczne biuro.',
-    url: 'https://reddit.com/r/Polska/przykład',
-    date: '2024-02-21', relevance: 90, keyword: 'księgowość' },
-  { source: 'Freelancer.pl', icon: '🎯', type: 'ogloszenia', color: '#fef3e2',
-    title: 'Zlecę tłumaczenie dokumentacji technicznej EN→PL',
-    snippet: 'Mam ok. 80 stron dokumentacji technicznej z branży mechanicznej. <mark>Szukam</mark> tłumacza z doświadczeniem w tłumaczeniach technicznych. Termin: 2 tygodnie. Pytajcie o szczegóły.',
-    url: 'https://freelancer.pl/zlecenia/przykład',
-    date: '2024-02-17', relevance: 78, keyword: 'tłumaczenie' },
-  { source: 'LinkedIn PL', icon: '💼', type: 'social', color: '#fde8f0',
-    title: 'Looking for a content marketing agency – B2B tech',
-    snippet: 'We are a Polish SaaS company <mark>looking for</mark> a content marketing agency experienced in B2B tech. We need blog posts, case studies and LinkedIn content. DM me if interested.',
-    url: 'https://linkedin.com/posts/przykład',
-    date: '2024-02-22', relevance: 85, keyword: 'content marketing' },
-  { source: 'Elektroda.pl', icon: '⚡', type: 'forum', color: '#e8f0fc',
-    title: 'Szukam serwisu laptopów dla firmy – Poznań lub zdalnie',
-    snippet: 'Mamy flotę ok. 30 laptopów służbowych. <mark>Potrzebuję</mark> solidnego partnera serwisowego który odbierze sprzęt, naprawi i odda w rozsądnym czasie. Pytanie czy ktoś ma sprawdzone miejsce?',
-    url: 'https://elektroda.pl/rtvforum/topic/przykład',
-    date: '2024-02-16', relevance: 72, keyword: 'serwis laptopów' },
-];
 
 let currentResults = [];
 let searching = false;
@@ -3013,13 +2976,14 @@ function quickSearch(q) {
   doSearch();
 }
 
-function doSearch() {
+
+async function doSearch() {
   if (searching) return;
   const query = document.getElementById('main-query').value.trim();
   if (!query) { document.getElementById('main-query').focus(); return; }
 
   searching = true;
-  const btn = document.getElementById('search-btn');
+  const btn  = document.getElementById('search-btn');
   const icon = document.getElementById('search-btn-icon');
   btn.disabled = true;
   icon.textContent = '⏳';
@@ -3029,34 +2993,106 @@ function doSearch() {
   document.getElementById('stats-strip').style.display = 'none';
   document.getElementById('progress-bar').classList.add('active');
 
-  const activeCount = SOURCES.filter(s => s.enabled).length;
-  const delay = 1200 + Math.random() * 800;
+  const activeCount  = SOURCES.filter(s => s.enabled).length;
+  const googleActive = SOURCES.some(s => s.enabled && (s.engine === 'google' || s.engine === 'google_site'));
+  const redditActive = SOURCES.some(s => s.enabled && s.engine === 'reddit');
+  const googleKey    = loadGoogleKey();
+  const googleCx     = loadGoogleCx();
 
-  setTimeout(() => {
-    // Simulate filtered results based on query keywords
-    const qLow = query.toLowerCase();
-    const shuffled = [...MOCK_RESULTS].sort(() => Math.random() - 0.5);
-    currentResults = shuffled.slice(0, 4 + Math.floor(Math.random() * 4));
-    // Inject query keyword into snippets
-    currentResults = currentResults.map((r,i) => ({
-      ...r,
-      relevance: Math.max(65, r.relevance - i * 3 + Math.floor(Math.random() * 10))
-    })).sort((a,b) => b.relevance - a.relevance);
-
+  const finish = (results) => {
+    currentResults = results;
     searching = false;
     btn.disabled = false;
     icon.textContent = '🔍';
     document.getElementById('progress-bar').classList.remove('active');
-
     renderResults(query, activeCount);
-  }, delay);
+  };
+
+  const promises = [];
+  if (googleActive && googleKey && googleCx) promises.push(searchGoogleCSE(query, googleKey, googleCx));
+  if (redditActive) promises.push(searchRedditPublic(query));
+
+  if (promises.length) {
+    const settled = await Promise.allSettled(promises);
+    const results = settled
+      .filter(r => r.status === 'fulfilled')
+      .flatMap(r => r.value)
+      .sort((a, b) => b.relevance - a.relevance);
+    finish(results);
+  } else {
+    finish([]);
+  }
+}
+
+async function searchGoogleCSE(query, apiKey, cx) {
+  const url = `https://www.googleapis.com/customsearch/v1?key=${encodeURIComponent(apiKey)}&cx=${encodeURIComponent(cx)}&q=${encodeURIComponent(query)}&num=10`;
+  const resp = await fetch(url);
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err?.error?.message || `HTTP ${resp.status}`);
+  }
+  const data = await resp.json();
+  return (data.items || []).map((item, i) => ({
+    source: 'Google',
+    icon: '🔍',
+    type: 'wyszukiwarka',
+    color: '#e8f0fc',
+    title: item.title,
+    snippet: item.snippet || '',
+    url: item.link,
+    date: '',
+    relevance: Math.max(60, 95 - i * 3),
+    keyword: query,
+  }));
+}
+
+async function searchRedditPublic(query) {
+  const url = `https://www.reddit.com/search.json?q=${encodeURIComponent(query)}&limit=10&sort=relevance&type=link`;
+  const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
+  if (!resp.ok) throw new Error(`Reddit HTTP ${resp.status}`);
+  const data = await resp.json();
+  return (data?.data?.children || []).map((item, i) => {
+    const p = item.data;
+    return {
+      source: `Reddit r/${p.subreddit}`,
+      icon: '🔺',
+      type: 'social',
+      color: '#fde8f0',
+      title: p.title,
+      snippet: p.selftext ? p.selftext.slice(0, 220) : `r/${p.subreddit} · ${p.score} pkt`,
+      url: `https://www.reddit.com${p.permalink}`,
+      date: new Date(p.created_utc * 1000).toISOString().split('T')[0],
+      relevance: Math.max(60, 90 - i * 3),
+      keyword: query,
+    };
+  });
+}
+
+function safeUrl(u) {
+  if (!u) return '#';
+  return /^https?:\/\//i.test(u) ? u : 'https://' + u;
 }
 
 function renderResults(query, sourceCount) {
   const list = document.getElementById('results-list');
-  const hotCount = currentResults.filter(r => r.relevance >= 88).length;
   selectedIndices.clear();
   updateBulkBar();
+
+  if (!currentResults.length) {
+    list.innerHTML = `<div class="empty-state" style="padding:40px 20px">
+      <div class="icon">🔍</div>
+      <h3>Brak wyników</h3>
+      <p>Zapytanie „${query}" nie zwróciło wyników. Spróbuj innych słów kluczowych lub włącz więcej źródeł.</p>
+    </div>`;
+    document.getElementById('results-section').style.display = 'block';
+    document.getElementById('results-title').textContent = `Wyniki dla: „${query}"`;
+    document.getElementById('results-meta').textContent = '0 wyników';
+    document.getElementById('stats-strip').style.display = 'none';
+    document.getElementById('select-all-row').classList.remove('visible');
+    return;
+  }
+
+  const hotCount = currentResults.filter(r => r.relevance >= 88).length;
 
   list.innerHTML = currentResults.map((r, i) => `
     <div class="result-item" style="animation-delay:${i*60}ms" id="ri-${i}">
@@ -3066,7 +3102,7 @@ function renderResults(query, sourceCount) {
       <div class="result-source-icon" style="background:${r.color}">${r.icon}</div>
       <div class="result-body">
         <div class="result-source-label">${r.source} ${typeBadge(r.type)}</div>
-        <div class="result-title"><a href="${r.url}" target="_blank">${r.title}</a></div>
+        <div class="result-title"><a href="${safeUrl(r.url)}" target="_blank">${r.title}</a></div>
         <div class="result-snippet">${r.snippet}</div>
         <div class="result-footer">
           <span class="result-date">📅 ${r.date}</span>
@@ -3076,7 +3112,7 @@ function renderResults(query, sourceCount) {
             <div class="relevance-track"><div class="relevance-fill" style="width:${r.relevance}%"></div></div>
           </div>
           <div class="result-actions">
-            <button class="result-btn" onclick="copyLink('${r.url}', this)">📋 Kopiuj</button>
+            <button class="result-btn" onclick="copyLink('${safeUrl(r.url)}', this)">📋 Kopiuj</button>
             <button class="result-btn primary" onclick="saveLead(${i}, this)" id="save-btn-${i}">🔖 Zapisz lead</button>
           </div>
         </div>
@@ -3270,10 +3306,7 @@ function addSourceFromSearch(idx, encodedName, encodedUrl) {
   closeSrcSearchModal();
   document.getElementById('new-name').value = name;
   document.getElementById('new-baseurl').value = url;
-  document.getElementById('new-url').value = '';
   document.getElementById('new-icon').value = '🌐';
-  document.getElementById('new-engine').value = 'google_site';
-  renderNewSourceKwPicker();
   document.getElementById('modal-overlay').classList.add('open');
   setTimeout(() => document.getElementById('new-name').select(), 80);
 }
@@ -3286,9 +3319,26 @@ document.getElementById('src-search-modal-overlay').addEventListener('click', fu
 // ADD SOURCE MODAL
 // =====================
 function openAddModal() {
-  renderNewSourceKwPicker();
+  document.getElementById('new-type').innerHTML =
+    Object.entries(SOURCE_TYPES).map(([v, m]) => `<option value="${v}">${m.label}</option>`).join('');
   document.getElementById('modal-overlay').classList.add('open');
   document.getElementById('new-name').focus();
+}
+
+function renderNewSourceScriptPicker() {
+  const picker = document.getElementById('new-script-picker');
+  if (!SCRIPTS.length) {
+    picker.innerHTML = '<div style="padding:10px 12px;font-size:0.72rem;color:var(--text-dim)">Brak skryptów — dodaj je w zakładce Skrypty.</div>';
+    return;
+  }
+  picker.innerHTML =
+    `<label class="kw-source-row"><input type="radio" name="new-script" value="0" checked><span class="kw-src-name">Brak</span></label>` +
+    SCRIPTS.map(s => `
+    <label class="kw-source-row">
+      <input type="radio" name="new-script" value="${s.id}">
+      <span class="kw-src-name">${s.name}</span>
+      <span style="font-size:0.62rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px">${s.description || s.language || ''}</span>
+    </label>`).join('');
 }
 
 function renderNewSourceKwPicker() {
@@ -3311,55 +3361,33 @@ function saveNewSource() {
   const name = document.getElementById('new-name').value.trim();
   if (!name) { document.getElementById('new-name').focus(); return; }
   const type = document.getElementById('new-type').value;
-  const engine = document.getElementById('new-engine').value;
   const baseUrl = document.getElementById('new-baseurl').value.trim();
-  const url = document.getElementById('new-url').value.trim();
   const icon = document.getElementById('new-icon').value.trim() || '🌐';
-  const apiUrl = document.getElementById('new-api-url').value.trim();
-  const apiKey = document.getElementById('new-api-key').value.trim();
-  const colorMap = { forum:'#e8f0fc', social:'#fde8f0', portal:'#e8f5ee', ogloszenia:'#fef3e2', it:'#f0e8fc', biznes:'#e8f5f5' };
   const newId = nextId++;
 
-  // Nowe źródło z pełną konfiguracją
   SOURCES.push({
     id: newId,
     name,
     type,
     icon,
-    color: colorMap[type],
+    color: (SOURCE_TYPES[type] || SOURCE_TYPES.forum).color,
     enabled: true,
     baseUrl,
-    engine,
-    apiUrl,
-    apiKey,
-    subforums: url ? [url] : [''],
+    engine: '',
+    subforums: [''],
     keywords: '',
     desc: '',
     favorite: false,
     dateAdded: new Date().toISOString().split('T')[0],
-    loginRequired: true // domyślnie wymagane logowanie
+    loginRequired: true,
+    scriptIds: [],
   });
-  
-  // Przypisz zaznaczone zestawy fraz
-  const selectedKwIds = [...document.querySelectorAll('.new-kw-cb:checked')].map(cb => parseInt(cb.dataset.id));
-  selectedKwIds.forEach(kwId => {
-    const ks = KEYWORD_SETS.find(k => k.id === kwId);
-    if (ks) ks.links.push({ sourceId: newId, subforum: url || '' });
-  });
-  if (selectedKwIds.length) {
-    saveKeywordSets();
-    syncKeywordSetsToSources();
-  }
+  saveSources();
 
   closeModal();
   document.getElementById('new-name').value = '';
   document.getElementById('new-baseurl').value = '';
-  document.getElementById('new-url').value = '';
   document.getElementById('new-icon').value = '';
-  document.getElementById('new-engine').value = 'internal';
-  document.getElementById('new-api-url').value = '';
-  document.getElementById('new-api-key').value = '';
-  document.getElementById('new-api-fields').style.display = 'none';
   renderSources();
   renderSourcesManage();
 
@@ -3388,6 +3416,17 @@ function saveNewSource() {
   }, 120);
 }
 
+function deleteSource(id) {
+  const s = SOURCES.find(x => x.id === id);
+  if (!s) return;
+  if (!confirm(`Usunąć źródło „${s.name}"?`)) return;
+  const idx = SOURCES.indexOf(s);
+  if (idx !== -1) SOURCES.splice(idx, 1);
+  saveSources();
+  renderSourcesManage();
+  renderEngines();
+}
+
 function cloneSource(id) {
   const s = SOURCES.find(x => x.id === id);
   if (!s) return;
@@ -3401,6 +3440,7 @@ function cloneSource(id) {
     subforums: s.subforums ? [...s.subforums] : [''],
   };
   SOURCES.push(clone);
+  saveSources();
   renderSources();
   renderSourcesManage();
   setTimeout(() => {
@@ -3416,20 +3456,48 @@ function cloneSource(id) {
 // =====================
 // IMPORT / EXPORT
 // =====================
-function exportSources() {
-  const data = {
-    version: 3,
+async function exportSources() {
+  const needsEncryption = securitySettings.exportPass;
+  let password = null;
+  if (needsEncryption) {
+    password = prompt('Podaj hasło szyfrowania danych wrażliwych:\n(hasła, klucze API, domyślne dane logowania)');
+    if (!password) return;
+  }
+
+  const encrypt = async (val) =>
+    needsEncryption && password ? await encryptData(val, password) : val;
+
+  const db = {
+    app: 'KlientHunter',
+    version: 4,
     exportedAt: new Date().toISOString(),
-    sources: SOURCES,
+
+    // ── Dane ──────────────────────────────────────────────
+    sources:     SOURCES,
     keywordSets: KEYWORD_SETS,
-    credentials: loadCreds(),
-    scripts: SCRIPTS,
+    scripts:     SCRIPTS,
+    savedLeads:  savedLeads,
+
+    // ── Ustawienia ────────────────────────────────────────
+    settings: {
+      schedule: loadSchedule(),
+      security: securitySettings,
+    },
+
+    // ── Dane wrażliwe (opcjonalnie zaszyfrowane) ──────────
+    credentials: {
+      sources:      await encrypt(loadCreds()),
+      defaultLogin: await encrypt(loadDefaultLogin()),
+      googleKey:    await encrypt({ key: loadGoogleKey() }),
+      googleCx:     loadGoogleCx(),   // nie wrażliwe — zawsze plain
+    },
   };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href     = url;
-  a.download = `klienthunter-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `klienthunter-${new Date().toISOString().slice(0,10)}.db.json`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -3437,80 +3505,131 @@ function exportSources() {
 function importSources() {
   const input = document.createElement('input');
   input.type   = 'file';
-  input.accept = '.json';
+  input.accept = '.json,.db.json';
   input.onchange = e => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = ev => {
-      let parsed;
+    reader.onload = async ev => {
+      let db;
       try {
-        parsed = JSON.parse(ev.target.result);
-      } catch (err) {
+        db = JSON.parse(ev.target.result);
+      } catch {
         alert('Błąd importu: nieprawidłowy plik JSON.');
         return;
       }
 
-      const importedSources  = Array.isArray(parsed) ? parsed : (parsed.sources || []);
-      const importedKwSets   = parsed.keywordSets || null;
-      const importedCreds    = parsed.credentials || null;
-      const importedScripts  = parsed.scripts || null;
-
-      try {
-        if (!Array.isArray(importedSources) || importedSources.length === 0) throw new Error('Brak źródeł w pliku');
-        importedSources.forEach(s => {
-          if (typeof s.id === 'undefined' || typeof s.name === 'undefined') throw new Error('Nieprawidłowy format źródeł');
-        });
-      } catch (err) {
-        alert('Błąd importu: ' + err.message + '\nUpewnij się, że plik pochodzi z eksportu KlientHunter.');
+      if (db.app !== 'KlientHunter') {
+        alert('Błąd importu: plik nie pochodzi z KlientHunter.');
         return;
       }
 
-      let summary = `Znaleziono w pliku:\n• ${importedSources.length} źródeł`;
-      if (importedKwSets)   summary += `\n• ${importedKwSets.length} zestawów fraz`;
-      if (importedCreds)    summary += `\n• ${Object.keys(importedCreds).length} loginów`;
-      if (importedScripts)  summary += `\n• ${importedScripts.length} skryptów`;
-      summary += '\n\nOK → Dołącz źródła do istniejących\nAnuluj → Zastąp wszystkie źródła';
+      // ── Odczyt sekcji ─────────────────────────────────────────
+      const imp = {
+        sources:     Array.isArray(db.sources)     ? db.sources     : [],
+        keywordSets: Array.isArray(db.keywordSets) ? db.keywordSets : null,
+        scripts:     Array.isArray(db.scripts)     ? db.scripts     : null,
+        savedLeads:  Array.isArray(db.savedLeads)  ? db.savedLeads  : null,
+        schedule:    db.settings?.schedule  || null,
+        security:    db.settings?.security  || null,
+        creds:       db.credentials?.sources      || null,
+        defaultLogin:db.credentials?.defaultLogin  || null,
+        googleKey:   db.credentials?.googleKey     || null,
+        googleCx:    db.credentials?.googleCx      || null,
+      };
 
-      const appendMode = confirm(summary);
+      // ── Odszyfrowanie wrażliwych danych (jeśli zaszyfrowane) ──
+      const isEncrypted = val => val && typeof val === 'object' && val.iv && val.data;
+      if (isEncrypted(imp.creds) || isEncrypted(imp.defaultLogin) || isEncrypted(imp.googleKey)) {
+        const pwd = prompt('Plik zawiera zaszyfrowane dane wrażliwe.\nPodaj hasło użyte przy eksporcie:');
+        if (!pwd) return;
+        try {
+          if (isEncrypted(imp.creds))        imp.creds        = await decryptData(imp.creds, pwd);
+          if (isEncrypted(imp.defaultLogin))  imp.defaultLogin = await decryptData(imp.defaultLogin, pwd);
+          if (isEncrypted(imp.googleKey))     imp.googleKey    = await decryptData(imp.googleKey, pwd);
+        } catch {
+          alert('Nieprawidłowe hasło lub uszkodzone dane szyfrowania.');
+          return;
+        }
+      }
+      // wyciągnij klucz z obiektu { key: '...' }
+      if (imp.googleKey && typeof imp.googleKey === 'object') imp.googleKey = imp.googleKey.key || '';
 
-      // --- Źródła ---
-      if (appendMode) {
-        importedSources.forEach(s => {
-          const newId = nextId++;
-          SOURCES.push({ desc: '', ...s, id: newId, dateAdded: s.dateAdded || new Date().toISOString().split('T')[0] });
-        });
-      } else {
-        SOURCES.length = 0;
-        importedSources.forEach(s => SOURCES.push({ desc: '', ...s }));
-        nextId = Math.max(...SOURCES.map(s => s.id), 0) + 1;
+      // ── Podsumowanie ──────────────────────────────────────────
+      const lines = [`Znaleziono w pliku (${db.exportedAt?.slice(0,10) || '?'}):`];
+      if (imp.sources.length)   lines.push(`• ${imp.sources.length} źródeł`);
+      if (imp.keywordSets)      lines.push(`• ${imp.keywordSets.length} zestawów fraz`);
+      if (imp.scripts)          lines.push(`• ${imp.scripts.length} skryptów`);
+      if (imp.savedLeads)       lines.push(`• ${imp.savedLeads.length} zapisanych leadów`);
+      if (imp.creds)            lines.push(`• loginy do źródeł`);
+      if (imp.defaultLogin?.email) lines.push(`• domyślne dane logowania`);
+      if (imp.googleKey)        lines.push(`• klucz Google API`);
+      if (imp.googleCx)         lines.push(`• Google CX`);
+      if (imp.schedule)         lines.push(`• ustawienia harmonogramu`);
+      lines.push('\nOK → Dołącz do istniejących danych\nAnuluj → Zastąp wszystkie dane');
+
+      const appendMode = confirm(lines.join('\n'));
+
+      // ── Źródła ────────────────────────────────────────────────
+      if (imp.sources.length) {
+        if (appendMode) {
+          imp.sources.forEach(s => {
+            const newId = nextId++;
+            SOURCES.push({ desc: '', ...s, id: newId, dateAdded: s.dateAdded || new Date().toISOString().split('T')[0] });
+          });
+        } else {
+          SOURCES.length = 0;
+          imp.sources.forEach(s => SOURCES.push({ desc: '', ...s }));
+          nextId = Math.max(...SOURCES.map(s => s.id), 0) + 1;
+        }
+        saveSources();
       }
 
-      // --- Zestawy fraz (zastąp) ---
-      if (importedKwSets) {
-        KEYWORD_SETS.splice(0, KEYWORD_SETS.length, ...importedKwSets);
+      // ── Zestawy fraz ──────────────────────────────────────────
+      if (imp.keywordSets) {
+        if (!appendMode) KEYWORD_SETS.length = 0;
+        imp.keywordSets.forEach(ks => {
+          if (!KEYWORD_SETS.find(k => k.id === ks.id)) KEYWORD_SETS.push(ks);
+        });
         saveKeywordSets();
         syncKeywordSetsToSources();
       }
 
-      // --- Loginy (scala z istniejącymi) ---
-      if (importedCreds) {
-        const existing = loadCreds();
-        saveCreds({ ...existing, ...importedCreds });
-      }
-
-      // --- Skrypty (zastąp) ---
-      if (importedScripts) {
-        SCRIPTS.splice(0, SCRIPTS.length, ...importedScripts);
+      // ── Skrypty ───────────────────────────────────────────────
+      if (imp.scripts) {
+        if (!appendMode) SCRIPTS.length = 0;
+        imp.scripts.forEach(s => {
+          if (!SCRIPTS.find(x => x.id === s.id)) SCRIPTS.push(s);
+        });
         scriptNextId = SCRIPTS.length ? Math.max(...SCRIPTS.map(s => s.id)) + 1 : 1;
         saveScripts();
       }
 
+      // ── Zapisane leady ────────────────────────────────────────
+      if (imp.savedLeads) {
+        if (!appendMode) savedLeads.length = 0;
+        imp.savedLeads.forEach(l => {
+          if (!savedLeads.find(x => x.id === l.id)) savedLeads.push(l);
+        });
+        localStorage.setItem('lh_saved', JSON.stringify(savedLeads));
+      }
+
+      // ── Dane wrażliwe ─────────────────────────────────────────
+      if (imp.creds)         saveCreds(appendMode ? { ...loadCreds(), ...imp.creds } : imp.creds);
+      if (imp.defaultLogin)  saveDefaultLoginToStorage(imp.defaultLogin);
+      if (imp.googleKey)     saveGoogleKey(imp.googleKey);
+      if (imp.googleCx)      saveGoogleCx(imp.googleCx);
+
+      // ── Ustawienia ────────────────────────────────────────────
+      if (imp.schedule && !appendMode) saveSchedule(imp.schedule);
+
+      // ── Re-render ─────────────────────────────────────────────
       renderSources();
       renderSourcesManage();
-      if (importedKwSets)  renderKeywords();
-      if (importedCreds)   renderCredentials();
-      if (importedScripts) renderScripts();
+      if (imp.keywordSets) renderKeywords();
+      if (imp.scripts)     renderScripts();
+      if (imp.savedLeads)  renderSaved();
+      if (imp.creds)       renderCredentials();
     };
     reader.readAsText(file);
   };
@@ -3526,6 +3645,9 @@ document.getElementById('modal-overlay').addEventListener('click', function(e) {
 document.getElementById('login-modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeLoginModal();
 });
+document.getElementById('google-cfg-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeGoogleCfg();
+});
 document.getElementById('src-cred-modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeSrcCredModal();
 });
@@ -3533,18 +3655,14 @@ document.getElementById('src-cred-modal-overlay').addEventListener('click', func
 // =====================
 // SOURCE CREDENTIALS
 // =====================
-function getCredsKey() {
-  // Per-user storage key
-  const uid = currentUser ? currentUser.email : '__guest__';
-  return `lh_creds_${uid}`;
-}
-
 function loadCreds() {
-  return JSON.parse(localStorage.getItem(getCredsKey()) || '{}');
+  if (securitySettings.passStorage === 'ram') return _ramCreds['lh_creds'] || {};
+  return JSON.parse(localStorage.getItem('lh_creds') || '{}');
 }
 
 function saveCreds(creds) {
-  localStorage.setItem(getCredsKey(), JSON.stringify(creds));
+  if (securitySettings.passStorage === 'ram') { _ramCreds['lh_creds'] = creds; return; }
+  localStorage.setItem('lh_creds', JSON.stringify(creds));
 }
 
 function getSourceCred(sourceId) {
@@ -3567,13 +3685,10 @@ function srcLoginBtnHTML(sourceId) {
 let srcCredEditingId = null;
 
 function openSrcCredModal(sourceId) {
-  if (!currentUser) {
-    alert('Zaloguj się do systemu, aby zarządzać loginami do źródeł.');
-    return;
-  }
   srcCredEditingId = sourceId;
   const s = SOURCES.find(x => x.id === sourceId);
   const cred = getSourceCred(sourceId);
+  const def  = loadDefaultLogin();
 
   document.getElementById('src-cred-info').innerHTML = `
     <div class="src-cred-icon" style="background:${s.color||'#e8f0fc'}">${s.icon}</div>
@@ -3581,8 +3696,8 @@ function openSrcCredModal(sourceId) {
       <div class="src-cred-name">${s.name}</div>
       <div class="src-cred-url">${s.baseUrl || ''}</div>
     </div>`;
-  document.getElementById('src-cred-login').value = cred ? cred.login : '';
-  document.getElementById('src-cred-pass').value  = cred ? cred.pass  : '';
+  document.getElementById('src-cred-login').value = cred ? cred.login : (def.email || '');
+  document.getElementById('src-cred-pass').value  = cred ? cred.pass  : (def.pass  || '');
   document.getElementById('src-cred-pass').type = 'password';
   document.getElementById('pass-toggle-btn').textContent = '👁';
   document.getElementById('src-cred-modal-overlay').classList.add('open');
@@ -3602,10 +3717,6 @@ function togglePassVis() {
 }
 
 function updateCredsBadge() {
-  if (!currentUser) {
-    document.getElementById('creds-count').style.display = 'none';
-    return;
-  }
   const count = Object.keys(loadCreds()).length;
   const badge = document.getElementById('creds-count');
   badge.textContent = count;
@@ -3644,7 +3755,7 @@ function setCredsGroup(mode, btn) {
     btn.classList.remove('active');
   } else {
     credsGroupBy = mode;
-    document.querySelectorAll('#cg-btn-status,#cg-btn-name').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#cg-btn-status,#cg-btn-active').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   }
   renderCredentials();
@@ -3654,19 +3765,12 @@ function renderCredentials() {
   const container = document.getElementById('creds-content');
   const notice = document.getElementById('creds-notice');
 
-  if (!currentUser) {
-    notice.style.display = 'flex';
-    container.innerHTML = `<div class="empty-state"><div class="icon">🔐</div><h3>Wymagane logowanie</h3><p>Zaloguj się do systemu (przycisk w prawym górnym rogu),<br>aby zarządzać loginami do poszczególnych źródeł.</p></div>`;
-    return;
-  }
-
   notice.style.display = 'none';
-  ['status','name'].forEach(m => {
+  ['status','active'].forEach(m => {
     const b = document.getElementById('cg-btn-'+m);
     if (b) b.classList.toggle('active', credsGroupBy === m);
   });
   const creds = loadCreds();
-  const initials = currentUser.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
 
   function makeRow(s) {
     const cred = creds[s.id];
@@ -3676,7 +3780,7 @@ function renderCredentials() {
         <td><div class="slt-icon" style="background:${s.color||'#e8f0fc'}">${s.icon}</div></td>
         <td>
           <div class="creds-source-name">${s.name}</div>
-          ${s.baseUrl ? `<a class="source-base-url" href="${s.baseUrl}" target="_blank">🔗 ${s.baseUrl.replace('https://','').replace('www.','')}</a>` : ''}
+          ${s.baseUrl ? `<a class="source-base-url" href="${safeUrl(s.baseUrl)}" target="_blank">🔗 ${s.baseUrl.replace(/^https?:\/\//,'').replace(/^www\./,'')}</a>` : ''}
         </td>
         <td>${cred ? `<span class="creds-login-val">${cred.login}</span>` : '<span class="creds-empty">—</span>'}</td>
         <td>${cred && cred.pass ? `<span class="creds-pass-val">${maskedPass}</span>` : '<span class="creds-empty">—</span>'}</td>
@@ -3708,28 +3812,22 @@ function renderCredentials() {
       rows += makeGroupHeader('Niezalogowane', loggedOut.length, 'status-unset');
       rows += loggedOut.map(makeRow).join('');
     }
-  } else if (credsGroupBy === 'name') {
-    const nameMap = {};
-    SOURCES.forEach(s => {
-      if (!nameMap[s.name]) nameMap[s.name] = [];
-      nameMap[s.name].push(s);
-    });
-    Object.entries(nameMap).sort((a,b) => a[0].localeCompare(b[0], 'pl')).forEach(([name, sources]) => {
-      rows += makeGroupHeader(name, sources.length);
-      rows += sources.map(makeRow).join('');
-    });
+  } else if (credsGroupBy === 'active') {
+    const active   = SOURCES.filter(s => s.enabled);
+    const inactive = SOURCES.filter(s => !s.enabled);
+    if (active.length) {
+      rows += makeGroupHeader('Aktywne', active.length, 'status-set');
+      rows += active.map(makeRow).join('');
+    }
+    if (inactive.length) {
+      rows += makeGroupHeader('Nieaktywne', inactive.length, 'status-unset');
+      rows += inactive.map(makeRow).join('');
+    }
   } else {
     rows = SOURCES.map(makeRow).join('');
   }
 
   container.innerHTML = `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-      <div class="login-avatar" style="width:30px;height:30px;font-size:0.75rem">${initials}</div>
-      <div>
-        <div style="font-weight:700;font-size:0.85rem">${currentUser.name}</div>
-        <div style="font-size:0.65rem;font-family:'JetBrains Mono',monospace;color:var(--text-dim)">${currentUser.email}</div>
-      </div>
-    </div>
     <table class="creds-table">
       <thead><tr>
         <th style="width:44px"></th>
@@ -3746,68 +3844,7 @@ function renderCredentials() {
 // =====================
 // KEYWORDS
 // =====================
-function getDefaultKeywordSets() {
-  return [
-    {
-      id: 10001, name: 'Frazy ogólne',
-      phrases: ['szukam', 'potrzebuję', 'polecacie', 'poszukuję', 'pomożecie'],
-      links: [
-        { sourceId: 1,  subforum: '' },
-        { sourceId: 3,  subforum: '' },
-        { sourceId: 9,  subforum: 'https://www.olx.pl/uslugi/' },
-        { sourceId: 11, subforum: 'https://reddit.com/r/Polska/' },
-        { sourceId: 12, subforum: '' },
-      ]
-    },
-    {
-      id: 10002, name: 'Frazy IT i programowanie',
-      phrases: ['szukam', 'potrzebuję', 'pomoc', 'oferta', 'zlecę', 'szukam wykonawcy'],
-      links: [
-        { sourceId: 2,  subforum: 'https://4programmers.net/Forum/Praca' },
-        { sourceId: 2,  subforum: 'https://4programmers.net/Forum/Oferty' },
-        { sourceId: 11, subforum: 'https://reddit.com/r/PracaIT/' },
-        { sourceId: 13, subforum: 'https://freelancer.pl/zlecenia/' },
-      ]
-    },
-    {
-      id: 10003, name: 'Frazy biznesowe',
-      phrases: ['szukam dostawcy', 'polecacie firmę', 'potrzebuję usługi', 'firma'],
-      links: [
-        { sourceId: 4, subforum: 'https://forum.bankier.pl/' },
-      ]
-    },
-    {
-      id: 10004, name: 'Frazy prawne',
-      phrases: ['szukam prawnika', 'potrzebuję porady', 'pomoc prawna'],
-      links: [
-        { sourceId: 15, subforum: '' },
-      ]
-    },
-    {
-      id: 10005, name: 'Frazy rekrutacja i praca',
-      phrases: ['szukam', 'hiring', 'rekrutacja', 'oferta', 'looking for', 'need vendor'],
-      links: [
-        { sourceId: 5, subforum: '' },
-        { sourceId: 6, subforum: '' },
-      ]
-    },
-    {
-      id: 10006, name: 'Frazy edukacja i szkolenia',
-      phrases: ['szukam szkolenia', 'potrzebuję kursu', 'szukam kursu'],
-      links: [
-        { sourceId: 14, subforum: '' },
-      ]
-    },
-  ];
-}
-
-let KEYWORD_SETS = (() => {
-  const stored = localStorage.getItem('lh_kw_sets');
-  if (stored) return JSON.parse(stored);
-  const defaults = getDefaultKeywordSets();
-  localStorage.setItem('lh_kw_sets', JSON.stringify(defaults));
-  return defaults;
-})();
+let KEYWORD_SETS = JSON.parse(localStorage.getItem('lh_kw_sets') || '[]');
 let editingKwId = null;
 
 function saveKeywordSets() {
@@ -3817,10 +3854,102 @@ function saveKeywordSets() {
 function syncKeywordSetsToSources() {
   SOURCES.forEach(src => {
     const linked = KEYWORD_SETS.filter(ks => ks.links.some(l => l.sourceId === src.id));
-    if (!linked.length) return;
     const merged = [...new Set(linked.flatMap(ks => ks.phrases))];
     src.keywords = merged.join(', ');
   });
+  saveSources();
+}
+
+function srcScriptPickerHTML(sourceId) {
+  const s = SOURCES.find(x => x.id === sourceId);
+  if (!s) return '';
+  if (!s.scriptIds) s.scriptIds = [];
+  if (!SCRIPTS.length)
+    return '<div style="padding:8px 10px;font-size:0.72rem;color:var(--text-dim)">Brak skryptów — dodaj je w zakładce Skrypty.</div>';
+
+  const linked = s.scriptIds.map(sid => SCRIPTS.find(sc => sc.id === sid)).filter(Boolean);
+  const unlinked = SCRIPTS.filter(sc => !s.scriptIds.includes(sc.id));
+
+  const orderedRows = linked.length ? `
+    <div class="src-script-order-list">
+      ${linked.map((sc, idx) => `
+        <div class="src-script-order-row">
+          <span class="src-script-order-name">${sc.name}</span>
+          <span class="src-script-order-badge">#${idx + 1}</span>
+          <button class="src-script-mv-btn" onclick="moveSrcScript(${sourceId},${sc.id},-1)" ${idx === 0 ? 'disabled' : ''} title="Przesuń wyżej">↑</button>
+          <button class="src-script-mv-btn" onclick="moveSrcScript(${sourceId},${sc.id},1)" ${idx === linked.length - 1 ? 'disabled' : ''} title="Przesuń niżej">↓</button>
+          <button class="src-script-mv-btn" onclick="toggleSrcScript(${sourceId},${sc.id},false)" title="Odepnij">✕</button>
+        </div>`).join('')}
+    </div>` : '<div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:6px">Brak podpiętych skryptów.</div>';
+
+  const addRows = unlinked.length ? '<div class="kw-source-picker" style="margin-top:6px">' + unlinked.map(sc => `
+    <label class="kw-source-row">
+      <input type="checkbox" onchange="toggleSrcScript(${sourceId},${sc.id},this.checked)">
+      <span class="kw-src-name">${sc.name}</span>
+    </label>`).join('') + '</div>' : '';
+
+  return orderedRows + addRows;
+}
+
+function toggleSrcScript(sourceId, scriptId, add) {
+  const s = SOURCES.find(x => x.id === sourceId);
+  if (!s) return;
+  if (!s.scriptIds) s.scriptIds = [];
+  if (add) {
+    if (!s.scriptIds.includes(scriptId)) s.scriptIds.push(scriptId);
+  } else {
+    s.scriptIds = s.scriptIds.filter(id => id !== scriptId);
+  }
+  saveSources();
+  // re-render picker in all open settings panels for this source
+  document.querySelectorAll(`[id^="src-script-wrap-${sourceId}"]`).forEach(el => {
+    el.innerHTML = srcScriptPickerHTML(sourceId);
+  });
+}
+
+function moveSrcScript(sourceId, scriptId, dir) {
+  const s = SOURCES.find(x => x.id === sourceId);
+  if (!s || !s.scriptIds) return;
+  const idx = s.scriptIds.indexOf(scriptId);
+  if (idx < 0) return;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= s.scriptIds.length) return;
+  s.scriptIds.splice(idx, 1);
+  s.scriptIds.splice(newIdx, 0, scriptId);
+  saveSources();
+  document.querySelectorAll(`[id^="src-script-wrap-${sourceId}"]`).forEach(el => {
+    el.innerHTML = srcScriptPickerHTML(sourceId);
+  });
+}
+
+function srcKwPickerHTML(sourceId) {
+  if (!KEYWORD_SETS.length)
+    return '<div style="padding:8px 10px;font-size:0.72rem;color:var(--text-dim)">Brak zestawów — dodaj je w zakładce Frazy i słowa kluczowe.</div>';
+  return '<div class="kw-source-picker">' + KEYWORD_SETS.map(ks => {
+    const linked = ks.links.some(l => l.sourceId === sourceId);
+    return `<label class="kw-source-row">
+      <input type="checkbox" ${linked ? 'checked' : ''} onchange="toggleSrcKwLink(${sourceId}, ${ks.id}, this.checked)">
+      <span class="kw-src-name">${ks.name}</span>
+      <span style="font-size:0.62rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px">${ks.phrases.slice(0,3).join(', ')}${ks.phrases.length > 3 ? '…' : ''}</span>
+    </label>`;
+  }).join('') + '</div>';
+}
+
+function toggleSrcKwLink(sourceId, kwId, checked) {
+  const ks = KEYWORD_SETS.find(k => k.id === kwId);
+  if (!ks) return;
+  if (checked) {
+    if (!ks.links.some(l => l.sourceId === sourceId)) {
+      const src = SOURCES.find(s => s.id === sourceId);
+      const subforum = (src && src.subforums && src.subforums.find(u => u.trim())) || '';
+      ks.links.push({ sourceId, subforum });
+    }
+  } else {
+    ks.links = ks.links.filter(l => l.sourceId !== sourceId);
+  }
+  saveKeywordSets();
+  syncKeywordSetsToSources();
+  renderQuickQueries();
 }
 
 function getSourceKwSetsHTML(sourceId) {
@@ -3832,6 +3961,26 @@ function getSourceKwSetsHTML(sourceId) {
 
 syncKeywordSetsToSources();
 
+function renderQuickQueries() {
+  const container = document.getElementById('quick-queries-list');
+  if (!container) return;
+  const favIds = new Set(SOURCES.filter(s => s.favorite && s.enabled).map(s => s.id));
+  const sets = KEYWORD_SETS.filter(ks => ks.links.some(l => favIds.has(l.sourceId)));
+  if (!sets.length) {
+    container.innerHTML = `<div style="padding:3px 12px 6px;font-size:0.7rem;color:var(--text-dim);font-style:italic;line-height:1.4">Oznacz źródło jako ulubione i przypisz do niego zestaw fraz</div>`;
+    return;
+  }
+  const icons = ['🔍','📌','💡','🎯','⚡','🔎','📢','🏷️'];
+  container.innerHTML = sets.map((ks, i) => {
+    const phrase = ks.phrases[0] || ks.name;
+    const icon = icons[i % icons.length];
+    const safePhrase = phrase.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return `<button class="nav-item" onclick="quickSearch('${safePhrase}')" title="${ks.phrases.join(', ')}">
+      <span class="nav-icon">${icon}</span> ${ks.name}
+    </button>`;
+  }).join('');
+}
+
 function renderKeywords() {
   const container = document.getElementById('keywords-content');
   if (!KEYWORD_SETS.length) {
@@ -3842,7 +3991,8 @@ function renderKeywords() {
     const shown = set.phrases.slice(0, 6).map(p => `<span class="kw-phrase">${p}</span>`).join('');
     const more  = set.phrases.length > 6 ? `<span class="kw-phrase kw-phrase-more">+${set.phrases.length - 6} więcej</span>` : '';
     const linkedRows = set.links.map(l => {
-      const src = SOURCES.find(s => s.id === l.sourceId);
+      const src = SOURCES.find(s => s.id === l.sourceId)
+               || (l.sourceName ? SOURCES.find(s => s.name === l.sourceName) : null);
       if (!src) return '';
       const sub = l.subforum
         ? l.subforum.replace(/https?:\/\/(www\.)?/,'').replace(/\/$/,'').split('/').slice(-2).join('/')
@@ -3883,7 +4033,14 @@ function openKwModal(id = null) {
   document.getElementById('kw-modal-name').value = set ? set.name : '';
   document.getElementById('kw-modal-phrases').value = set ? set.phrases.join('\n') : '';
   const linksMap = {};
-  if (set) set.links.forEach(l => { linksMap[l.sourceId] = l.subforum; });
+  if (set) set.links.forEach(l => {
+    linksMap[l.sourceId] = l.subforum;
+    // też po nazwie jako fallback
+    if (l.sourceName) {
+      const byName = SOURCES.find(s => s.name === l.sourceName && !(s.id in linksMap));
+      if (byName) linksMap[byName.id] = l.subforum;
+    }
+  });
   const rows = SOURCES.map(s => {
     const checked = s.id in linksMap;
     if (!s.subforums) s.subforums = s.subforum ? [s.subforum] : [''];
@@ -3920,8 +4077,9 @@ function saveKwSet() {
   const links = [];
   document.querySelectorAll('.kw-src-cb:checked').forEach(cb => {
     const sourceId = parseInt(cb.dataset.id);
+    const src = SOURCES.find(s => s.id === sourceId);
     const sel = document.getElementById(`kwsub-${sourceId}`);
-    links.push({ sourceId, subforum: sel ? sel.value : '' });
+    links.push({ sourceId, sourceName: src ? src.name : '', subforum: sel ? sel.value : '' });
   });
   if (editingKwId) {
     const set = KEYWORD_SETS.find(s => s.id === editingKwId);
@@ -3933,6 +4091,7 @@ function saveKwSet() {
   syncKeywordSetsToSources();
   closeKwModal();
   renderKeywords();
+  renderQuickQueries();
   if (document.getElementById('page-sources').style.display !== 'none') renderSourcesManage();
 }
 
@@ -3942,6 +4101,7 @@ function deleteKwSet(id) {
   saveKeywordSets();
   syncKeywordSetsToSources();
   renderKeywords();
+  renderQuickQueries();
   if (document.getElementById('page-sources').style.display !== 'none') renderSourcesManage();
 }
 
@@ -3977,31 +4137,19 @@ function escapeHtml(str) {
 function renderScripts() {
   const container = document.getElementById('scripts-content');
   if (!SCRIPTS.length) {
-    container.innerHTML = `<div class="empty-state"><div class="icon">📜</div><h3>Brak skryptów</h3><p>Dodaj skrypt powiązany z silnikiem wyszukiwania dla niestandardowych zapytań.</p></div>`;
+    container.innerHTML = `<div class="empty-state"><div class="icon">📜</div><h3>Brak skryptów</h3><p>Dodaj skrypt, a następnie podepnij go do wybranych źródeł w ustawieniach źródła.</p></div>`;
     return;
   }
-  const enginesUsed = [...new Set(SCRIPTS.map(s => s.engine))];
-  let html = '';
-  enginesUsed.forEach(eng => {
-    const meta = ENGINE_META[eng] || { label: eng, color: '#999' };
-    const group = SCRIPTS.filter(s => s.engine === eng);
-    html += `
-      <div class="sources-header" style="margin:14px 0 10px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="width:9px;height:9px;border-radius:50%;background:${meta.color};box-shadow:0 0 5px ${meta.color}99;flex-shrink:0"></div>
-          <span class="sources-title">${meta.label}</span>
-          <span class="manage-count">${group.length}</span>
-        </div>
-      </div>
-      <div class="scripts-grid">${group.map(scriptCardHTML).join('')}</div>`;
-  });
-  container.innerHTML = html;
+  container.innerHTML = `<div class="scripts-grid">${SCRIPTS.map(scriptCardHTML).join('')}</div>`;
 }
 
 function scriptCardHTML(s) {
-  const lang    = LANG_META[s.language] || LANG_META.other;
-  const engMeta = ENGINE_META[s.engine] || { label: s.engine, color: '#999' };
-  const lines   = (s.code || '').split('\n').length;
+  const lang  = LANG_META[s.language] || LANG_META.other;
+  const lines = (s.code || '').split('\n').length;
+  const linkedSources = SOURCES.filter(src => src.scriptIds && src.scriptIds.includes(s.id));
+  const sourcesHTML = linkedSources.length
+    ? linkedSources.map(src => `<span class="engine-badge" style="background:${src.color||'#e8f0fc'}44;color:var(--text-mid);border:1px solid var(--border2)">${src.icon} ${src.name}</span>`).join('')
+    : `<span style="font-size:0.65rem;color:var(--text-dim)">Brak podpiętych źródeł</span>`;
   return `
     <div class="script-card" id="sscript-${s.id}">
       <div class="script-card-header">
@@ -4009,10 +4157,9 @@ function scriptCardHTML(s) {
         <div class="script-card-info">
           <div class="script-card-name">${s.name}</div>
           <div class="script-card-badges">
-            <span class="engine-badge" style="background:${engMeta.color}22;color:${engMeta.color};border:1px solid ${engMeta.color}44">${engMeta.label}</span>
             <span class="script-lang-badge ${lang.cls}">${lang.label}</span>
-            <span class="script-lang-badge" style="opacity:0.7">${s.dateAdded||''}</span>
           </div>
+          <div class="script-card-badges" style="margin-top:4px;flex-wrap:wrap">${sourcesHTML}</div>
         </div>
         <div class="script-card-actions">
           <button class="script-action-btn" onclick="openScriptModal(${s.id})" title="Edytuj">✏️</button>
@@ -4039,21 +4186,17 @@ function toggleScriptCode(id) {
 
 function openScriptModal(id = null) {
   editingScriptId = id;
-  const sel = document.getElementById('script-engine');
-  sel.innerHTML = ENGINES.map(e => `<option value="${e.value}">${e.label}</option>`).join('');
   if (id !== null) {
     const s = SCRIPTS.find(x => x.id === id);
     if (!s) return;
     document.getElementById('script-modal-title').textContent = 'Edytuj skrypt';
     document.getElementById('script-name').value     = s.name;
-    document.getElementById('script-engine').value   = s.engine;
     document.getElementById('script-language').value = s.language;
     document.getElementById('script-desc').value     = s.description || '';
     document.getElementById('script-code').value     = s.code || '';
   } else {
     document.getElementById('script-modal-title').textContent = 'Dodaj skrypt';
     document.getElementById('script-name').value     = '';
-    document.getElementById('script-engine').value   = 'api';
     document.getElementById('script-language').value = 'javascript';
     document.getElementById('script-desc').value     = '';
     document.getElementById('script-code').value     = '';
@@ -4072,7 +4215,6 @@ function saveScript() {
   if (!name) { document.getElementById('script-name').focus(); return; }
   const data = {
     name,
-    engine:      document.getElementById('script-engine').value,
     language:    document.getElementById('script-language').value,
     description: document.getElementById('script-desc').value.trim(),
     code:        document.getElementById('script-code').value,
@@ -4100,40 +4242,75 @@ document.getElementById('script-modal-overlay').addEventListener('click', functi
   if (e.target === this) closeScriptModal();
 });
 
-// =====================
-// ENGINES
-// =====================
-const ENGINE_META = {
-  internal:    { label: 'Wewnętrzna wyszukiwarka', color: '#6c63ff' },
-  google:      { label: 'Google',                  color: '#4285F4' },
-  google_site: { label: 'Google (site:)',           color: '#34A853' },
-  bing:        { label: 'Bing',                    color: '#008272' },
-  duckduckgo:  { label: 'DuckDuckGo',              color: '#DE5833' },
-  api:         { label: 'API',                     color: '#10b981' },
-};
+function deleteEngineSource(id) {
+  const s = SOURCES.find(x => x.id === id);
+  if (!s) return;
+  s.engine = '';
+  saveSources();
+  renderEngines();
+  renderSources();
+}
 
 function renderEngines() {
   const container = document.getElementById('engines-content');
-  const order = ['internal','google','google_site','bing','duckduckgo','api'];
 
-  const cards = order.map(key => {
-    const meta = ENGINE_META[key] || { label: key, color: '#999' };
-    const sources = SOURCES.filter(s => (s.engine || 'internal') === key);
-    if (!sources.length) return '';
+  const ENGINE_INSTRUCTIONS = {
+    google: [
+      'Wejdź na <b>programmablesearchengine.google.com</b> i utwórz nowy silnik wyszukiwania (cała sieć).',
+      'Skopiuj <b>Search Engine ID (CX)</b> z ustawień silnika.',
+      'Wejdź na <b>console.cloud.google.com</b> → Włącz <b>Custom Search API</b> → Utwórz klucz API.',
+      'Kliknij <b>🔑 Konfiguruj</b> poniżej i wpisz klucz API oraz CX.',
+      'W zarządzaniu źródłami przypisz źródłom silnik <b>Google Custom Search</b>.',
+    ],
+    google_site: [
+      'Wejdź na <b>programmablesearchengine.google.com</b> i utwórz silnik ograniczony do konkretnych domen.',
+      'Dodaj domeny serwisów do przeszukiwania w konfiguracji silnika, skopiuj <b>CX</b>.',
+      'Użyj tego samego <b>klucza API</b> co dla Google Custom Search (jeden klucz wystarcza).',
+      'Kliknij <b>🔑 Konfiguruj</b> poniżej i wpisz klucz API oraz CX.',
+      'Przypisz źródłom silnik <b>Google Custom Search (site:)</b> w zarządzaniu źródłami.',
+    ],
+    reddit: [
+      'Reddit nie wymaga żadnej konfiguracji — używa <b>publicznego API</b>.',
+      'W zarządzaniu źródłami dodaj źródła z domeną <b>reddit.com</b>.',
+      'Przypisz im silnik <b>Reddit</b> i wpisz URL subredditu jako podforum, np. <b>r/Poland</b>.',
+      'Wyszukiwanie pobiera posty i komentarze pasujące do fraz kluczowych.',
+    ],
+  };
 
-    const rows = sources.map(s => {
-      const domain = s.baseUrl ? s.baseUrl.replace('https://','').replace('http://','').replace('www.','').split('/')[0] : '';
-      const apiInfo = (s.engine === 'api' && s.apiUrl) ? s.apiUrl.replace('https://','').replace('http://','').split('/')[0] : '';
+  const cards = Object.keys(ENGINE_META).map(key => {
+    const meta = ENGINE_META[key];
+    const sources = SOURCES.filter(s => s.engine === key);
+    const isGoogle = key === 'google' || key === 'google_site';
+    const googleConfigured = isGoogle && !!(loadGoogleKey() && loadGoogleCx());
+
+    const steps = (ENGINE_INSTRUCTIONS[key] || [])
+      .map((txt, i) => `<div class="engine-step"><div class="engine-step-num">${i + 1}</div><div>${txt}</div></div>`)
+      .join('');
+
+    const configBanner = isGoogle ? `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid var(--border);font-size:0.72rem">
+        <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:${googleConfigured ? '#10b981' : 'var(--text-dim)'}${googleConfigured ? ';box-shadow:0 0 4px #10b98199' : ''}"></div>
+        <span style="flex:1;color:var(--text-mid)">API Key: ${googleConfigured ? '••••••••' : 'nieskonfigurowany'}</span>
+        <button onclick="openGoogleCfg()" style="font-family:'Outfit',sans-serif;font-size:0.7rem;font-weight:600;padding:3px 10px;border:1px solid var(--border2);border-radius:5px;background:transparent;color:var(--text-dim);cursor:pointer">🔑 Konfiguruj</button>
+      </div>` : `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid var(--border);font-size:0.72rem">
+        <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:#10b981;box-shadow:0 0 4px #10b98199"></div>
+        <span style="color:var(--text-mid)">API publiczne — bez konfiguracji</span>
+      </div>`;
+
+    const sourceRows = sources.length ? sources.map(s => {
+      const domain = s.baseUrl ? s.baseUrl.replace(/https?:\/\/(www\.)?/, '').split('/')[0] : '';
       return `
         <div class="engine-source-row">
           <div class="engine-source-icon" style="background:${s.color||'#e8f0fc'}">${s.icon}</div>
           <div style="flex:1;min-width:0">
             <div class="engine-source-name">${s.name}</div>
-            ${apiInfo ? `<div class="engine-source-url" title="${s.apiUrl}">⚡ ${apiInfo}</div>` : domain ? `<div class="engine-source-url" title="${s.baseUrl}">${domain}</div>` : ''}
+            ${domain ? `<div class="engine-source-url" title="${s.baseUrl}">${domain}</div>` : ''}
           </div>
           <div class="engine-source-status ${s.enabled ? 'on' : 'off'}" title="${s.enabled ? 'Aktywne' : 'Nieaktywne'}"></div>
+          <button class="engine-source-del" onclick="deleteEngineSource(${s.id})" title="Odepnij od silnika">✕</button>
         </div>`;
-    }).join('');
+    }).join('') : `<div class="engine-no-sources">Brak podpiętych źródeł</div>`;
 
     return `
       <div class="engine-card">
@@ -4142,75 +4319,98 @@ function renderEngines() {
           <div class="engine-card-name">${meta.label}</div>
           <div class="engine-card-count">${sources.length} źródeł</div>
         </div>
-        <div class="engine-source-list">${rows}</div>
+        ${configBanner}
+        <div class="engine-instructions">
+          <div class="engine-instructions-title">Konfiguracja krok po kroku</div>
+          ${steps}
+        </div>
+        <div class="engine-sources-section">
+          <div class="engine-sources-title">Podpięte źródła</div>
+          <div class="engine-source-list">${sourceRows}</div>
+        </div>
       </div>`;
   }).join('');
 
-  container.innerHTML = cards
-    ? `<div class="engines-grid">${cards}</div>`
-    : `<div class="empty-state"><div class="icon">🔎</div><h3>Brak źródeł</h3></div>`;
+  container.innerHTML = `<div class="engines-grid">${cards}</div>`;
 }
 
 // =====================
-// LOGIN
+// DEFAULT LOGIN
 // =====================
-let currentUser = JSON.parse(localStorage.getItem('lh_user') || 'null');
+let _ramDefaultLogin = null;
 
-function updateLoginUI() {
-  const lamp = document.getElementById('login-lamp');
-  const label = document.getElementById('login-btn-label');
-  if (currentUser) {
-    lamp.className = 'login-lamp lamp-logged-in';
-    label.textContent = currentUser.name.split(' ')[0];
-  } else {
-    lamp.className = 'login-lamp lamp-logged-out';
-    label.textContent = 'Zaloguj się';
-  }
+// =====================
+// GOOGLE API KEY
+// =====================
+let _ramGoogleKey = null;
+
+function loadGoogleKey() {
+  if (securitySettings.passStorage === 'ram') return _ramGoogleKey || '';
+  return localStorage.getItem('lh_google_key') || '';
+}
+function saveGoogleKey(key) {
+  if (securitySettings.passStorage === 'ram') { _ramGoogleKey = key; return; }
+  if (key) localStorage.setItem('lh_google_key', key);
+  else localStorage.removeItem('lh_google_key');
+}
+function loadGoogleCx() { return localStorage.getItem('lh_google_cx') || ''; }
+function saveGoogleCx(cx) {
+  if (cx) localStorage.setItem('lh_google_cx', cx);
+  else localStorage.removeItem('lh_google_cx');
+}
+
+function loadDefaultLogin() {
+  if (securitySettings.passStorage === 'ram') return _ramDefaultLogin || { email: '', pass: '' };
+  return JSON.parse(localStorage.getItem('lh_default_login') || '{}');
+}
+
+function saveDefaultLoginToStorage(cfg) {
+  if (securitySettings.passStorage === 'ram') { _ramDefaultLogin = cfg; return; }
+  localStorage.setItem('lh_default_login', JSON.stringify(cfg));
 }
 
 function openLoginModal() {
-  const overlay = document.getElementById('login-modal-overlay');
-  overlay.classList.add('open');
-  if (currentUser) {
-    document.getElementById('login-form-view').style.display = 'none';
-    document.getElementById('login-logged-view').style.display = 'block';
-    const initials = currentUser.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
-    document.getElementById('login-avatar').textContent = initials;
-    document.getElementById('login-user-name').textContent = currentUser.name;
-    document.getElementById('login-user-email').textContent = currentUser.email;
-  } else {
-    document.getElementById('login-form-view').style.display = 'block';
-    document.getElementById('login-logged-view').style.display = 'none';
-    setTimeout(() => document.getElementById('login-email').focus(), 100);
-  }
+  const def = loadDefaultLogin();
+  document.getElementById('login-email').value    = def.email || '';
+  document.getElementById('login-password').value = def.pass  || '';
+  document.getElementById('login-modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('login-email').focus(), 100);
+  updateLoginBtn();
 }
 
 function closeLoginModal() {
   document.getElementById('login-modal-overlay').classList.remove('open');
-  document.getElementById('login-error').style.display = 'none';
 }
 
-function doLogin() {
+function saveDefaultLogin() {
   const email = document.getElementById('login-email').value.trim();
   const pass  = document.getElementById('login-password').value;
-  const err   = document.getElementById('login-error');
-  if (!email || !pass) { err.textContent = 'Uzupełnij email i hasło.'; err.style.display='block'; return; }
-  if (pass.length < 4) { err.textContent = 'Hasło jest za krótkie.'; err.style.display='block'; return; }
-  // Demo: accept any valid-looking credentials
-  const name = email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-  currentUser = { name, email };
-  localStorage.setItem('lh_user', JSON.stringify(currentUser));
-  updateLoginUI();
-  updateCredsBadge();
+  saveDefaultLoginToStorage({ email, pass });
+  updateLoginBtn();
   closeLoginModal();
 }
 
-function doLogout() {
-  currentUser = null;
-  localStorage.removeItem('lh_user');
-  updateLoginUI();
-  updateCredsBadge();
-  closeLoginModal();
+function updateLoginBtn() {
+  const def = loadDefaultLogin();
+  const btn = document.getElementById('login-btn');
+  if (!btn) return;
+  btn.classList.toggle('configured', !!(def.email || def.pass));
+}
+
+function openGoogleCfg() {
+  document.getElementById('gcfg-key').value = loadGoogleKey();
+  document.getElementById('gcfg-cx').value  = loadGoogleCx();
+  document.getElementById('google-cfg-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('gcfg-key').focus(), 100);
+}
+function closeGoogleCfg() {
+  document.getElementById('google-cfg-overlay').classList.remove('open');
+}
+function saveGoogleCfg() {
+  saveGoogleKey(document.getElementById('gcfg-key').value.trim());
+  saveGoogleCx(document.getElementById('gcfg-cx').value.trim());
+  closeGoogleCfg();
+  renderEngines();
 }
 
 // =====================
@@ -4222,6 +4422,12 @@ function loadSchedule() {
   }));
 }
 function saveSchedule(cfg) { localStorage.setItem('lh_schedule', JSON.stringify(cfg)); }
+
+function clearAllData() {
+  if (!confirm('Czy na pewno chcesz wyczyścić całą bazę danych?\n\nZostaną usunięte: źródła, leady, frazy, skrypty, loginy, klucze API, ustawienia.\n\nTej operacji nie można cofnąć.')) return;
+  localStorage.clear();
+  location.reload();
+}
 
 function toggleSchedulePanel(e) {
   e.stopPropagation();
@@ -4322,32 +4528,37 @@ function checkSchedule() {
   if (shouldRun) runAutoSearch(false);
 }
 
-function runAutoSearch(manual = false) {
+async function runAutoSearch(manual = false) {
   const cfg = loadSchedule();
-  const favSources = SOURCES.filter(s => s.enabled && s.favorite);
-  const query = cfg.query || document.getElementById('main-query')?.value?.trim() || 'klienci';
-
-  // Symulacja wyników z ulubionych źródeł
-  const total = favSources.length ? (2 + Math.floor(Math.random() * (favSources.length * 2 + 3))) : (2 + Math.floor(Math.random() * 5));
-  const hot   = Math.max(0, Math.floor(total * (0.2 + Math.random() * 0.3)));
+  const query = cfg.query || document.getElementById('main-query')?.value?.trim() || '';
+  if (!query) return;
 
   // Zapisz czas uruchomienia
   cfg.lastRun = new Date().toISOString();
   saveSchedule(cfg);
   updateScheduleStatus();
+  closeSchedulePanel();
 
-  // Powiadomienie systemowe
+  // Przejdź do strony wyszukiwania i uruchom prawdziwe wyszukiwanie
+  setQuery(query);
+  showPage('search');
+  await doSearch();
+
+  // Po zakończeniu — toast z prawdziwymi wynikami
+  const total = currentResults.length;
+  const hot = currentResults.filter(r => r.relevance >= 88).length;
+  const srcCount = SOURCES.filter(s => s.enabled && s.favorite).length;
+
   if (Notification.permission === 'granted') {
     try {
-      new Notification(`🔍 Lead Hunter — ${total} nowych wyników`, {
-        body: `Zapytanie: "${query}" · ${favSources.length} ulubionych źródeł · ${hot} gorących leadów`,
+      new Notification(`🔍 Lead Hunter — ${total} wyników`, {
+        body: `Zapytanie: "${query}" · ${hot} gorących leadów`,
         icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><text y="28" font-size="28">🎯</text></svg>'
       });
     } catch(e) {}
   }
 
-  // Toast in-app
-  showAutoSearchToast(total, hot, query, favSources.length, manual);
+  showAutoSearchToast(total, hot, query, srcCount, manual);
 }
 
 function showAutoSearchToast(total, hot, query, srcCount, manual) {
@@ -4388,11 +4599,6 @@ document.addEventListener('click', function(e) {
 // =====================
 // API FIELDS TOGGLE
 // =====================
-function toggleApiFields(id, engine) {
-  const el = document.getElementById('api-fields-' + id);
-  if (el) el.style.display = engine === 'api' ? '' : 'none';
-}
-
 // =====================
 // INFO PANEL
 // =====================
@@ -4427,6 +4633,14 @@ document.addEventListener('click', function(e) {
   }
 });
 
+document.addEventListener('click', function(e) {
+  const panel = document.getElementById('security-panel');
+  const btn   = document.getElementById('security-btn');
+  if (panel && panel.classList.contains('open') && !btn.contains(e.target) && !panel.contains(e.target)) {
+    panel.classList.remove('open');
+  }
+});
+
 // =====================
 // THEME
 // =====================
@@ -4445,19 +4659,91 @@ function toggleTheme() {
 }
 
 // =====================
+// SECURITY SETTINGS
+// =====================
+let securitySettings = JSON.parse(localStorage.getItem('lh_security') || JSON.stringify({
+  passStorage: 'localStorage',
+  exportPass:  false
+}));
+
+// RAM storage for credentials (cleared on page reload)
+let _ramCreds = {};
+
+function toggleSecurityPanel(e) {
+  e.stopPropagation();
+  const panel = document.getElementById('security-panel');
+  if (!panel.classList.contains('open')) {
+    document.querySelector(`input[name="sec-pass"][value="${securitySettings.passStorage}"]`).checked = true;
+    document.getElementById('sec-export-pass').checked = securitySettings.exportPass;
+  }
+  panel.classList.toggle('open');
+}
+
+function closeSecurityPanel() {
+  document.getElementById('security-panel').classList.remove('open');
+}
+
+function onSecurityChange() {
+  securitySettings.passStorage = document.querySelector('input[name="sec-pass"]:checked')?.value || 'localStorage';
+  securitySettings.exportPass  = document.getElementById('sec-export-pass').checked;
+  localStorage.setItem('lh_security', JSON.stringify(securitySettings));
+  updateSecurityBtn();
+}
+
+function updateSecurityBtn() {
+  const btn = document.getElementById('security-btn');
+  if (!btn) return;
+  const isRam = securitySettings.passStorage === 'ram';
+  btn.classList.toggle('active', isRam);
+  btn.title = isRam ? 'Bezpieczeństwo: tryb RAM aktywny' : 'Ustawienia bezpieczeństwa';
+}
+
+// Web Crypto helpers
+async function encryptData(data, password) {
+  const enc  = new TextEncoder();
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv   = crypto.getRandomValues(new Uint8Array(12));
+  const km   = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+  const key  = await crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+    km, { name: 'AES-GCM', length: 256 }, false, ['encrypt']
+  );
+  const buf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(JSON.stringify(data)));
+  const b64 = arr => btoa(String.fromCharCode(...new Uint8Array(arr)));
+  return { _encrypted: true, alg: 'AES-GCM-PBKDF2', salt: b64(salt), iv: b64(iv), data: b64(buf) };
+}
+
+async function decryptData(enc, password) {
+  const te  = new TextEncoder();
+  const dec = new TextDecoder();
+  const b   = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const km  = await crypto.subtle.importKey('raw', te.encode(password), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: b(enc.salt), iterations: 100000, hash: 'SHA-256' },
+    km, { name: 'AES-GCM', length: 256 }, false, ['decrypt']
+  );
+  const buf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b(enc.iv) }, key, b(enc.data));
+  return JSON.parse(dec.decode(buf));
+}
+
+// =====================
 // INIT
 // =====================
 document.addEventListener('DOMContentLoaded', function() {
   applyTheme(currentTheme);
+  renderNav();
   document.getElementById('saved-count').textContent = savedLeads.length;
-  updateLoginUI();
+  updateLoginBtn();
   updateCredsBadge();
   renderSources();
+  renderQuickQueries();
+  updateSecurityBtn();
   updateScheduleUI();
   const initCfg = loadSchedule();
   if (initCfg.enabled) startScheduleTimer();
 });
 </script>
+
 
 <!-- AUTO-SEARCH TOAST -->
 <div class="autosearch-toast" id="autosearch-toast">
