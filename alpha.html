@@ -232,26 +232,6 @@ body {
 .search-btn:active { transform: none; }
 .search-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-.search-tags {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 12px;
-  align-items: center;
-}
-.search-tag-label { font-size: 0.72rem; color: var(--text-dim); }
-.preset-tag {
-  font-size: 0.75rem;
-  padding: 4px 12px;
-  border: 1px solid var(--border2);
-  border-radius: 20px;
-  background: var(--surface2);
-  color: var(--text-mid);
-  cursor: pointer;
-  transition: all 0.12s;
-  font-family: 'Outfit', sans-serif;
-}
-.preset-tag:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 
 /* SOURCES GRID */
 .sources-header {
@@ -1792,15 +1772,6 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
           <button class="search-btn" onclick="doSearch()" id="search-btn">
             <span id="search-btn-icon">🔍</span> Szukaj
           </button>
-        </div>
-        <div class="search-tags">
-          <span class="search-tag-label">Przykłady:</span>
-          <span class="preset-tag" onclick="setQuery('szukam szkoleń z Excela')">Szkolenia Excel</span>
-          <span class="preset-tag" onclick="setQuery('potrzebuję artykułów biurowych hurt')">Art. biurowe</span>
-          <span class="preset-tag" onclick="setQuery('polecacie programistę PHP freelancer')">PHP dev</span>
-          <span class="preset-tag" onclick="setQuery('szukam agencji SEO dla firmy')">Agencja SEO</span>
-          <span class="preset-tag" onclick="setQuery('potrzebuję tłumacza angielski')">Tłumacz</span>
-          <span class="preset-tag" onclick="setQuery('szukam dostawcy kawy do biura')">Kawa do biura</span>
         </div>
       </div>
 
@@ -3693,68 +3664,7 @@ function renderCredentials() {
 // =====================
 // KEYWORDS
 // =====================
-function getDefaultKeywordSets() {
-  return [
-    {
-      id: 10001, name: 'Frazy ogólne',
-      phrases: ['szukam', 'potrzebuję', 'polecacie', 'poszukuję', 'pomożecie'],
-      links: [
-        { sourceId: 1,  subforum: '' },
-        { sourceId: 3,  subforum: '' },
-        { sourceId: 9,  subforum: 'https://www.olx.pl/uslugi/' },
-        { sourceId: 11, subforum: 'https://reddit.com/r/Polska/' },
-        { sourceId: 12, subforum: '' },
-      ]
-    },
-    {
-      id: 10002, name: 'Frazy IT i programowanie',
-      phrases: ['szukam', 'potrzebuję', 'pomoc', 'oferta', 'zlecę', 'szukam wykonawcy'],
-      links: [
-        { sourceId: 2,  subforum: 'https://4programmers.net/Forum/Praca' },
-        { sourceId: 2,  subforum: 'https://4programmers.net/Forum/Oferty' },
-        { sourceId: 11, subforum: 'https://reddit.com/r/PracaIT/' },
-        { sourceId: 13, subforum: 'https://freelancer.pl/zlecenia/' },
-      ]
-    },
-    {
-      id: 10003, name: 'Frazy biznesowe',
-      phrases: ['szukam dostawcy', 'polecacie firmę', 'potrzebuję usługi', 'firma'],
-      links: [
-        { sourceId: 4, subforum: 'https://forum.bankier.pl/' },
-      ]
-    },
-    {
-      id: 10004, name: 'Frazy prawne',
-      phrases: ['szukam prawnika', 'potrzebuję porady', 'pomoc prawna'],
-      links: [
-        { sourceId: 15, subforum: '' },
-      ]
-    },
-    {
-      id: 10005, name: 'Frazy rekrutacja i praca',
-      phrases: ['szukam', 'hiring', 'rekrutacja', 'oferta', 'looking for', 'need vendor'],
-      links: [
-        { sourceId: 5, subforum: '' },
-        { sourceId: 6, subforum: '' },
-      ]
-    },
-    {
-      id: 10006, name: 'Frazy edukacja i szkolenia',
-      phrases: ['szukam szkolenia', 'potrzebuję kursu', 'szukam kursu'],
-      links: [
-        { sourceId: 14, subforum: '' },
-      ]
-    },
-  ];
-}
-
-let KEYWORD_SETS = (() => {
-  const stored = localStorage.getItem('lh_kw_sets');
-  if (stored) return JSON.parse(stored);
-  const defaults = getDefaultKeywordSets();
-  localStorage.setItem('lh_kw_sets', JSON.stringify(defaults));
-  return defaults;
-})();
+let KEYWORD_SETS = JSON.parse(localStorage.getItem('lh_kw_sets') || '[]');
 let editingKwId = null;
 
 function saveKeywordSets() {
