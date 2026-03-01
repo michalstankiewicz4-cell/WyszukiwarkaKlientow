@@ -400,6 +400,22 @@ body {
 .badge-it { background: #f0e8fc; color: #6a25a8; }
 .badge-biznes { background: #e8f5f5; color: #1a7a7a; }
 .badge-wyszukiwarka { background: #e0f2fe; color: #0369a1; }
+.import-pending-badge {
+  font-size: 0.65rem; font-weight: 700; padding: 2px 7px;
+  border-radius: 5px; background: #fef3e2; color: #b07800;
+  border: 1px solid rgba(245,158,11,0.2); margin-top: 2px; display: inline-block;
+}
+.import-approve-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 10px; background: #fef3e2; border-radius: 8px;
+  border: 1px solid rgba(245,158,11,0.35); margin-bottom: 10px;
+  font-size: 0.78rem; color: #b07800;
+}
+.import-approve-bar button {
+  padding: 4px 12px; background: #f59e0b; color: white;
+  border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.78rem;
+}
+.import-approve-bar button:hover { background: #d97706; }
 
 .source-toggle {
   position: relative;
@@ -2449,6 +2465,14 @@ function sourceCardHTML(s, fullSettings = false) {
       <span class="chevron">▾</span> Ustawienia
     </button>
     <div class="source-card-body" id="sbody-${s.id}">
+      ${s.importedPending ? `<div class="import-approve-bar"><span>📥 Źródło zaimportowane — sprawdź dane i zatwierdź</span><button onclick="approveSource(${s.id})">✓ Zatwierdź</button></div>` : ''}
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div class="field-label" style="margin:0">Wymaga logowania</div>
+        <label class="source-toggle">
+          <input type="checkbox" ${s.loginRequired?'checked':''} onchange="updateSource(${s.id},'loginRequired',this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
         <div class="field-label" style="margin:0">Dane logowania</div>
         ${srcLoginBtnHTML(s.id)}
@@ -2490,6 +2514,7 @@ function sourceCardHTML(s, fullSettings = false) {
       <div class="source-card-top">
         <div class="source-name">${s.name}</div>
         ${typeBadge(s.type)}
+        ${s.importedPending ? '<span class="import-pending-badge">📥 Do weryfikacji</span>' : ''}
         ${s.baseUrl ? `<a class="source-base-url" href="${safeUrl(s.baseUrl)}" target="_blank" onclick="event.stopPropagation()">🔗 ${s.baseUrl.replace(/^https?:\/\//,'').replace(/^www\./,'')}</a>` : ''}
       </div>
       <div class="source-card-bottom">
@@ -2655,6 +2680,7 @@ function sourceListTableHTML(sources = null) {
         <div style="min-width:0">
           <div class="slt-name">${s.name}</div>
           ${typeBadge(s.type)}
+          ${s.importedPending ? '<span class="import-pending-badge">📥 Do weryfikacji</span>' : ''}
           ${s.baseUrl ? `<br><a class="source-base-url" href="${safeUrl(s.baseUrl)}" target="_blank">🔗 ${s.baseUrl.replace(/^https?:\/\//,'').replace(/^www\./,'').substring(0,25)}</a>` : ''}
         </div>
       </div>
@@ -2672,6 +2698,12 @@ function sourceListTableHTML(sources = null) {
         <td>
           <div style="font-size:0.7rem">${srcLoginBtnHTML(s.id)}</div>
         </td>
+        <td style="text-align:center">
+          <label class="source-toggle" style="display:inline-block">
+            <input type="checkbox" ${s.loginRequired?'checked':''} onchange="updateSource(${s.id},'loginRequired',this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </td>
         <td style="text-align:center">${enabledHTML}</td>
         <td>
           <div style="display:flex;align-items:center;gap:4px">
@@ -2682,7 +2714,7 @@ function sourceListTableHTML(sources = null) {
         </td>
       </tr>
       <tr class="slt-settings-row" id="slts-${s.id}" style="display:none">
-        <td colspan="8">
+        <td colspan="9">
           <div class="slt-settings-inner">
             <div class="field-label">Silnik wyszukiwania</div>
             <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value)">
@@ -2714,6 +2746,7 @@ function sourceListTableHTML(sources = null) {
         <th>Grupy fraz</th>
         <th>Silnik</th>
         <th>Logowanie</th>
+        <th style="text-align:center">Wymaga logowania</th>
         <th style="text-align:center">Aktywne</th>
         <th></th>
       </tr></thead>
@@ -2876,6 +2909,15 @@ function removeSubforum(sourceId, idx) {
   const list = document.getElementById(`sflist-${sourceId}`);
   if (list) list.innerHTML = s.subforums.map((url, i) => subforumRowHTML(sourceId, i, url)).join('');
   refreshSubforumCount(sourceId);
+}
+
+function approveSource(id) {
+  const s = SOURCES.find(x => x.id === id);
+  if (!s) return;
+  delete s.importedPending;
+  saveSources();
+  renderSources();
+  renderSourcesManage();
 }
 
 function refreshSubforumCount(sourceId) {
@@ -3574,72 +3616,68 @@ function importSources() {
       if (imp.googleKey && typeof imp.googleKey === 'object') imp.googleKey = imp.googleKey.key || '';
 
       // ── Podsumowanie ──────────────────────────────────────────
-      const lines = [`Znaleziono w pliku (${db.exportedAt?.slice(0,10) || '?'}):`];
-      if (imp.sources.length)   lines.push(`• ${imp.sources.length} źródeł`);
-      if (imp.keywordSets)      lines.push(`• ${imp.keywordSets.length} zestawów fraz`);
-      if (imp.scripts)          lines.push(`• ${imp.scripts.length} skryptów`);
-      if (imp.savedLeads)       lines.push(`• ${imp.savedLeads.length} zapisanych leadów`);
-      if (imp.creds)            lines.push(`• loginy do źródeł`);
+      const lines = [`Zaimportować z pliku (${db.exportedAt?.slice(0,10) || '?'})?`];
+      if (imp.sources.length)      lines.push(`• ${imp.sources.length} źródeł (jako nowe, do weryfikacji)`);
+      if (imp.keywordSets?.length) lines.push(`• ${imp.keywordSets.length} zestawów fraz`);
+      if (imp.scripts?.length)     lines.push(`• ${imp.scripts.length} skryptów`);
+      if (imp.savedLeads?.length)  lines.push(`• ${imp.savedLeads.length} zapisanych leadów`);
+      if (imp.creds)               lines.push(`• loginy do źródeł`);
       if (imp.defaultLogin?.email) lines.push(`• domyślne dane logowania`);
-      if (imp.googleKey)        lines.push(`• klucz Google API`);
-      if (imp.googleCx)         lines.push(`• Google CX`);
-      if (imp.schedule)         lines.push(`• ustawienia harmonogramu`);
-      lines.push('\nOK → Dołącz do istniejących danych\nAnuluj → Zastąp wszystkie dane');
+      if (imp.googleKey)           lines.push(`• klucz Google API`);
+      if (imp.googleCx)            lines.push(`• Google CX`);
 
-      const appendMode = confirm(lines.join('\n'));
+      if (!confirm(lines.join('\n'))) return;
 
-      // ── Źródła ────────────────────────────────────────────────
+      // ── Źródła — zawsze jako nowe, oznaczone do weryfikacji ───
+      const idMap = {}; // stare ID → nowe ID
+      const today = new Date().toISOString().split('T')[0];
       if (imp.sources.length) {
-        if (appendMode) {
-          imp.sources.forEach(s => {
-            const newId = nextId++;
-            SOURCES.push({ desc: '', ...s, id: newId, dateAdded: s.dateAdded || new Date().toISOString().split('T')[0] });
-          });
-        } else {
-          SOURCES.length = 0;
-          imp.sources.forEach(s => SOURCES.push({ desc: '', ...s }));
-          nextId = Math.max(...SOURCES.map(s => s.id), 0) + 1;
-        }
+        imp.sources.forEach(s => {
+          const newId = nextId++;
+          idMap[s.id] = newId;
+          SOURCES.push({ desc: '', ...s, id: newId, importedPending: true,
+            dateAdded: s.dateAdded || today });
+        });
         saveSources();
       }
 
-      // ── Zestawy fraz ──────────────────────────────────────────
+      // ── Zestawy fraz — zawsze jako nowe, remapuj sourceId ─────
       if (imp.keywordSets) {
-        if (!appendMode) KEYWORD_SETS.length = 0;
         imp.keywordSets.forEach(ks => {
-          if (!KEYWORD_SETS.find(k => k.id === ks.id)) KEYWORD_SETS.push(ks);
+          const newKsId = Date.now() + Math.floor(Math.random() * 1e6);
+          KEYWORD_SETS.push({
+            ...ks,
+            id: newKsId,
+            links: ks.links.map(l => ({ ...l, sourceId: idMap[l.sourceId] ?? l.sourceId })),
+          });
         });
         saveKeywordSets();
         syncKeywordSetsToSources();
       }
 
-      // ── Skrypty ───────────────────────────────────────────────
+      // ── Skrypty — zawsze jako nowe ────────────────────────────
       if (imp.scripts) {
-        if (!appendMode) SCRIPTS.length = 0;
         imp.scripts.forEach(s => {
-          if (!SCRIPTS.find(x => x.id === s.id)) SCRIPTS.push(s);
+          const newId = scriptNextId++;
+          SCRIPTS.push({ ...s, id: newId });
         });
-        scriptNextId = SCRIPTS.length ? Math.max(...SCRIPTS.map(s => s.id)) + 1 : 1;
         saveScripts();
       }
 
-      // ── Zapisane leady ────────────────────────────────────────
+      // ── Zapisane leady — zawsze jako nowe ────────────────────
       if (imp.savedLeads) {
-        if (!appendMode) savedLeads.length = 0;
-        imp.savedLeads.forEach(l => {
-          if (!savedLeads.find(x => x.id === l.id)) savedLeads.push(l);
-        });
+        imp.savedLeads.forEach(l => savedLeads.push({ ...l, id: Date.now() + Math.floor(Math.random() * 1e6) }));
         localStorage.setItem('lh_saved', JSON.stringify(savedLeads));
       }
 
       // ── Dane wrażliwe ─────────────────────────────────────────
-      if (imp.creds)         saveCreds(appendMode ? { ...loadCreds(), ...imp.creds } : imp.creds);
-      if (imp.defaultLogin)  saveDefaultLoginToStorage(imp.defaultLogin);
-      if (imp.googleKey)     saveGoogleKey(imp.googleKey);
-      if (imp.googleCx)      saveGoogleCx(imp.googleCx);
+      if (imp.creds)        saveCreds({ ...loadCreds(), ...imp.creds });
+      if (imp.defaultLogin) saveDefaultLoginToStorage(imp.defaultLogin);
+      if (imp.googleKey)    saveGoogleKey(imp.googleKey);
+      if (imp.googleCx)     saveGoogleCx(imp.googleCx);
 
       // ── Ustawienia ────────────────────────────────────────────
-      if (imp.schedule && !appendMode) saveSchedule(imp.schedule);
+      if (imp.schedule) saveSchedule(imp.schedule);
 
       // ── Re-render ─────────────────────────────────────────────
       renderSources();
@@ -3807,6 +3845,12 @@ function renderCredentials() {
             ? `<span class="creds-status set">● Skonfigurowane</span>`
             : `<span class="creds-status unset">○ Brak</span>`}
         </td>
+        <td style="text-align:center">
+          <label class="source-toggle" style="display:inline-block">
+            <input type="checkbox" ${s.loginRequired?'checked':''} onchange="updateSource(${s.id},'loginRequired',this.checked);renderCredentials()">
+            <span class="toggle-slider"></span>
+          </label>
+        </td>
         <td style="white-space:nowrap">
           <button class="creds-edit-btn" onclick="openSrcCredModal(${s.id})">${cred ? '✏ Zmień' : '+ Dodaj'}</button>
           ${cred ? `<button class="creds-clear-btn" onclick="clearSrcCred(${s.id})">🗑</button>` : ''}
@@ -3815,7 +3859,7 @@ function renderCredentials() {
   }
 
   function makeGroupHeader(label, count, extraClass) {
-    return `<tr class="creds-group-header${extraClass ? ' '+extraClass : ''}"><td colspan="6"><span class="creds-group-label">${label}</span><span class="creds-group-count">${count}</span></td></tr>`;
+    return `<tr class="creds-group-header${extraClass ? ' '+extraClass : ''}"><td colspan="7"><span class="creds-group-label">${label}</span><span class="creds-group-count">${count}</span></td></tr>`;
   }
 
   let rows = '';
@@ -3853,6 +3897,7 @@ function renderCredentials() {
         <th>Login</th>
         <th>Hasło</th>
         <th>Status</th>
+        <th style="text-align:center">Wymaga logowania</th>
         <th>Akcje</th>
       </tr></thead>
       <tbody>${rows}</tbody>
