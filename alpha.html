@@ -322,17 +322,15 @@ body {
   position: relative;
 }
 .favorite-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
   background: none;
   border: none;
-  font-size: 1rem;
+  font-size: 0.8rem;
   cursor: pointer;
-  padding: 4px;
+  padding: 2px 3px;
   border-radius: 4px;
   transition: all 0.12s;
   opacity: 0.4;
+  line-height: 1;
 }
 .favorite-btn:hover { opacity: 1; background: rgba(0,0,0,0.05); }
 .favorite-btn.active { opacity: 1; color: #f59e0b; }
@@ -2464,10 +2462,8 @@ function sourceCardHTML(s, fullSettings = false) {
         ${s.baseUrl ? `<a class="source-base-url" href="${safeUrl(s.baseUrl)}" target="_blank" onclick="event.stopPropagation()">🔗 ${s.baseUrl.replace(/^https?:\/\//,'').replace(/^www\./,'')}</a>` : ''}
       </div>
       ${toggleHTML}
-      <button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">
-        ${s.favorite ? '⭐' : '☆'}
-      </button>
       ${fullSettings ? `<button class="clone-btn" onclick="cloneSource(${s.id})" title="Klonuj źródło">⧉</button><button class="delete-src-btn" onclick="deleteSource(${s.id})" title="Usuń źródło">🗑</button>` : ''}
+      <button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">${s.favorite ? '⭐' : '☆'}</button>
       <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}"></div>
     </div>
     ${subforumsDisplay}
