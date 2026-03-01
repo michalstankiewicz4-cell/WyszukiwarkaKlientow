@@ -2039,50 +2039,22 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <div class="modal-title">Dodaj nowe źródło</div>
-    <div class="modal-sub">Skonfiguruj nowe miejsce przeszukiwania</div>
+    <div class="modal-sub">Podstawowe informacje — resztę skonfigurujesz w ustawieniach źródła</div>
     <div class="form-row">
       <label class="form-label">Nazwa źródła</label>
-      <input class="form-input" id="new-name" placeholder="np. Forum Moje Forum" />
+      <input class="form-input" id="new-name" placeholder="np. Forum Moje Forum" onkeydown="if(event.key==='Enter')saveNewSource()" />
     </div>
     <div class="form-row">
       <label class="form-label">Typ</label>
       <select class="form-select" id="new-type"></select>
     </div>
     <div class="form-row">
-      <label class="form-label">Silnik wyszukiwania</label>
-      <select class="form-select" id="new-engine"></select>
-    </div>
-    <div class="form-row">
       <label class="form-label">Główny URL serwisu</label>
-      <input class="form-input" id="new-baseurl" placeholder="https://forum.example.com" />
-    </div>
-    <div class="form-row">
-      <label class="form-label">URL podforum / sekcji (opcjonalnie)</label>
-      <input class="form-input" id="new-url" placeholder="https://forum.example.com/kategoria/" />
+      <input class="form-input" id="new-baseurl" placeholder="https://forum.example.com" onkeydown="if(event.key==='Enter')saveNewSource()" />
     </div>
     <div class="form-row">
       <label class="form-label">Ikona (emoji)</label>
-      <input class="form-input" id="new-icon" placeholder="🌐" maxlength="2" style="width:80px" />
-    </div>
-    <div class="form-row">
-      <label class="form-label">Opis (opcjonalnie)</label>
-      <input class="form-input" id="new-desc" placeholder="Krótki opis źródła" />
-    </div>
-    <div class="form-row">
-      <label class="form-label">Zestawy fraz i słów kluczowych</label>
-      <div class="kw-source-picker" id="new-kw-sets-picker"></div>
-      <div class="kw-hint">Frazy z zaznaczonych zestawów będą używane podczas wyszukiwania w tym źródle.</div>
-    </div>
-    <div class="form-row">
-      <label class="form-label">Skrypt (opcjonalnie)</label>
-      <div class="kw-source-picker" id="new-script-picker"></div>
-    </div>
-    <div class="form-row">
-      <label class="kw-source-row" style="cursor:pointer;padding:8px 10px;gap:10px;border-radius:6px;border:1px solid var(--border2)">
-        <input type="checkbox" id="new-login-required" checked>
-        <span class="kw-src-name">Wymaga logowania</span>
-        <span style="font-size:0.72rem;color:var(--text-dim)">zapamiętaj dane dostępowe do tego serwisu</span>
-      </label>
+      <input class="form-input" id="new-icon" placeholder="🌐" maxlength="2" style="width:80px" onkeydown="if(event.key==='Enter')saveNewSource()" />
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Anuluj</button>
@@ -3319,10 +3291,7 @@ function addSourceFromSearch(idx, encodedName, encodedUrl) {
   closeSrcSearchModal();
   document.getElementById('new-name').value = name;
   document.getElementById('new-baseurl').value = url;
-  document.getElementById('new-url').value = '';
   document.getElementById('new-icon').value = '🌐';
-  document.getElementById('new-engine').value = 'google_site';
-  renderNewSourceKwPicker();
   document.getElementById('modal-overlay').classList.add('open');
   setTimeout(() => document.getElementById('new-name').select(), 80);
 }
@@ -3337,9 +3306,6 @@ document.getElementById('src-search-modal-overlay').addEventListener('click', fu
 function openAddModal() {
   document.getElementById('new-type').innerHTML =
     Object.entries(SOURCE_TYPES).map(([v, m]) => `<option value="${v}">${m.label}</option>`).join('');
-  document.getElementById('new-engine').innerHTML = engineSelectOptions('');
-  renderNewSourceKwPicker();
-  renderNewSourceScriptPicker();
   document.getElementById('modal-overlay').classList.add('open');
   document.getElementById('new-name').focus();
 }
@@ -3380,14 +3346,8 @@ function saveNewSource() {
   const name = document.getElementById('new-name').value.trim();
   if (!name) { document.getElementById('new-name').focus(); return; }
   const type = document.getElementById('new-type').value;
-  const engine = document.getElementById('new-engine').value;
   const baseUrl = document.getElementById('new-baseurl').value.trim();
-  const url = document.getElementById('new-url').value.trim();
   const icon = document.getElementById('new-icon').value.trim() || '🌐';
-  const desc = document.getElementById('new-desc').value.trim();
-  const loginRequired = document.getElementById('new-login-required').checked;
-  const scriptRb = document.querySelector('input[name="new-script"]:checked');
-  const scriptId = scriptRb && parseInt(scriptRb.value) ? parseInt(scriptRb.value) : null;
   const newId = nextId++;
 
   SOURCES.push({
@@ -3398,36 +3358,21 @@ function saveNewSource() {
     color: (SOURCE_TYPES[type] || SOURCE_TYPES.forum).color,
     enabled: true,
     baseUrl,
-    engine,
-    subforums: url ? [url] : [''],
+    engine: '',
+    subforums: [''],
     keywords: '',
-    desc,
+    desc: '',
     favorite: false,
     dateAdded: new Date().toISOString().split('T')[0],
-    loginRequired,
-    scriptId,
+    loginRequired: true,
+    scriptId: null,
   });
   saveSources();
-
-  // Przypisz zaznaczone zestawy fraz
-  const selectedKwIds = [...document.querySelectorAll('.new-kw-cb:checked')].map(cb => parseInt(cb.dataset.id));
-  selectedKwIds.forEach(kwId => {
-    const ks = KEYWORD_SETS.find(k => k.id === kwId);
-    if (ks) ks.links.push({ sourceId: newId, subforum: url || '' });
-  });
-  if (selectedKwIds.length) {
-    saveKeywordSets();
-    syncKeywordSetsToSources();
-  }
 
   closeModal();
   document.getElementById('new-name').value = '';
   document.getElementById('new-baseurl').value = '';
-  document.getElementById('new-url').value = '';
   document.getElementById('new-icon').value = '';
-  document.getElementById('new-desc').value = '';
-  document.getElementById('new-login-required').checked = true;
-  document.getElementById('new-engine').value = 'google';
   renderSources();
   renderSourcesManage();
 
