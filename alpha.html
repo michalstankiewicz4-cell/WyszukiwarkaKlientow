@@ -448,6 +448,11 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
   padding: 3px 7px; border: 1px solid var(--border2); border-radius: 6px;
   background: var(--surface2); color: var(--text);
 }
+.src-edit-icon {
+  width: 34px; height: 34px; border: 1px solid var(--border2); border-radius: 8px;
+  background: var(--surface2); text-align: center; font-size: 1.1rem;
+  padding: 0; flex-shrink: 0; cursor: text; color: var(--text);
+}
 
 .field-label {
   font-size: 0.65rem;
@@ -2780,7 +2785,15 @@ function toggleSourceEdit(id) {
   if (!s) return;
 
   if (top.classList.contains('editing')) {
-    // switch back to view mode
+    // switch back to view mode — restore icon div from input
+    const iconInput = card.querySelector('.src-edit-icon');
+    if (iconInput) {
+      const iconDiv = document.createElement('div');
+      iconDiv.className = 'source-icon';
+      iconDiv.style.background = s.color || '#e8f0fc';
+      iconDiv.textContent = s.icon;
+      iconInput.replaceWith(iconDiv);
+    }
     top.classList.remove('editing');
     btn.classList.remove('active');
     btn.title = 'Edytuj nazwę, typ i URL';
@@ -2790,7 +2803,8 @@ function toggleSourceEdit(id) {
       ${s.baseUrl ? `<a class="source-base-url" href="${safeUrl(s.baseUrl)}" target="_blank" onclick="event.stopPropagation()">🔗 ${s.baseUrl.replace(/^https?:\/\//, '').replace(/^www\./, '')}</a>` : ''}
     `;
   } else {
-    // switch to edit mode
+    // switch to edit mode — replace icon div with input
+    const iconEl = card.querySelector('.source-icon');
     top.classList.add('editing');
     btn.classList.add('active');
     btn.title = 'Zatwierdź';
@@ -2802,6 +2816,15 @@ function toggleSourceEdit(id) {
       <select class="src-edit-type" onchange="updateSourceType(${id},this.value)">${typeOptions}</select>
       <input class="src-edit-url" type="url" value="${s.baseUrl || ''}" oninput="updateBaseUrl(${id},this.value)" placeholder="https://..." />
     `;
+    if (iconEl) {
+      const iconInput = document.createElement('input');
+      iconInput.className = 'src-edit-icon';
+      iconInput.value = s.icon || '';
+      iconInput.maxLength = 2;
+      iconInput.title = 'Ikona (emoji)';
+      iconInput.oninput = () => updateSource(id, 'icon', iconInput.value);
+      iconEl.replaceWith(iconInput);
+    }
     top.querySelector('.src-edit-name').focus();
   }
 }
