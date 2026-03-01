@@ -2436,10 +2436,8 @@ function sourceCardHTML(s, fullSettings = false) {
       <button class="subforum-add-btn" onclick="addSubforum(${s.id})">+ Dodaj kolejny link</button>
       <div class="field-label" style="margin-top:10px">Opis źródła <span style="font-weight:400;color:var(--text-dim)">(widoczny po najechaniu na kafelek)</span></div>
       <textarea class="field-input keywords-input" id="sdesc-${s.id}" placeholder="Krótki opis źródła..." maxlength="255" oninput="updateSource(${s.id},'desc',this.value)" style="min-height:52px;resize:vertical">${s.desc||''}</textarea>
-      <div class="field-label" style="margin-top:10px">Powiązane zestawy fraz</div>
-      <div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:3px">${getSourceKwSetsHTML(s.id)}</div>
-      <div class="field-label" style="margin-top:10px">Słowa kluczowe aktywne (z zestawów)</div>
-      <textarea class="field-input keywords-input" id="skw-${s.id}" placeholder="np. szukam, polecacie, potrzebuję..." oninput="updateSource(${s.id},'keywords',this.value)" title="Zarządzaj frazami przez zakładkę Frazy i słowa kluczowe">${s.keywords||''}</textarea>
+      <div class="field-label" style="margin-top:10px">Zestawy fraz i słów kluczowych</div>
+      ${srcKwPickerHTML(s.id)}
     </div>` : '';
 
   const toggleHTML = fullSettings ? `
@@ -2672,10 +2670,8 @@ function sourceListTableHTML(sources = null) {
             <button class="subforum-add-btn" onclick="addSubforum(${s.id})">+ Dodaj kolejny link</button>
             <div class="field-label" style="margin-top:10px">Opis źródła <span style="font-weight:400;color:var(--text-dim)">(widoczny po najechaniu na kafelek)</span></div>
             <textarea class="field-input keywords-input" id="sdesc-${s.id}" placeholder="Krótki opis źródła..." maxlength="255" oninput="updateSource(${s.id},'desc',this.value)" style="min-height:52px;resize:vertical">${s.desc||''}</textarea>
-            <div class="field-label" style="margin-top:10px">Powiązane zestawy fraz</div>
-            <div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:3px">${getSourceKwSetsHTML(s.id)}</div>
-            <div class="field-label" style="margin-top:10px">Słowa kluczowe aktywne (z zestawów)</div>
-            <textarea class="field-input keywords-input" id="skw-${s.id}" placeholder="np. szukam, polecacie, potrzebuję..." oninput="updateSource(${s.id},'keywords',this.value)">${s.keywords||''}</textarea>
+            <div class="field-label" style="margin-top:10px">Zestawy fraz i słów kluczowych</div>
+            ${srcKwPickerHTML(s.id)}
           </div>
         </td>
       </tr>
@@ -3724,6 +3720,36 @@ function syncKeywordSetsToSources() {
     src.keywords = merged.join(', ');
   });
   saveSources();
+}
+
+function srcKwPickerHTML(sourceId) {
+  if (!KEYWORD_SETS.length)
+    return '<div style="padding:8px 10px;font-size:0.72rem;color:var(--text-dim)">Brak zestawów — dodaj je w zakładce Frazy i słowa kluczowe.</div>';
+  return '<div class="kw-source-picker">' + KEYWORD_SETS.map(ks => {
+    const linked = ks.links.some(l => l.sourceId === sourceId);
+    return `<label class="kw-source-row">
+      <input type="checkbox" ${linked ? 'checked' : ''} onchange="toggleSrcKwLink(${sourceId}, ${ks.id}, this.checked)">
+      <span class="kw-src-name">${ks.name}</span>
+      <span style="font-size:0.62rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px">${ks.phrases.slice(0,3).join(', ')}${ks.phrases.length > 3 ? '…' : ''}</span>
+    </label>`;
+  }).join('') + '</div>';
+}
+
+function toggleSrcKwLink(sourceId, kwId, checked) {
+  const ks = KEYWORD_SETS.find(k => k.id === kwId);
+  if (!ks) return;
+  if (checked) {
+    if (!ks.links.some(l => l.sourceId === sourceId)) {
+      const src = SOURCES.find(s => s.id === sourceId);
+      const subforum = (src && src.subforums && src.subforums.find(u => u.trim())) || '';
+      ks.links.push({ sourceId, subforum });
+    }
+  } else {
+    ks.links = ks.links.filter(l => l.sourceId !== sourceId);
+  }
+  saveKeywordSets();
+  syncKeywordSetsToSources();
+  renderQuickQueries();
 }
 
 function getSourceKwSetsHTML(sourceId) {
