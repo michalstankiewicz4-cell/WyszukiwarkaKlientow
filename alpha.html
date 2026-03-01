@@ -1598,7 +1598,8 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
 .script-textarea:focus { border-color: var(--accent); }
 
 /* ENGINES PAGE */
-.engines-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+.engines-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 700px) { .engines-grid { grid-template-columns: 1fr; } }
 .engine-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
 .engine-card-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
 .engine-card-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
@@ -1606,6 +1607,14 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
 .engine-card-count { font-size: 0.68rem; font-weight: 700; background: var(--border2); color: var(--text-dim); padding: 2px 8px; border-radius: 9px; }
 .engine-cfg-btn { border: none; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; padding: 3px 8px; font-size: 0.75rem; cursor: pointer; color: var(--text-dim); transition: all 0.15s; }
 .engine-cfg-btn:hover { border-color: var(--accent); color: var(--accent); }
+.engine-instructions { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.engine-instructions-title { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 8px; }
+.engine-step { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; font-size: 0.73rem; color: var(--text-mid); line-height: 1.4; }
+.engine-step:last-child { margin-bottom: 0; }
+.engine-step-num { width: 16px; height: 16px; border-radius: 50%; background: var(--border2); color: var(--text-dim); font-size: 0.6rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.engine-sources-section { padding: 10px 16px 14px; }
+.engine-sources-title { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 8px; }
+.engine-no-sources { font-size: 0.73rem; color: var(--text-dim); font-style: italic; }
 .engine-source-list { padding: 6px 0; }
 .engine-source-row { display: flex; align-items: center; gap: 10px; padding: 7px 16px; transition: background 0.1s; }
 .engine-source-row:hover { background: var(--bg); }
@@ -4184,42 +4193,64 @@ function deleteEngineSource(id) {
 
 function renderEngines() {
   const container = document.getElementById('engines-content');
-  const order = ['google','google_site','reddit'];
 
-  const cards = order.map(key => {
-    const meta = ENGINE_META[key] || { label: key, color: '#999' };
-    const sources = SOURCES.filter(s => (s.engine || 'internal') === key);
-    if (!sources.length) return '';
+  const ENGINE_INSTRUCTIONS = {
+    google: [
+      'Wejdź na <b>programmablesearchengine.google.com</b> i utwórz nowy silnik wyszukiwania (cała sieć).',
+      'Skopiuj <b>Search Engine ID (CX)</b> z ustawień silnika.',
+      'Wejdź na <b>console.cloud.google.com</b> → Włącz <b>Custom Search API</b> → Utwórz klucz API.',
+      'Kliknij <b>🔑 Konfiguruj</b> poniżej i wpisz klucz API oraz CX.',
+      'W zarządzaniu źródłami przypisz źródłom silnik <b>Google Custom Search</b>.',
+    ],
+    google_site: [
+      'Wejdź na <b>programmablesearchengine.google.com</b> i utwórz silnik ograniczony do konkretnych domen.',
+      'Dodaj domeny serwisów do przeszukiwania w konfiguracji silnika, skopiuj <b>CX</b>.',
+      'Użyj tego samego <b>klucza API</b> co dla Google Custom Search (jeden klucz wystarcza).',
+      'Kliknij <b>🔑 Konfiguruj</b> poniżej i wpisz klucz API oraz CX.',
+      'Przypisz źródłom silnik <b>Google Custom Search (site:)</b> w zarządzaniu źródłami.',
+    ],
+    reddit: [
+      'Reddit nie wymaga żadnej konfiguracji — używa <b>publicznego API</b>.',
+      'W zarządzaniu źródłami dodaj źródła z domeną <b>reddit.com</b>.',
+      'Przypisz im silnik <b>Reddit</b> i wpisz URL subredditu jako podforum, np. <b>r/Poland</b>.',
+      'Wyszukiwanie pobiera posty i komentarze pasujące do fraz kluczowych.',
+    ],
+  };
 
-    const rows = sources.map(s => {
-      const domain = s.baseUrl ? s.baseUrl.replace('https://','').replace('http://','').replace('www.','').split('/')[0] : '';
-      const apiInfo = (s.engine === 'api' && s.apiUrl) ? s.apiUrl.replace('https://','').replace('http://','').split('/')[0] : '';
+  const cards = Object.keys(ENGINE_META).map(key => {
+    const meta = ENGINE_META[key];
+    const sources = SOURCES.filter(s => s.engine === key);
+    const isGoogle = key === 'google' || key === 'google_site';
+    const googleConfigured = isGoogle && !!(loadGoogleKey() && loadGoogleCx());
+
+    const steps = (ENGINE_INSTRUCTIONS[key] || [])
+      .map((txt, i) => `<div class="engine-step"><div class="engine-step-num">${i + 1}</div><div>${txt}</div></div>`)
+      .join('');
+
+    const configBanner = isGoogle ? `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid var(--border);font-size:0.72rem">
+        <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:${googleConfigured ? '#10b981' : 'var(--text-dim)'}${googleConfigured ? ';box-shadow:0 0 4px #10b98199' : ''}"></div>
+        <span style="flex:1;color:var(--text-mid)">API Key: ${googleConfigured ? '••••••••' : 'nieskonfigurowany'}</span>
+        <button onclick="openGoogleCfg()" style="font-family:'Outfit',sans-serif;font-size:0.7rem;font-weight:600;padding:3px 10px;border:1px solid var(--border2);border-radius:5px;background:transparent;color:var(--text-dim);cursor:pointer">🔑 Konfiguruj</button>
+      </div>` : `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid var(--border);font-size:0.72rem">
+        <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:#10b981;box-shadow:0 0 4px #10b98199"></div>
+        <span style="color:var(--text-mid)">API publiczne — bez konfiguracji</span>
+      </div>`;
+
+    const sourceRows = sources.length ? sources.map(s => {
+      const domain = s.baseUrl ? s.baseUrl.replace(/https?:\/\/(www\.)?/, '').split('/')[0] : '';
       return `
         <div class="engine-source-row">
           <div class="engine-source-icon" style="background:${s.color||'#e8f0fc'}">${s.icon}</div>
           <div style="flex:1;min-width:0">
             <div class="engine-source-name">${s.name}</div>
-            ${apiInfo ? `<div class="engine-source-url" title="${s.apiUrl}">⚡ ${apiInfo}</div>` : domain ? `<div class="engine-source-url" title="${s.baseUrl}">${domain}</div>` : ''}
+            ${domain ? `<div class="engine-source-url" title="${s.baseUrl}">${domain}</div>` : ''}
           </div>
           <div class="engine-source-status ${s.enabled ? 'on' : 'off'}" title="${s.enabled ? 'Aktywne' : 'Nieaktywne'}"></div>
           <button class="engine-source-del" onclick="deleteEngineSource(${s.id})" title="Odepnij od silnika">✕</button>
         </div>`;
-    }).join('');
-
-    const isGoogleEngine = key === 'google' || key === 'google_site';
-    const googleConfigured = isGoogleEngine && !!(loadGoogleKey() && loadGoogleCx());
-    const googleBanner = isGoogleEngine ? `
-      <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);font-size:0.72rem">
-        <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:${googleConfigured ? '#10b981' : 'var(--text-dim)'}${googleConfigured ? ';box-shadow:0 0 4px #10b98199' : ''}"></div>
-        <span style="flex:1;color:var(--text-mid)">API Key: ${googleConfigured ? '••••••••' : 'nieskonfigurowany'}</span>
-        <button onclick="openGoogleCfg()" style="font-family:'Outfit',sans-serif;font-size:0.7rem;font-weight:600;padding:3px 10px;border:1px solid var(--border2);border-radius:5px;background:transparent;color:var(--text-dim);cursor:pointer">🔑 Konfiguruj</button>
-      </div>` : '';
-
-    const redditBanner = key === 'reddit' ? `
-      <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);font-size:0.72rem">
-        <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:#10b981;box-shadow:0 0 4px #10b98199"></div>
-        <span style="flex:1;color:var(--text-mid)">API publiczne — bez konfiguracji</span>
-      </div>` : '';
+    }).join('') : `<div class="engine-no-sources">Brak podpiętych źródeł</div>`;
 
     return `
       <div class="engine-card">
@@ -4228,14 +4259,19 @@ function renderEngines() {
           <div class="engine-card-name">${meta.label}</div>
           <div class="engine-card-count">${sources.length} źródeł</div>
         </div>
-        ${googleBanner}${redditBanner}
-        <div class="engine-source-list">${rows}</div>
+        ${configBanner}
+        <div class="engine-instructions">
+          <div class="engine-instructions-title">Konfiguracja krok po kroku</div>
+          ${steps}
+        </div>
+        <div class="engine-sources-section">
+          <div class="engine-sources-title">Podpięte źródła</div>
+          <div class="engine-source-list">${sourceRows}</div>
+        </div>
       </div>`;
   }).join('');
 
-  container.innerHTML = cards
-    ? `<div class="engines-grid">${cards}</div>`
-    : `<div class="empty-state"><div class="icon">🔎</div><h3>Brak źródeł</h3></div>`;
+  container.innerHTML = `<div class="engines-grid">${cards}</div>`;
 }
 
 // =====================
