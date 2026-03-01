@@ -1059,6 +1059,8 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
 }
 .sched-toggle input:checked + .sched-slider { background: #10b981; }
 .sched-toggle input:checked + .sched-slider::before { transform: translateX(18px); }
+.mode-toggle-wrap { display: flex; align-items: center; gap: 5px; }
+.mode-label { font-size: 0.9rem; line-height: 1; }
 .sched-select, .sched-input {
   width: 100%; font-family: 'Outfit', sans-serif; font-size: 0.82rem;
   padding: 8px 10px; border: 1px solid var(--border); border-radius: 7px;
@@ -1804,6 +1806,18 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
         </button>
       </div>
       <div class="topbar-divider"></div>
+      <!-- Tryb użytkownik / admin -->
+      <div class="topbar-section">
+        <div class="mode-toggle-wrap" title="Użytkownik — widok uproszczony&#10;Admin — pełny dostęp">
+          <span class="mode-label">👤</span>
+          <label class="sched-toggle">
+            <input type="checkbox" id="mode-toggle" onchange="onModeToggle(this.checked)">
+            <span class="sched-slider"></span>
+          </label>
+          <span class="mode-label">⚙️</span>
+        </div>
+      </div>
+      <div class="topbar-divider"></div>
       <!-- Sekcja 3: Język i info -->
       <div class="topbar-section">
         <div class="lang-switcher" title="Zmiana języka – wkrótce dostępna">
@@ -2284,22 +2298,55 @@ function saveSources() {
 // PAGES — jedyne źródło prawdy dla nawigacji
 // =====================
 const PAGES = [
-  { id: 'search',      icon: '🔍', label: 'Szukaj klientów',       subtitle: 'Przeszukuj fora i serwisy społecznościowe',        badge: null,          render: null },
-  { id: 'saved',       icon: '🔖', label: 'Zapisane leady',         subtitle: 'Twoja lista potencjalnych klientów',               badge: 'saved-count', render: () => renderSaved() },
-  { id: 'sources',     icon: '⚙️', label: 'Zarządzaj źródłami',     subtitle: 'Konfiguruj i edytuj źródła danych',                badge: null,          render: () => renderSourcesManage() },
-  { id: 'keywords',    icon: '🏷️', label: 'Frazy i słowa kluczowe', subtitle: 'Zestawy fraz powiązane z wybranymi źródłami',       badge: null,          render: () => renderKeywords() },
-  { id: 'engines',     icon: '🔎', label: 'Silniki wyszukiwań',     subtitle: 'Źródła pogrupowane według metody wyszukiwania',     badge: null,          render: () => renderEngines() },
-  { id: 'scripts',     icon: '📜', label: 'Skrypty',                subtitle: 'Skrypty dla niestandardowych wyszukiwań',           badge: null,          render: () => renderScripts() },
-  { id: 'credentials', icon: '🔐', label: 'Loginy do źródeł',       subtitle: 'Zarządzaj danymi dostępowymi do każdego źródła',    badge: 'creds-count', render: () => renderCredentials() },
+  { id: 'search',      userVisible: true,  icon: '🔍', label: 'Szukaj klientów',       subtitle: 'Przeszukuj fora i serwisy społecznościowe',        badge: null,          render: null },
+  { id: 'saved',       userVisible: true,  icon: '🔖', label: 'Zapisane leady',         subtitle: 'Twoja lista potencjalnych klientów',               badge: 'saved-count', render: () => renderSaved() },
+  { id: 'sources',     userVisible: false, icon: '⚙️', label: 'Zarządzaj źródłami',     subtitle: 'Konfiguruj i edytuj źródła danych',                badge: null,          render: () => renderSourcesManage() },
+  { id: 'keywords',    userVisible: false, icon: '🏷️', label: 'Frazy i słowa kluczowe', subtitle: 'Zestawy fraz powiązane z wybranymi źródłami',       badge: null,          render: () => renderKeywords() },
+  { id: 'engines',     userVisible: false, icon: '🔎', label: 'Silniki wyszukiwań',     subtitle: 'Źródła pogrupowane według metody wyszukiwania',     badge: null,          render: () => renderEngines() },
+  { id: 'scripts',     userVisible: false, icon: '📜', label: 'Skrypty',                subtitle: 'Skrypty dla niestandardowych wyszukiwań',           badge: null,          render: () => renderScripts() },
+  { id: 'credentials', userVisible: false, icon: '🔐', label: 'Loginy do źródeł',       subtitle: 'Zarządzaj danymi dostępowymi do każdego źródła',    badge: 'creds-count', render: () => renderCredentials() },
 ];
+
+let appMode = localStorage.getItem('lh_mode') || 'admin';
 
 function renderNav() {
   const container = document.getElementById('sidebar-nav-items');
-  container.innerHTML = PAGES.map((p, i) => `
+  const visible = PAGES.filter(p => appMode === 'admin' || p.userVisible);
+  container.innerHTML = visible.map((p, i) => `
     <button class="nav-item${i === 0 ? ' active' : ''}" onclick="showPage('${p.id}')">
       <span class="nav-icon">${p.icon}</span> ${p.label}
       ${p.badge ? `<span class="nav-badge" id="${p.badge}" style="${p.badge === 'saved-count' ? '' : 'display:none'}">0</span>` : ''}
     </button>`).join('');
+}
+
+function onModeToggle(isAdmin) {
+  appMode = isAdmin ? 'admin' : 'user';
+  localStorage.setItem('lh_mode', appMode);
+  const activePage = document.querySelector('.nav-item.active');
+  const currentId  = activePage ? activePage.getAttribute('onclick').match(/'(\w+)'/)?.[1] : 'search';
+  const page = PAGES.find(p => p.id === currentId);
+  renderNav();
+  if (page && !page.userVisible && appMode === 'user') {
+    showPageById('search');
+  } else if (currentId) {
+    // przywróć aktywny stan właściwego przycisku po rerenderze
+    document.querySelectorAll('.nav-item').forEach(btn => {
+      if (btn.getAttribute('onclick')?.includes(`'${currentId}'`)) btn.classList.add('active');
+    });
+  }
+}
+
+function showPageById(id) {
+  const p = PAGES.find(x => x.id === id);
+  if (!p) return;
+  PAGES.forEach(x => document.getElementById(`page-${x.id}`).style.display = x.id === id ? 'block' : 'none');
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    if (btn.getAttribute('onclick')?.includes(`'${id}'`)) btn.classList.add('active');
+  });
+  document.getElementById('page-title').textContent = p.label;
+  document.getElementById('page-subtitle').textContent = p.subtitle;
+  p.render?.();
 }
 
 function showPage(page) {
@@ -3897,6 +3944,7 @@ function togglePassVis() {
 function updateCredsBadge() {
   const count = Object.keys(loadCreds()).length;
   const badge = document.getElementById('creds-count');
+  if (!badge) return;
   badge.textContent = count;
   badge.style.display = count > 0 ? 'inline-flex' : 'none';
 }
@@ -5011,6 +5059,7 @@ async function decryptData(enc, password) {
 document.addEventListener('DOMContentLoaded', function() {
   applyTheme(currentTheme);
   renderNav();
+  document.getElementById('mode-toggle').checked = appMode === 'admin';
   document.getElementById('saved-count').textContent = savedLeads.length;
   updateLoginBtn();
   updateCredsBadge();
