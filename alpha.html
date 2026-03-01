@@ -2028,9 +2028,24 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
       <input class="form-input" id="new-icon" placeholder="🌐" maxlength="2" style="width:80px" />
     </div>
     <div class="form-row">
+      <label class="form-label">Opis (opcjonalnie)</label>
+      <input class="form-input" id="new-desc" placeholder="Krótki opis źródła" />
+    </div>
+    <div class="form-row">
       <label class="form-label">Zestawy fraz i słów kluczowych</label>
       <div class="kw-source-picker" id="new-kw-sets-picker"></div>
       <div class="kw-hint">Frazy z zaznaczonych zestawów będą używane podczas wyszukiwania w tym źródle.</div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Skrypt (opcjonalnie)</label>
+      <div class="kw-source-picker" id="new-script-picker"></div>
+    </div>
+    <div class="form-row">
+      <label class="kw-source-row" style="cursor:pointer;padding:8px 10px;gap:10px;border-radius:6px;border:1px solid var(--border2)">
+        <input type="checkbox" id="new-login-required" checked>
+        <span class="kw-src-name">Wymaga logowania</span>
+        <span style="font-size:0.72rem;color:var(--text-dim)">zapamiętaj dane dostępowe do tego serwisu</span>
+      </label>
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Anuluj</button>
@@ -3206,8 +3221,25 @@ function openAddModal() {
   document.getElementById('new-type').innerHTML =
     Object.entries(SOURCE_TYPES).map(([v, m]) => `<option value="${v}">${m.label}</option>`).join('');
   renderNewSourceKwPicker();
+  renderNewSourceScriptPicker();
   document.getElementById('modal-overlay').classList.add('open');
   document.getElementById('new-name').focus();
+}
+
+function renderNewSourceScriptPicker() {
+  const picker = document.getElementById('new-script-picker');
+  if (!SCRIPTS.length) {
+    picker.innerHTML = '<div style="padding:10px 12px;font-size:0.72rem;color:var(--text-dim)">Brak skryptów — dodaj je w zakładce Skrypty.</div>';
+    return;
+  }
+  picker.innerHTML =
+    `<label class="kw-source-row"><input type="radio" name="new-script" value="0" checked><span class="kw-src-name">Brak</span></label>` +
+    SCRIPTS.map(s => `
+    <label class="kw-source-row">
+      <input type="radio" name="new-script" value="${s.id}">
+      <span class="kw-src-name">${s.name}</span>
+      <span style="font-size:0.62rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px">${s.description || s.language || ''}</span>
+    </label>`).join('');
 }
 
 function renderNewSourceKwPicker() {
@@ -3234,9 +3266,12 @@ function saveNewSource() {
   const baseUrl = document.getElementById('new-baseurl').value.trim();
   const url = document.getElementById('new-url').value.trim();
   const icon = document.getElementById('new-icon').value.trim() || '🌐';
+  const desc = document.getElementById('new-desc').value.trim();
+  const loginRequired = document.getElementById('new-login-required').checked;
+  const scriptRb = document.querySelector('input[name="new-script"]:checked');
+  const scriptId = scriptRb && parseInt(scriptRb.value) ? parseInt(scriptRb.value) : null;
   const newId = nextId++;
 
-  // Nowe źródło z pełną konfiguracją
   SOURCES.push({
     id: newId,
     name,
@@ -3248,10 +3283,11 @@ function saveNewSource() {
     engine,
     subforums: url ? [url] : [''],
     keywords: '',
-    desc: '',
+    desc,
     favorite: false,
     dateAdded: new Date().toISOString().split('T')[0],
-    loginRequired: true
+    loginRequired,
+    scriptId,
   });
   saveSources();
 
@@ -3271,6 +3307,8 @@ function saveNewSource() {
   document.getElementById('new-baseurl').value = '';
   document.getElementById('new-url').value = '';
   document.getElementById('new-icon').value = '';
+  document.getElementById('new-desc').value = '';
+  document.getElementById('new-login-required').checked = true;
   document.getElementById('new-engine').value = 'google';
   renderSources();
   renderSourcesManage();
