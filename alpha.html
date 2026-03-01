@@ -2878,40 +2878,6 @@ function quickSearch(q) {
   doSearch();
 }
 
-const MOCK_RESULTS = [
-  { source: 'Wykop.pl', icon: '🔺', type: 'social', color: '#fde8f0',
-    title: 'Szukam polecenia na szkolenie z Excela dla całego działu',
-    snippet: 'Hej, mamy w firmie 15 osób które <mark>potrzebują szkoleń</mark> z Excela (poziom średniozaawansowany). Budżet ok. 500zł/os. Czy ktoś przechodził przez coś podobnego i może polecić sprawdzone centrum szkoleniowe?',
-    url: 'https://wykop.pl/link/przyklad', date: '2024-02-15', relevance: 95, keyword: 'szkolenia' },
-  { source: '4programmers.net', icon: '👨‍💻', type: 'it', color: '#f0e8fc',
-    title: 'Potrzebuję kogoś do wdrożenia systemu CRM – mała firma',
-    snippet: 'Prowadzę 10-osobową firmę usługową i <mark>szukam</mark> kogoś kto pomoże nam wdrożyć i skonfigurować CRM (najchętniej HubSpot lub Pipedrive). Płatne zlecenie, możliwa długoterminowa współpraca.',
-    url: 'https://4programmers.net/Forum/przyklad', date: '2024-02-18', relevance: 88, keyword: 'CRM wdrożenie' },
-  { source: 'OLX – Usługi', icon: '📋', type: 'ogloszenia', color: '#fef3e2',
-    title: 'Poszukuję dostawcy materiałów biurowych – umowa długoterminowa',
-    snippet: 'Firma z Wrocławia <mark>poszukuje</mark> rzetelnego dostawcy <mark>artykułów biurowych</mark>. Miesięczne zamówienia ok. 2000-3000 PLN. Interesuje nas faktura VAT i dostawa pod biuro.',
-    url: 'https://olx.pl/oferta/przyklad', date: '2024-02-20', relevance: 97, keyword: 'artykuły biurowe' },
-  { source: 'Bankier.pl Forum', icon: '🏦', type: 'biznes', color: '#e8f5f5',
-    title: 'Czy ktoś może polecić agencję SEO dla e-commerce?',
-    snippet: 'Prowadzę sklep internetowy z elektroniką. <mark>Szukam</mark> agencji SEO która ma doświadczenie z e-commerce i rozumie specyfikę branży. Budżet od 3000 PLN/miesiąc, mile widziane case studies.',
-    url: 'https://forum.bankier.pl/przyklad', date: '2024-02-19', relevance: 82, keyword: 'agencja SEO' },
-  { source: 'Reddit r/Polska', icon: '🤖', type: 'social', color: '#fde8f0',
-    title: 'Polecacie kogoś do stałej obsługi księgowej? Startup, B2B',
-    snippet: 'Zakładam spółkę z o.o. i <mark>szukam</mark> biura rachunkowego które ogarnie startup – faktury, ZUS, KPiR. Chodzi mi o kogoś z doświadczeniem ze startupami, nie klasyczne biuro.',
-    url: 'https://reddit.com/r/Polska/przyklad', date: '2024-02-21', relevance: 90, keyword: 'księgowość' },
-  { source: 'Freelancer.pl', icon: '🎯', type: 'ogloszenia', color: '#fef3e2',
-    title: 'Zlecę tłumaczenie dokumentacji technicznej EN→PL',
-    snippet: 'Mam ok. 80 stron dokumentacji technicznej z branży mechanicznej. <mark>Szukam</mark> tłumacza z doświadczeniem w tłumaczeniach technicznych. Termin: 2 tygodnie. Pytajcie o szczegóły.',
-    url: 'https://freelancer.pl/zlecenia/przyklad', date: '2024-02-17', relevance: 78, keyword: 'tłumaczenie' },
-  { source: 'LinkedIn PL', icon: '💼', type: 'social', color: '#fde8f0',
-    title: 'Looking for a content marketing agency – B2B tech',
-    snippet: 'We are a Polish SaaS company <mark>looking for</mark> a content marketing agency experienced in B2B tech. We need blog posts, case studies and LinkedIn content. DM me if interested.',
-    url: 'https://linkedin.com/posts/przyklad', date: '2024-02-22', relevance: 85, keyword: 'content marketing' },
-  { source: 'Elektroda.pl', icon: '⚡', type: 'forum', color: '#e8f0fc',
-    title: 'Szukam serwisu laptopów dla firmy – Poznań lub zdalnie',
-    snippet: 'Mamy flotę ok. 30 laptopów służbowych. <mark>Potrzebuję</mark> solidnego partnera serwisowego który odbierze sprzęt, naprawi i odda w rozsądnym czasie. Pytanie czy ktoś ma sprawdzone miejsce?',
-    url: 'https://elektroda.pl/rtvforum/topic/przyklad', date: '2024-02-16', relevance: 72, keyword: 'serwis laptopów' },
-];
 
 async function doSearch() {
   if (searching) return;
@@ -2954,26 +2920,10 @@ async function doSearch() {
       .filter(r => r.status === 'fulfilled')
       .flatMap(r => r.value)
       .sort((a, b) => b.relevance - a.relevance);
-    if (results.length) {
-      finish(results);
-    } else {
-      console.warn('Wszystkie API zwróciły błąd, używam mock-ów');
-      useMockSearch(finish);
-    }
-  } else {
-    useMockSearch(finish);
-  }
-}
-
-function useMockSearch(finish) {
-  setTimeout(() => {
-    const shuffled = [...MOCK_RESULTS].sort(() => Math.random() - 0.5);
-    const results = shuffled
-      .slice(0, 4 + Math.floor(Math.random() * 4))
-      .map((r, i) => ({ ...r, relevance: Math.max(65, r.relevance - i * 3 + Math.floor(Math.random() * 10)) }))
-      .sort((a, b) => b.relevance - a.relevance);
     finish(results);
-  }, 1200 + Math.random() * 800);
+  } else {
+    finish([]);
+  }
 }
 
 async function searchGoogleCSE(query, apiKey, cx) {
