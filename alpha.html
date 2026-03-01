@@ -885,6 +885,13 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
 .topbar-controls {
   display: flex; align-items: center; gap: 8px; margin-left: auto;
 }
+.clear-db-btn {
+  font-size: 0.75rem; padding: 6px 12px; border-radius: 8px;
+  border: 1px solid #f87171; background: transparent; color: #f87171;
+  cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 500;
+  transition: all 0.12s;
+}
+.clear-db-btn:hover { background: #fee2e2; border-color: #ef4444; color: #ef4444; }
 .theme-toggle {
   width: 36px; height: 36px;
   border-radius: 8px;
@@ -1669,6 +1676,7 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
           </div>
         </div>
       </div>
+      <button class="clear-db-btn" onclick="clearAllData()" title="Wyczyść całą bazę danych">🗑 Wyczyść bazę</button>
       <div class="info-btn-wrap">
         <button class="security-btn" id="security-btn" onclick="toggleSecurityPanel(event)" title="Ustawienia bezpieczeństwa">🔒</button>
         <div class="topbar-panel security-panel" id="security-panel">
@@ -4143,6 +4151,12 @@ function loadSchedule() {
   }));
 }
 function saveSchedule(cfg) { localStorage.setItem('lh_schedule', JSON.stringify(cfg)); }
+
+function clearAllData() {
+  if (!confirm('Czy na pewno chcesz wyczyścić całą bazę danych?\n\nZostaną usunięte: źródła, leady, frazy, skrypty, loginy, klucze API, ustawienia.\n\nTej operacji nie można cofnąć.')) return;
+  localStorage.clear();
+  location.reload();
+}
 
 function toggleSchedulePanel(e) {
   e.stopPropagation();
