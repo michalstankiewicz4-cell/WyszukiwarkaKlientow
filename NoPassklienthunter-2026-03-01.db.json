@@ -1,11 +1,12 @@
 {
   "app": "KlientHunter",
   "version": 4,
-  "exportedAt": "2026-03-01T08:49:29.196Z",
+  "exportedAt": "2026-03-01T09:05:12.336Z",
   "sources": [
     {
+      "desc": "Wyszukiwarka google",
       "id": 1,
-      "name": "Google",
+      "name": "Google inny",
       "type": "wyszukiwarka",
       "icon": "🌐",
       "color": "#e8f0fc",
@@ -18,7 +19,6 @@
         ""
       ],
       "keywords": "",
-      "desc": "Wyszukiwarka google",
       "favorite": true,
       "dateAdded": "2026-03-01",
       "loginRequired": true,
@@ -27,25 +27,7 @@
       ]
     },
     {
-      "id": 2,
-      "name": "Google (kopia)",
-      "type": "wyszukiwarka",
-      "icon": "🌐",
-      "color": "#e8f0fc",
-      "enabled": false,
-      "baseUrl": "www.google.pl",
-      "engine": "",
-      "subforums": [
-        "www.google.pl"
-      ],
-      "keywords": "",
       "desc": "To jest wyszukiwarka",
-      "favorite": true,
-      "dateAdded": "2026-03-01",
-      "loginRequired": true,
-      "scriptIds": []
-    },
-    {
       "id": 3,
       "name": "Bing testowy",
       "type": "wyszukiwarka",
@@ -60,13 +42,13 @@
         "www.bing/moto"
       ],
       "keywords": "Szukam dziewczyny która szuka chłopaka, szukam kawy",
-      "desc": "To jest wyszukiwarka",
       "favorite": true,
       "dateAdded": "2026-03-01",
       "loginRequired": true,
       "scriptIds": []
     },
     {
+      "desc": "Wyszukiwarka google",
       "id": 4,
       "name": "Google (kopia)",
       "type": "wyszukiwarka",
@@ -81,13 +63,13 @@
         ""
       ],
       "keywords": "",
-      "desc": "Wyszukiwarka google",
       "favorite": false,
       "dateAdded": "2026-03-01",
       "loginRequired": true,
       "scriptIds": []
     },
     {
+      "desc": "To jest wyszukiwarka",
       "id": 5,
       "name": "Bing (kopia)",
       "type": "wyszukiwarka",
@@ -100,7 +82,6 @@
         "www.google.pl"
       ],
       "keywords": "Szukam dziewczyny która szuka chłopaka, szukam kawy, auto, pojazd, dom",
-      "desc": "To jest wyszukiwarka",
       "favorite": false,
       "dateAdded": "2026-03-01",
       "loginRequired": true,
@@ -110,26 +91,71 @@
       ]
     },
     {
-      "id": 6,
-      "name": "Bing (kopia)",
+      "desc": "Wyszukiwarka google",
+      "id": 9,
+      "name": "Google",
+      "type": "wyszukiwarka",
+      "icon": "🌐",
+      "color": "#e8f0fc",
+      "enabled": true,
+      "baseUrl": "www.google.pl",
+      "engine": "",
+      "subforums": [
+        "www.google.pl",
+        "www.google.pl/praca",
+        ""
+      ],
+      "keywords": "",
+      "favorite": true,
+      "dateAdded": "2026-03-01",
+      "loginRequired": true,
+      "scriptIds": [
+        2
+      ]
+    },
+    {
+      "desc": "To jest wyszukiwarka",
+      "id": 10,
+      "name": "Google (kopia)",
       "type": "wyszukiwarka",
       "icon": "🌐",
       "color": "#e8f0fc",
       "enabled": false,
-      "baseUrl": "www.bing.pl",
-      "engine": "google",
+      "baseUrl": "www.google.pl",
+      "engine": "",
       "subforums": [
         "www.google.pl"
       ],
-      "keywords": "Szukam dziewczyny która szuka chłopaka, szukam kawy",
-      "desc": "To jest wyszukiwarka",
+      "keywords": "",
+      "favorite": true,
+      "dateAdded": "2026-03-01",
+      "loginRequired": true,
+      "scriptIds": []
+    },
+    {
+      "desc": "Wyszukiwarka google",
+      "id": 12,
+      "name": "Google (kopia)",
+      "type": "wyszukiwarka",
+      "icon": "🌐",
+      "color": "#e8f0fc",
+      "enabled": false,
+      "baseUrl": "www.google.pl",
+      "engine": "",
+      "subforums": [
+        "www.google.pl",
+        "www.google.pl/praca",
+        ""
+      ],
+      "keywords": "",
       "favorite": false,
       "dateAdded": "2026-03-01",
       "loginRequired": true,
       "scriptIds": []
     },
     {
-      "id": 7,
+      "desc": "To jest wyszukiwarka",
+      "id": 15,
       "name": "Bing (kopia)",
       "type": "wyszukiwarka",
       "icon": "🌐",
@@ -140,15 +166,15 @@
       "subforums": [
         "www.bing.pl"
       ],
-      "keywords": "Szukam dziewczyny która szuka chłopaka, szukam kawy",
-      "desc": "To jest wyszukiwarka",
+      "keywords": "",
       "favorite": false,
       "dateAdded": "2026-03-01",
       "loginRequired": true,
       "scriptIds": []
     },
     {
-      "id": 8,
+      "desc": "To jest wyszukiwarka",
+      "id": 16,
       "name": "Bing (kopia)",
       "type": "wyszukiwarka",
       "icon": "🌐",
@@ -162,8 +188,7 @@
         "www.bing/moto"
       ],
       "keywords": "",
-      "desc": "To jest wyszukiwarka",
-      "favorite": false,
+      "favorite": true,
       "dateAdded": "2026-03-01",
       "loginRequired": true,
       "scriptIds": []
@@ -264,9 +289,7 @@
       "email": "michalstankiewicz@maupa.pl",
       "pass": "qwe123qwe"
     },
-    "googleKey": {
-      "key": ""
-    },
-    "googleCx": ""
+    "googleKey": "123123",
+    "googleCx": "123123"
   }
 }

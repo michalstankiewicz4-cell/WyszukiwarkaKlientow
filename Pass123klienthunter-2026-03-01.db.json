@@ -1,11 +1,12 @@
 {
   "app": "KlientHunter",
   "version": 4,
-  "exportedAt": "2026-03-01T08:55:42.747Z",
+  "exportedAt": "2026-03-01T09:04:57.754Z",
   "sources": [
     {
+      "desc": "Wyszukiwarka google",
       "id": 1,
-      "name": "Google",
+      "name": "Google inny",
       "type": "wyszukiwarka",
       "icon": "🌐",
       "color": "#e8f0fc",
@@ -18,7 +19,6 @@
         ""
       ],
       "keywords": "",
-      "desc": "Wyszukiwarka google",
       "favorite": true,
       "dateAdded": "2026-03-01",
       "loginRequired": true,
@@ -27,25 +27,7 @@
       ]
     },
     {
-      "id": 2,
-      "name": "Google (kopia)",
-      "type": "wyszukiwarka",
-      "icon": "🌐",
-      "color": "#e8f0fc",
-      "enabled": false,
-      "baseUrl": "www.google.pl",
-      "engine": "",
-      "subforums": [
-        "www.google.pl"
-      ],
-      "keywords": "",
       "desc": "To jest wyszukiwarka",
-      "favorite": true,
-      "dateAdded": "2026-03-01",
-      "loginRequired": true,
-      "scriptIds": []
-    },
-    {
       "id": 3,
       "name": "Bing testowy",
       "type": "wyszukiwarka",
@@ -60,13 +42,13 @@
         "www.bing/moto"
       ],
       "keywords": "Szukam dziewczyny która szuka chłopaka, szukam kawy",
-      "desc": "To jest wyszukiwarka",
       "favorite": true,
       "dateAdded": "2026-03-01",
       "loginRequired": true,
       "scriptIds": []
     },
     {
+      "desc": "Wyszukiwarka google",
       "id": 4,
       "name": "Google (kopia)",
       "type": "wyszukiwarka",
@@ -81,13 +63,13 @@
         ""
       ],
       "keywords": "",
-      "desc": "Wyszukiwarka google",
       "favorite": false,
       "dateAdded": "2026-03-01",
       "loginRequired": true,
       "scriptIds": []
     },
     {
+      "desc": "To jest wyszukiwarka",
       "id": 5,
       "name": "Bing (kopia)",
       "type": "wyszukiwarka",
@@ -100,7 +82,6 @@
         "www.google.pl"
       ],
       "keywords": "Szukam dziewczyny która szuka chłopaka, szukam kawy, auto, pojazd, dom",
-      "desc": "To jest wyszukiwarka",
       "favorite": false,
       "dateAdded": "2026-03-01",
       "loginRequired": true,
@@ -110,26 +91,71 @@
       ]
     },
     {
-      "id": 6,
-      "name": "Bing (kopia)",
+      "desc": "Wyszukiwarka google",
+      "id": 9,
+      "name": "Google",
+      "type": "wyszukiwarka",
+      "icon": "🌐",
+      "color": "#e8f0fc",
+      "enabled": true,
+      "baseUrl": "www.google.pl",
+      "engine": "",
+      "subforums": [
+        "www.google.pl",
+        "www.google.pl/praca",
+        ""
+      ],
+      "keywords": "",
+      "favorite": true,
+      "dateAdded": "2026-03-01",
+      "loginRequired": true,
+      "scriptIds": [
+        2
+      ]
+    },
+    {
+      "desc": "To jest wyszukiwarka",
+      "id": 10,
+      "name": "Google (kopia)",
       "type": "wyszukiwarka",
       "icon": "🌐",
       "color": "#e8f0fc",
       "enabled": false,
-      "baseUrl": "www.bing.pl",
-      "engine": "google",
+      "baseUrl": "www.google.pl",
+      "engine": "",
       "subforums": [
         "www.google.pl"
       ],
-      "keywords": "Szukam dziewczyny która szuka chłopaka, szukam kawy",
-      "desc": "To jest wyszukiwarka",
+      "keywords": "",
+      "favorite": true,
+      "dateAdded": "2026-03-01",
+      "loginRequired": true,
+      "scriptIds": []
+    },
+    {
+      "desc": "Wyszukiwarka google",
+      "id": 12,
+      "name": "Google (kopia)",
+      "type": "wyszukiwarka",
+      "icon": "🌐",
+      "color": "#e8f0fc",
+      "enabled": false,
+      "baseUrl": "www.google.pl",
+      "engine": "",
+      "subforums": [
+        "www.google.pl",
+        "www.google.pl/praca",
+        ""
+      ],
+      "keywords": "",
       "favorite": false,
       "dateAdded": "2026-03-01",
       "loginRequired": true,
       "scriptIds": []
     },
     {
-      "id": 7,
+      "desc": "To jest wyszukiwarka",
+      "id": 15,
       "name": "Bing (kopia)",
       "type": "wyszukiwarka",
       "icon": "🌐",
@@ -140,15 +166,15 @@
       "subforums": [
         "www.bing.pl"
       ],
-      "keywords": "Szukam dziewczyny która szuka chłopaka, szukam kawy",
-      "desc": "To jest wyszukiwarka",
+      "keywords": "",
       "favorite": false,
       "dateAdded": "2026-03-01",
       "loginRequired": true,
       "scriptIds": []
     },
     {
-      "id": 8,
+      "desc": "To jest wyszukiwarka",
+      "id": 16,
       "name": "Bing (kopia)",
       "type": "wyszukiwarka",
       "icon": "🌐",
@@ -162,8 +188,7 @@
         "www.bing/moto"
       ],
       "keywords": "",
-      "desc": "To jest wyszukiwarka",
-      "favorite": false,
+      "favorite": true,
       "dateAdded": "2026-03-01",
       "loginRequired": true,
       "scriptIds": []
@@ -253,24 +278,24 @@
     "sources": {
       "_encrypted": true,
       "alg": "AES-GCM-PBKDF2",
-      "salt": "HvjCA0WXzVkkvaJeLuX7hA==",
-      "iv": "ly7wCUriLv78XUY/",
-      "data": "iRvpNp0JP/ORLTr5bw2lRAJfFs3SORa0KPs0m2D7mF50mSPLN2FCY4uloRQdpUCuhAJhLQ+nxsKaQQH13nA5biSO0zGkbR0yFJNkTk9g5xDt1jGX8mEqyzVdtZEMuKvDf9XHVj22QUz1oq9GZYFswGXb5VN3c8ehl3DJy8u7FWyF35UnR9MzasfhSotb"
+      "salt": "eDltTGrSZuotVV+mYh9Rfg==",
+      "iv": "I6xcizI+uYvImP24",
+      "data": "n9xnxq8qbMrP75VcPzkNpt/yrXPsuCRwM0qc4HuTp62VPKSrc3EfXfjixeIt4D+o1nDPD3SPA9KqIFE4TXq+JV9Nr794CkdRHP3Qt8ZNsk+1q3oFgddn6nd987cV4RBszCQABA3xFCIRg3pdHepwgm7hl/Exx/lDxOQ43R+AJTS6rCe/LpVWAqik0OIx"
     },
     "defaultLogin": {
       "_encrypted": true,
       "alg": "AES-GCM-PBKDF2",
-      "salt": "niwzoEAe+hLvveTXzn/gyA==",
-      "iv": "RBaqp4oHUaGkPZeb",
-      "data": "Uo+Gxoukw7TqZvXx1+utL9aoQJW2BMXY5KiTPYeAmfjffpt8tecL48Y02KMavnGARcABfaWQ9OYKNia7DD5HM5YHcI2+7yExyg=="
+      "salt": "PkEWhu0+eg5J2uVoTAGqkw==",
+      "iv": "UhYz0j8oQFcgoYaD",
+      "data": "p2tGcdr0QE/xOH7TsXpy4yGDMN1GIZ6G1LAtsPAlXGblT9qgv+PLC7uHn3Er30aWYrAuekhVz0s4dgt0OucIcS4MuLwywATDgw=="
     },
     "googleKey": {
       "_encrypted": true,
       "alg": "AES-GCM-PBKDF2",
-      "salt": "LNgmKSo+FQ5JRBlXqolqaw==",
-      "iv": "zp3u0Zt21F5d3XYd",
-      "data": "WjPKdWNcnG3BoHycDppLiNE67jXy25ETS/c="
+      "salt": "kRZY1KBBg3aupuco+fKTqQ==",
+      "iv": "+kx2VsuYf7yTfQ4p",
+      "data": "jlyH4xxpbqAT0GUse+L27Q7s1RPPgye0"
     },
-    "googleCx": ""
+    "googleCx": "123123"
   }
 }

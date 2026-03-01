@@ -3495,7 +3495,7 @@ async function exportSources() {
     credentials: {
       sources:      await encrypt(loadCreds()),
       defaultLogin: await encrypt(loadDefaultLogin()),
-      googleKey:    await encrypt({ key: loadGoogleKey() }),
+      googleKey:    await encrypt(loadGoogleKey()),
       googleCx:     loadGoogleCx(),   // nie wrażliwe — zawsze plain
     },
   };
