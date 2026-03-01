@@ -1614,12 +1614,13 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
 .engine-source-del:hover { background: rgba(239,68,68,0.12); color: #ef4444; }
 .engine-empty { padding: 18px 16px; font-size: 0.75rem; color: var(--text-dim); font-style: italic; }
 
-.source-edit-btn { font-family: 'Outfit', sans-serif; font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border: 1px solid var(--border2); border-radius: 5px; background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
-.source-edit-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.source-edit-btn, .clone-btn, .delete-src-btn {
+  width: 26px; height: 26px; padding: 0; border: 1px solid var(--border2); border-radius: 5px;
+  background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.12s;
+  display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0;
+}
+.source-edit-btn:hover, .clone-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 .source-edit-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
-.clone-btn { font-family: 'Outfit', sans-serif; font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border: 1px solid var(--border2); border-radius: 5px; background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
-.clone-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
-.delete-src-btn { font-family: 'Outfit', sans-serif; font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border: 1px solid var(--border2); border-radius: 5px; background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
 .delete-src-btn:hover { border-color: #ef4444; color: #ef4444; background: rgba(239,68,68,0.07); }
 
 /* SOURCE CRED MODAL */
@@ -2771,9 +2772,10 @@ function updateSourceType(id, type) {
 }
 
 function toggleSourceEdit(id) {
-  const card = document.getElementById(`scard-${id}`);
-  const top = card.querySelector('.source-card-top');
   const btn = document.getElementById(`sedit-${id}`);
+  if (!btn) return;
+  const card = btn.closest('.source-card');
+  const top = card.querySelector('.source-card-top');
   const s = SOURCES.find(x => x.id === id);
   if (!s) return;
 
