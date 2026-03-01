@@ -2471,13 +2471,13 @@ function sourceCardHTML(s, fullSettings = false) {
         ${s.baseUrl ? `<a class="source-base-url" href="${safeUrl(s.baseUrl)}" target="_blank" onclick="event.stopPropagation()">🔗 ${s.baseUrl.replace(/^https?:\/\//,'').replace(/^www\./,'')}</a>` : ''}
       </div>
       <div class="source-card-bottom">
+        <div class="source-icon" style="background:${iconBg}">${s.icon}</div>
         <div style="display:flex;align-items:center;gap:6px">
           ${toggleHTML}
           ${fullSettings ? `<button class="clone-btn" onclick="cloneSource(${s.id})" title="Klonuj źródło">⧉</button><button class="delete-src-btn" onclick="deleteSource(${s.id})" title="Usuń źródło">🗑</button>` : ''}
           <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}" style="position:static"></div>
           <button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">${s.favorite ? '⭐' : '☆'}</button>
         </div>
-        <div class="source-icon" style="background:${iconBg}">${s.icon}</div>
       </div>
     </div>
     ${subforumsDisplay}
