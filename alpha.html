@@ -1553,6 +1553,13 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
 .kw-source-row { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
 .kw-source-row:last-child { border-bottom: none; }
 .kw-source-row:hover { background: var(--bg); }
+.src-script-order-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
+.src-script-order-row { display: flex; align-items: center; gap: 6px; padding: 5px 8px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; }
+.src-script-order-name { flex: 1; font-size: 0.78rem; font-weight: 600; color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.src-script-order-badge { font-size: 0.62rem; color: var(--text-dim); flex-shrink: 0; }
+.src-script-mv-btn { width: 20px; height: 20px; border: 1px solid var(--border2); border-radius: 4px; background: transparent; color: var(--text-dim); cursor: pointer; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0; line-height: 1; }
+.src-script-mv-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.src-script-mv-btn:disabled { opacity: 0.25; cursor: default; }
 .kw-source-row input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
 .kw-src-name { font-size: 0.8rem; font-weight: 600; flex: 1; }
 .kw-sub-select { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; padding: 3px 7px; border: 1px solid var(--border2); border-radius: 5px; background: var(--surface); color: var(--text-mid); max-width: 170px; }
@@ -2210,6 +2217,11 @@ const SOURCE_TYPES = {
 };
 
 const SOURCES = JSON.parse(localStorage.getItem('lh_sources') || '[]');
+// migrate scriptId (single) → scriptIds (array)
+SOURCES.forEach(s => {
+  if (!s.scriptIds) s.scriptIds = s.scriptId ? [s.scriptId] : [];
+  delete s.scriptId;
+});
 let nextId = SOURCES.length ? Math.max(...SOURCES.map(s => s.id)) + 1 : 1;
 
 function saveSources() {
@@ -2452,6 +2464,8 @@ function sourceCardHTML(s, fullSettings = false) {
       <textarea class="field-input keywords-input" id="sdesc-${s.id}" placeholder="Krótki opis źródła..." maxlength="255" oninput="updateSource(${s.id},'desc',this.value)" style="min-height:52px;resize:vertical">${s.desc||''}</textarea>
       <div class="field-label" style="margin-top:10px">Zestawy fraz i słów kluczowych</div>
       ${srcKwPickerHTML(s.id)}
+      <div class="field-label" style="margin-top:10px">Skrypty <span style="font-weight:400;color:var(--text-dim)">(kolejność wykonania)</span></div>
+      <div id="src-script-wrap-${s.id}-card">${srcScriptPickerHTML(s.id)}</div>
     </div>` : '';
 
   const toggleHTML = fullSettings ? `
@@ -2676,6 +2690,8 @@ function sourceListTableHTML(sources = null) {
             <textarea class="field-input keywords-input" id="sdesc-${s.id}" placeholder="Krótki opis źródła..." maxlength="255" oninput="updateSource(${s.id},'desc',this.value)" style="min-height:52px;resize:vertical">${s.desc||''}</textarea>
             <div class="field-label" style="margin-top:10px">Zestawy fraz i słów kluczowych</div>
             ${srcKwPickerHTML(s.id)}
+            <div class="field-label" style="margin-top:10px">Skrypty <span style="font-weight:400;color:var(--text-dim)">(kolejność wykonania)</span></div>
+            <div id="src-script-wrap-${s.id}-list">${srcScriptPickerHTML(s.id)}</div>
           </div>
         </td>
       </tr>
@@ -3365,7 +3381,7 @@ function saveNewSource() {
     favorite: false,
     dateAdded: new Date().toISOString().split('T')[0],
     loginRequired: true,
-    scriptId: null,
+    scriptIds: [],
   });
   saveSources();
 
@@ -3787,6 +3803,68 @@ function syncKeywordSetsToSources() {
     src.keywords = merged.join(', ');
   });
   saveSources();
+}
+
+function srcScriptPickerHTML(sourceId) {
+  const s = SOURCES.find(x => x.id === sourceId);
+  if (!s) return '';
+  if (!s.scriptIds) s.scriptIds = [];
+  if (!SCRIPTS.length)
+    return '<div style="padding:8px 10px;font-size:0.72rem;color:var(--text-dim)">Brak skryptów — dodaj je w zakładce Skrypty.</div>';
+
+  const linked = s.scriptIds.map(sid => SCRIPTS.find(sc => sc.id === sid)).filter(Boolean);
+  const unlinked = SCRIPTS.filter(sc => !s.scriptIds.includes(sc.id));
+
+  const orderedRows = linked.length ? `
+    <div class="src-script-order-list">
+      ${linked.map((sc, idx) => `
+        <div class="src-script-order-row">
+          <span class="src-script-order-name">${sc.name}</span>
+          <span class="src-script-order-badge">#${idx + 1}</span>
+          <button class="src-script-mv-btn" onclick="moveSrcScript(${sourceId},${sc.id},-1)" ${idx === 0 ? 'disabled' : ''} title="Przesuń wyżej">↑</button>
+          <button class="src-script-mv-btn" onclick="moveSrcScript(${sourceId},${sc.id},1)" ${idx === linked.length - 1 ? 'disabled' : ''} title="Przesuń niżej">↓</button>
+          <button class="src-script-mv-btn" onclick="toggleSrcScript(${sourceId},${sc.id},false)" title="Odepnij">✕</button>
+        </div>`).join('')}
+    </div>` : '<div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:6px">Brak podpiętych skryptów.</div>';
+
+  const addRows = unlinked.length ? '<div class="kw-source-picker" style="margin-top:6px">' + unlinked.map(sc => `
+    <label class="kw-source-row">
+      <input type="checkbox" onchange="toggleSrcScript(${sourceId},${sc.id},this.checked)">
+      <span class="kw-src-name">${sc.name}</span>
+    </label>`).join('') + '</div>' : '';
+
+  return orderedRows + addRows;
+}
+
+function toggleSrcScript(sourceId, scriptId, add) {
+  const s = SOURCES.find(x => x.id === sourceId);
+  if (!s) return;
+  if (!s.scriptIds) s.scriptIds = [];
+  if (add) {
+    if (!s.scriptIds.includes(scriptId)) s.scriptIds.push(scriptId);
+  } else {
+    s.scriptIds = s.scriptIds.filter(id => id !== scriptId);
+  }
+  saveSources();
+  // re-render picker in all open settings panels for this source
+  document.querySelectorAll(`[id^="src-script-wrap-${sourceId}"]`).forEach(el => {
+    el.innerHTML = srcScriptPickerHTML(sourceId);
+  });
+}
+
+function moveSrcScript(sourceId, scriptId, dir) {
+  const s = SOURCES.find(x => x.id === sourceId);
+  if (!s || !s.scriptIds) return;
+  const idx = s.scriptIds.indexOf(scriptId);
+  if (idx < 0) return;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= s.scriptIds.length) return;
+  s.scriptIds.splice(idx, 1);
+  s.scriptIds.splice(newIdx, 0, scriptId);
+  saveSources();
+  document.querySelectorAll(`[id^="src-script-wrap-${sourceId}"]`).forEach(el => {
+    el.innerHTML = srcScriptPickerHTML(sourceId);
+  });
 }
 
 function srcKwPickerHTML(sourceId) {
