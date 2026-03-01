@@ -5,6 +5,9 @@
 **Autor:** Michał Stankiewicz | 📞 +48 797 486 355 | ✉️ michalstankiewicz@onet.eu
 
 ---
+<img width="1919" height="1199" alt="image" src="https://github.com/user-attachments/assets/41241f34-09e5-45e9-9d66-540a4808f36a" />
+
+<img width="1919" height="947" alt="image" src="https://github.com/user-attachments/assets/19a30027-cdc9-4b3c-850c-7ad9b5ef3f11" />
 
 ## ✨ Funkcjonalności
 
