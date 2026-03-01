@@ -1943,9 +1943,15 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
       <div class="creds-topbar">
         <div>
           <div class="sources-title">Skrypty</div>
-          <div style="font-size:0.72rem;color:var(--text-dim);margin-top:2px">Skrypty dla niestandardowych wyszukiwań — powiązane z silnikami</div>
+          <div style="font-size:0.72rem;color:var(--text-dim);margin-top:2px">Skrypty dla niestandardowych wyszukiwań</div>
         </div>
-        <button class="add-kwset-btn" onclick="openScriptModal()">+ Dodaj skrypt</button>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="manage-view-toggle">
+            <button class="manage-view-btn active" id="scrbtn-scripts" onclick="setScriptsView('scripts',this)">📜 Skrypty</button>
+            <button class="manage-view-btn" id="scrbtn-sources" onclick="setScriptsView('sources',this)">⚙️ Źródła</button>
+          </div>
+          <button class="add-kwset-btn" onclick="openScriptModal()">+ Dodaj skrypt</button>
+        </div>
       </div>
       <div id="scripts-content"></div>
     </div>
@@ -4135,13 +4141,59 @@ function escapeHtml(str) {
   return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+let scriptsView = 'scripts';
+
+function setScriptsView(view, btn) {
+  scriptsView = view;
+  document.querySelectorAll('#scrbtn-scripts, #scrbtn-sources').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderScripts();
+}
+
 function renderScripts() {
   const container = document.getElementById('scripts-content');
+  if (scriptsView === 'sources') {
+    renderScriptsBySource(container);
+    return;
+  }
   if (!SCRIPTS.length) {
     container.innerHTML = `<div class="empty-state"><div class="icon">📜</div><h3>Brak skryptów</h3><p>Dodaj skrypt, a następnie podepnij go do wybranych źródeł w ustawieniach źródła.</p></div>`;
     return;
   }
   container.innerHTML = `<div class="scripts-grid">${SCRIPTS.map(scriptCardHTML).join('')}</div>`;
+}
+
+function renderScriptsBySource(container) {
+  const sourcesWithScripts = SOURCES.filter(s => s.scriptIds && s.scriptIds.length);
+  if (!sourcesWithScripts.length) {
+    container.innerHTML = `<div class="empty-state"><div class="icon">⚙️</div><h3>Brak podpięć</h3><p>Żadne źródło nie ma przypisanego skryptu. Podepnij skrypty w ustawieniach źródła.</p></div>`;
+    return;
+  }
+  const cards = sourcesWithScripts.map(src => {
+    const scripts = src.scriptIds.map((sid, i) => {
+      const sc = SCRIPTS.find(x => x.id === sid);
+      if (!sc) return '';
+      const lang = LANG_META[sc.language] || LANG_META.other;
+      return `<div class="src-script-order-row" style="margin-bottom:4px">
+        <span style="font-size:0.9rem">${lang.icon}</span>
+        <span class="src-script-order-name">${sc.name}</span>
+        <span class="src-script-order-badge">#${i + 1}</span>
+      </div>`;
+    }).join('');
+    return `
+      <div class="engine-card">
+        <div class="engine-card-header">
+          <div class="source-icon" style="background:${src.color||'#e8f0fc'};width:28px;height:28px;font-size:0.9rem;flex-shrink:0">${src.icon}</div>
+          <div class="engine-card-name" style="flex:1">${src.name}</div>
+          ${typeBadge(src.type)}
+          <div class="engine-card-count">${src.scriptIds.length} skryptów</div>
+        </div>
+        <div style="padding:10px 16px 12px">
+          <div class="src-script-order-list">${scripts}</div>
+        </div>
+      </div>`;
+  }).join('');
+  container.innerHTML = `<div class="engines-grid">${cards}</div>`;
 }
 
 function scriptCardHTML(s) {
