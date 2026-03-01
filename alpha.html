@@ -2119,28 +2119,22 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
 <div class="modal-overlay" id="script-modal-overlay">
   <div class="modal script-modal">
     <div class="modal-title" id="script-modal-title">Dodaj skrypt</div>
-    <div class="modal-sub">Skrypt dla niestandardowego wyszukiwania powiązany z silnikiem</div>
+    <div class="modal-sub">Skrypt do podpięcia pod wybrane źródła w ustawieniach źródła</div>
     <div class="modal-body">
       <div class="form-row">
         <label class="form-label">Nazwa skryptu</label>
         <input class="form-input" id="script-name" placeholder="np. OpenSearch API scraper">
       </div>
-      <div style="display:flex;gap:12px">
-        <div class="form-row" style="flex:1">
-          <label class="form-label">Silnik</label>
-          <select class="form-select" id="script-engine"></select>
-        </div>
-        <div class="form-row" style="flex:1">
-          <label class="form-label">Język</label>
-          <select class="form-select" id="script-language">
-            <option value="javascript">JavaScript</option>
-            <option value="python">Python</option>
-            <option value="bash">Bash</option>
-            <option value="curl">cURL</option>
-            <option value="php">PHP</option>
-            <option value="other">Inny</option>
-          </select>
-        </div>
+      <div class="form-row">
+        <label class="form-label">Język</label>
+        <select class="form-select" id="script-language">
+          <option value="javascript">JavaScript</option>
+          <option value="python">Python</option>
+          <option value="bash">Bash</option>
+          <option value="curl">cURL</option>
+          <option value="php">PHP</option>
+          <option value="other">Inny</option>
+        </select>
       </div>
       <div class="form-row">
         <label class="form-label">Opis <span style="font-weight:400;color:var(--text-dim)">(opcjonalnie)</span></label>
@@ -4082,31 +4076,19 @@ function escapeHtml(str) {
 function renderScripts() {
   const container = document.getElementById('scripts-content');
   if (!SCRIPTS.length) {
-    container.innerHTML = `<div class="empty-state"><div class="icon">📜</div><h3>Brak skryptów</h3><p>Dodaj skrypt powiązany z silnikiem wyszukiwania dla niestandardowych zapytań.</p></div>`;
+    container.innerHTML = `<div class="empty-state"><div class="icon">📜</div><h3>Brak skryptów</h3><p>Dodaj skrypt, a następnie podepnij go do wybranych źródeł w ustawieniach źródła.</p></div>`;
     return;
   }
-  const enginesUsed = [...new Set(SCRIPTS.map(s => s.engine))];
-  let html = '';
-  enginesUsed.forEach(eng => {
-    const meta = ENGINE_META[eng] || { label: eng, color: '#999' };
-    const group = SCRIPTS.filter(s => s.engine === eng);
-    html += `
-      <div class="sources-header" style="margin:14px 0 10px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="width:9px;height:9px;border-radius:50%;background:${meta.color};box-shadow:0 0 5px ${meta.color}99;flex-shrink:0"></div>
-          <span class="sources-title">${meta.label}</span>
-          <span class="manage-count">${group.length}</span>
-        </div>
-      </div>
-      <div class="scripts-grid">${group.map(scriptCardHTML).join('')}</div>`;
-  });
-  container.innerHTML = html;
+  container.innerHTML = `<div class="scripts-grid">${SCRIPTS.map(scriptCardHTML).join('')}</div>`;
 }
 
 function scriptCardHTML(s) {
-  const lang    = LANG_META[s.language] || LANG_META.other;
-  const engMeta = ENGINE_META[s.engine] || { label: s.engine, color: '#999' };
-  const lines   = (s.code || '').split('\n').length;
+  const lang  = LANG_META[s.language] || LANG_META.other;
+  const lines = (s.code || '').split('\n').length;
+  const linkedSources = SOURCES.filter(src => src.scriptIds && src.scriptIds.includes(s.id));
+  const sourcesHTML = linkedSources.length
+    ? linkedSources.map(src => `<span class="engine-badge" style="background:${src.color||'#e8f0fc'}44;color:var(--text-mid);border:1px solid var(--border2)">${src.icon} ${src.name}</span>`).join('')
+    : `<span style="font-size:0.65rem;color:var(--text-dim)">Brak podpiętych źródeł</span>`;
   return `
     <div class="script-card" id="sscript-${s.id}">
       <div class="script-card-header">
@@ -4114,10 +4096,10 @@ function scriptCardHTML(s) {
         <div class="script-card-info">
           <div class="script-card-name">${s.name}</div>
           <div class="script-card-badges">
-            <span class="engine-badge" style="background:${engMeta.color}22;color:${engMeta.color};border:1px solid ${engMeta.color}44">${engMeta.label}</span>
             <span class="script-lang-badge ${lang.cls}">${lang.label}</span>
             <span class="script-lang-badge" style="opacity:0.7">${s.dateAdded||''}</span>
           </div>
+          <div class="script-card-badges" style="margin-top:4px;flex-wrap:wrap">${sourcesHTML}</div>
         </div>
         <div class="script-card-actions">
           <button class="script-action-btn" onclick="openScriptModal(${s.id})" title="Edytuj">✏️</button>
@@ -4144,21 +4126,17 @@ function toggleScriptCode(id) {
 
 function openScriptModal(id = null) {
   editingScriptId = id;
-  const sel = document.getElementById('script-engine');
-  sel.innerHTML = ENGINES.map(e => `<option value="${e.value}">${e.label}</option>`).join('');
   if (id !== null) {
     const s = SCRIPTS.find(x => x.id === id);
     if (!s) return;
     document.getElementById('script-modal-title').textContent = 'Edytuj skrypt';
     document.getElementById('script-name').value     = s.name;
-    document.getElementById('script-engine').value   = s.engine;
     document.getElementById('script-language').value = s.language;
     document.getElementById('script-desc').value     = s.description || '';
     document.getElementById('script-code').value     = s.code || '';
   } else {
     document.getElementById('script-modal-title').textContent = 'Dodaj skrypt';
     document.getElementById('script-name').value     = '';
-    document.getElementById('script-engine').value   = 'api';
     document.getElementById('script-language').value = 'javascript';
     document.getElementById('script-desc').value     = '';
     document.getElementById('script-code').value     = '';
@@ -4177,7 +4155,6 @@ function saveScript() {
   if (!name) { document.getElementById('script-name').focus(); return; }
   const data = {
     name,
-    engine:      document.getElementById('script-engine').value,
     language:    document.getElementById('script-language').value,
     description: document.getElementById('script-desc').value.trim(),
     code:        document.getElementById('script-code').value,
