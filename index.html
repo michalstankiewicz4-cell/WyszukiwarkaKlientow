@@ -3044,11 +3044,10 @@ async function doSearch() {
   document.getElementById('stats-strip').style.display = 'none';
   document.getElementById('progress-bar').classList.add('active');
 
-  const activeCount  = SOURCES.filter(s => s.enabled).length;
-  const googleActive = SOURCES.some(s => s.enabled && (s.engine === 'google' || s.engine === 'google_site'));
-  const redditActive = SOURCES.some(s => s.enabled && s.engine === 'reddit');
-  const googleKey    = loadGoogleKey();
-  const googleCx     = loadGoogleCx();
+  const activeSources = SOURCES.filter(s => s.enabled && s.engine);
+  const activeCount   = SOURCES.filter(s => s.enabled).length;
+  const googleKey     = loadGoogleKey();
+  const googleCx      = loadGoogleCx();
 
   const finish = (results) => {
     currentResults = results;
@@ -3060,8 +3059,29 @@ async function doSearch() {
   };
 
   const promises = [];
-  if (googleActive && googleKey && googleCx) promises.push(searchGoogleCSE(query, googleKey, googleCx));
-  if (redditActive) promises.push(searchRedditPublic(query));
+
+  // google — one shared call, no site: filter
+  const googleSources = activeSources.filter(s => s.engine === 'google');
+  if (googleSources.length && googleKey && googleCx)
+    promises.push(searchGoogleCSE(query, googleKey, googleCx, null, googleSources[0]));
+
+  // google_site — one call per source with site: filter
+  if (googleKey && googleCx) {
+    for (const src of activeSources.filter(s => s.engine === 'google_site')) {
+      const subs = (src.subforums || []).filter(sf => sf && sf.trim());
+      if (subs.length) {
+        for (const sf of subs)
+          promises.push(searchGoogleCSE(query, googleKey, googleCx, sf, src));
+      } else {
+        promises.push(searchGoogleCSE(query, googleKey, googleCx, src.baseUrl, src));
+      }
+    }
+  }
+
+  // reddit — one shared call
+  const redditSources = activeSources.filter(s => s.engine === 'reddit');
+  if (redditSources.length)
+    promises.push(searchRedditPublic(query, redditSources[0]));
 
   if (promises.length) {
     const settled = await Promise.allSettled(promises);
@@ -3075,19 +3095,24 @@ async function doSearch() {
   }
 }
 
-async function searchGoogleCSE(query, apiKey, cx) {
-  const url = `https://www.googleapis.com/customsearch/v1?key=${encodeURIComponent(apiKey)}&cx=${encodeURIComponent(cx)}&q=${encodeURIComponent(query)}&num=10`;
+async function searchGoogleCSE(query, apiKey, cx, siteFilter, source) {
+  const q   = siteFilter ? `${query} site:${siteFilter}` : query;
+  const url = `https://www.googleapis.com/customsearch/v1?key=${encodeURIComponent(apiKey)}&cx=${encodeURIComponent(cx)}&q=${encodeURIComponent(q)}&num=10`;
   const resp = await fetch(url);
   if (!resp.ok) {
     const err = await resp.json().catch(() => ({}));
     throw new Error(err?.error?.message || `HTTP ${resp.status}`);
   }
   const data = await resp.json();
+  const srcName  = source?.name  || 'Google';
+  const srcIcon  = source?.icon  || '🔍';
+  const srcColor = source?.color || '#e8f0fc';
+  const srcType  = source?.type  || 'wyszukiwarka';
   return (data.items || []).map((item, i) => ({
-    source: 'Google',
-    icon: '🔍',
-    type: 'wyszukiwarka',
-    color: '#e8f0fc',
+    source: srcName,
+    icon: srcIcon,
+    type: srcType,
+    color: srcColor,
     title: item.title,
     snippet: item.snippet || '',
     url: item.link,
