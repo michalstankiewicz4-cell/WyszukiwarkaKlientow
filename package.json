@@ -1,0 +1,12 @@
+{
+  "name": "klienthunter",
+  "version": "0.0.1-alpha",
+  "description": "KlientHunter — Lead Hunter app",
+  "scripts": {
+    "start": "npx http-server . -p 8080 -o --cors -c-1",
+    "serve": "npx http-server . -p 8080 --cors -c-1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}
