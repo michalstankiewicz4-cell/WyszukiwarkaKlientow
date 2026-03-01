@@ -1617,6 +1617,8 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
 .engine-instructions { padding: 12px 16px; border-bottom: 1px solid var(--border); }
 .engine-instructions-title { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 8px; }
 .engine-step { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; font-size: 0.73rem; color: var(--text-mid); line-height: 1.4; }
+.engine-step a { color: var(--accent); text-decoration: none; }
+.engine-step a:hover { text-decoration: underline; }
 .engine-step:last-child { margin-bottom: 0; }
 .engine-step-num { width: 16px; height: 16px; border-radius: 50%; background: var(--border2); color: var(--text-dim); font-size: 0.6rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
 .engine-sources-section { padding: 10px 16px 14px; }
@@ -4309,14 +4311,14 @@ function renderEngines() {
 
   const ENGINE_INSTRUCTIONS = {
     google: [
-      'Wejdź na <b>programmablesearchengine.google.com</b> i utwórz nowy silnik wyszukiwania (cała sieć).',
+      'Wejdź na <a href="https://programmablesearchengine.google.com" target="_blank" rel="noopener">programmablesearchengine.google.com</a> i utwórz nowy silnik wyszukiwania (cała sieć).',
       'Skopiuj <b>Search Engine ID (CX)</b> z ustawień silnika.',
-      'Wejdź na <b>console.cloud.google.com</b> → Włącz <b>Custom Search API</b> → Utwórz klucz API.',
+      'Wejdź na <a href="https://console.cloud.google.com" target="_blank" rel="noopener">console.cloud.google.com</a> → Włącz <b>Custom Search API</b> → Utwórz klucz API.',
       'Kliknij <b>🔑 Konfiguruj</b> poniżej i wpisz klucz API oraz CX.',
       'W zarządzaniu źródłami przypisz źródłom silnik <b>Google Custom Search</b>.',
     ],
     google_site: [
-      'Wejdź na <b>programmablesearchengine.google.com</b> i utwórz silnik ograniczony do konkretnych domen.',
+      'Wejdź na <a href="https://programmablesearchengine.google.com" target="_blank" rel="noopener">programmablesearchengine.google.com</a> i utwórz silnik ograniczony do konkretnych domen.',
       'Dodaj domeny serwisów do przeszukiwania w konfiguracji silnika, skopiuj <b>CX</b>.',
       'Użyj tego samego <b>klucza API</b> co dla Google Custom Search (jeden klucz wystarcza).',
       'Kliknij <b>🔑 Konfiguruj</b> poniżej i wpisz klucz API oraz CX.',
@@ -4324,7 +4326,7 @@ function renderEngines() {
     ],
     reddit: [
       'Reddit nie wymaga żadnej konfiguracji — używa <b>publicznego API</b>.',
-      'W zarządzaniu źródłami dodaj źródła z domeną <b>reddit.com</b>.',
+      'W zarządzaniu źródłami dodaj źródła z domeną <a href="https://www.reddit.com" target="_blank" rel="noopener">reddit.com</a>.',
       'Przypisz im silnik <b>Reddit</b> i wpisz URL subredditu jako podforum, np. <b>r/Poland</b>.',
       'Wyszukiwanie pobiera posty i komentarze pasujące do fraz kluczowych.',
     ],
