@@ -405,6 +405,11 @@ body {
   border-radius: 5px; background: #fef3e2; color: #b07800;
   border: 1px solid rgba(245,158,11,0.2); margin-top: 2px; display: inline-block;
 }
+.already-saved-badge {
+  font-size: 0.65rem; font-weight: 700; padding: 2px 7px;
+  border-radius: 5px; background: #e8f5ee; color: #1a7a4a;
+  border: 1px solid rgba(26,122,74,0.25); margin-left: 6px; display: inline-block;
+}
 .import-approve-bar {
   display: flex; align-items: center; justify-content: space-between;
   padding: 8px 10px; background: #fef3e2; border-radius: 8px;
@@ -542,6 +547,10 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
   border-color: var(--accent);
   background: linear-gradient(135deg, #fff 0%, rgba(232,93,38,0.04) 100%);
   box-shadow: 0 0 0 2px rgba(232,93,38,0.15), var(--shadow);
+}
+.result-item.already-saved {
+  background: linear-gradient(135deg, #f0faf4 0%, #e8f5ee 100%);
+  border-color: rgba(26,122,74,0.2);
 }
 
 /* BULK ACTION BAR */
@@ -924,6 +933,10 @@ html[data-theme="dark"] .badge-biznes { background: rgba(26,122,122,0.22); color
 html[data-theme="dark"] .badge-wyszukiwarka { background: rgba(3,105,161,0.22); color: #38bdf8; }
 html[data-theme="dark"] .result-item.selected {
   background: linear-gradient(135deg, var(--surface) 0%, rgba(232,93,38,0.09) 100%);
+}
+html[data-theme="dark"] .result-item.already-saved {
+  background: linear-gradient(135deg, rgba(26,122,74,0.1) 0%, rgba(26,122,74,0.18) 100%);
+  border-color: rgba(26,122,74,0.3);
 }
 html[data-theme="dark"] .card-subforum-chip:hover { background: rgba(37,99,168,0.3); color: #6aafdf; }
 html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); color: var(--text-dim); }
@@ -2139,6 +2152,26 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
   </div>
 </div>
 
+<!-- APIFY CONFIG MODAL -->
+<div class="modal-overlay" id="apify-cfg-overlay">
+  <div class="modal" style="width:400px">
+    <div class="modal-title">🕷️ Apify Web Scraper</div>
+    <div class="modal-sub">Klucz API przechowywany zgodnie z ustawieniami bezpieczeństwa.</div>
+    <div class="form-row">
+      <label class="form-label">Personal API Token</label>
+      <div style="position:relative">
+        <input class="form-input" id="apify-cfg-key" type="password" placeholder="apify_api_..." autocomplete="off" style="padding-right:40px"
+          onkeydown="if(event.key==='Enter') saveApifyCfg()" />
+        <button class="pass-toggle-btn" onclick="this.previousElementSibling.type=this.previousElementSibling.type==='password'?'text':'password'">👁</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeApifyCfg()">Anuluj</button>
+      <button class="btn-save" onclick="saveApifyCfg()">Zapisz</button>
+    </div>
+  </div>
+</div>
+
 <!-- SCRIPT MODAL -->
 <div class="modal-overlay" id="script-modal-overlay">
   <div class="modal script-modal">
@@ -2213,6 +2246,7 @@ const ENGINE_META = {
   google:      { label: 'Google Custom Search',         color: '#4285F4' },
   google_site: { label: 'Google Custom Search (site:)', color: '#34A853' },
   reddit:      { label: 'Reddit',                       color: '#ff4500' },
+  apify:       { label: 'Apify Web Scraper',            color: '#FF9900' },
 };
 const ENGINES = Object.entries(ENGINE_META).map(([value, { label }]) => ({ value, label }));
 
@@ -3083,6 +3117,20 @@ async function doSearch() {
   if (redditSources.length)
     promises.push(searchRedditPublic(query, redditSources[0]));
 
+  // apify — one call per source with optional site: filter
+  const apifyKey = loadApifyKey();
+  if (apifyKey) {
+    for (const src of activeSources.filter(s => s.engine === 'apify')) {
+      const subs = (src.subforums || []).filter(sf => sf && sf.trim());
+      if (subs.length) {
+        for (const sf of subs)
+          promises.push(searchApify(query, apifyKey, sf, src));
+      } else {
+        promises.push(searchApify(query, apifyKey, null, src));
+      }
+    }
+  }
+
   if (promises.length) {
     const settled = await Promise.allSettled(promises);
     const results = settled
@@ -3117,6 +3165,43 @@ async function searchGoogleCSE(query, apiKey, cx, siteFilter, source) {
     snippet: item.snippet || '',
     url: item.link,
     date: '',
+    relevance: Math.max(60, 95 - i * 3),
+    keyword: query,
+  }));
+}
+
+async function searchApify(query, apiKey, siteFilter, source) {
+  const q   = siteFilter ? `${query} site:${siteFilter}` : query;
+  const url = `https://api.apify.com/v2/acts/apify~google-search-scraper/run-sync-get-dataset-items?token=${encodeURIComponent(apiKey)}`;
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ queries: q, languageCode: 'pl', countryCode: 'pl', maxItems: 20, resultsPerPage: 10, mobileResults: false }),
+  });
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err?.error?.message || `Apify HTTP ${resp.status}`);
+  }
+  const data = await resp.json();
+  // Apify zwraca tablicę stron SERP — każda strona zawiera listę wyników
+  const items = [];
+  for (const page of (data || [])) {
+    const results = page.nonPromotedSearchResults || page.organicResults || [];
+    items.push(...results);
+  }
+  const srcName  = source?.name  || 'Apify';
+  const srcIcon  = source?.icon  || '🕷️';
+  const srcColor = source?.color || '#fff3e0';
+  const srcType  = source?.type  || 'wyszukiwarka';
+  return items.filter(item => item.url || item.link).map((item, i) => ({
+    source: srcName,
+    icon: srcIcon,
+    type: srcType,
+    color: srcColor,
+    title: item.title || '',
+    snippet: item.description || item.snippet || '',
+    url: item.url || item.link,
+    date: item.date || item.publishedAt || '',
     relevance: Math.max(60, 95 - i * 3),
     keyword: query,
   }));
@@ -3169,15 +3254,18 @@ function renderResults(query, sourceCount) {
   }
 
   const hotCount = currentResults.filter(r => r.relevance >= 88).length;
+  const savedUrls = new Set(savedLeads.map(l => l.url).filter(Boolean));
 
-  list.innerHTML = currentResults.map((r, i) => `
-    <div class="result-item" style="animation-delay:${i*60}ms" id="ri-${i}">
+  list.innerHTML = currentResults.map((r, i) => {
+    const alreadySaved = savedUrls.has(r.url);
+    return `
+    <div class="result-item${alreadySaved ? ' already-saved' : ''}" style="animation-delay:${i*60}ms" id="ri-${i}">
       <div class="result-checkbox-wrap">
         <input type="checkbox" class="result-checkbox" data-idx="${i}" onchange="toggleSelect(${i}, this.checked)">
       </div>
       <div class="result-source-icon" style="background:${r.color}">${r.icon}</div>
       <div class="result-body">
-        <div class="result-source-label">${r.source} ${typeBadge(r.type)}</div>
+        <div class="result-source-label">${r.source} ${typeBadge(r.type)}${alreadySaved ? '<span class="already-saved-badge">✓ Już zapisany</span>' : ''}</div>
         <div class="result-title"><a href="${safeUrl(r.url)}" target="_blank">${r.title}</a></div>
         <div class="result-snippet">${r.snippet}</div>
         <div class="result-footer">
@@ -3189,12 +3277,12 @@ function renderResults(query, sourceCount) {
           </div>
           <div class="result-actions">
             <button class="result-btn" onclick="copyLink('${safeUrl(r.url)}', this)">📋 Kopiuj</button>
-            <button class="result-btn primary" onclick="saveLead(${i}, this)" id="save-btn-${i}">🔖 Zapisz lead</button>
+            <button class="result-btn primary" onclick="saveLead(${i}, this)" id="save-btn-${i}"${alreadySaved ? ' style="background:#e8f5ee;color:#1a7a4a;border-color:rgba(26,122,74,0.3)"' : ''}>🔖 ${alreadySaved ? 'Zapisz ponownie' : 'Zapisz lead'}</button>
           </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 
   document.getElementById('select-all-row').classList.add('visible');
   document.getElementById('select-all-cb').checked = false;
@@ -3575,6 +3663,7 @@ async function exportSources() {
       defaultLogin: await encrypt(loadDefaultLogin()),
       googleKey:    await encrypt(loadGoogleKey()),
       googleCx:     loadGoogleCx(),   // nie wrażliwe — zawsze plain
+      apifyKey:     await encrypt(loadApifyKey()),
     },
   };
 
@@ -3621,17 +3710,19 @@ function importSources() {
         defaultLogin:db.credentials?.defaultLogin  || null,
         googleKey:   db.credentials?.googleKey     || null,
         googleCx:    db.credentials?.googleCx      || null,
+        apifyKey:    db.credentials?.apifyKey      || null,
       };
 
       // ── Odszyfrowanie wrażliwych danych (jeśli zaszyfrowane) ──
       const isEncrypted = val => val && typeof val === 'object' && val.iv && val.data;
-      if (isEncrypted(imp.creds) || isEncrypted(imp.defaultLogin) || isEncrypted(imp.googleKey)) {
+      if (isEncrypted(imp.creds) || isEncrypted(imp.defaultLogin) || isEncrypted(imp.googleKey) || isEncrypted(imp.apifyKey)) {
         const pwd = prompt('Plik zawiera zaszyfrowane dane wrażliwe.\nPodaj hasło użyte przy eksporcie:');
         if (!pwd) return;
         try {
           if (isEncrypted(imp.creds))        imp.creds        = await decryptData(imp.creds, pwd);
           if (isEncrypted(imp.defaultLogin))  imp.defaultLogin = await decryptData(imp.defaultLogin, pwd);
           if (isEncrypted(imp.googleKey))     imp.googleKey    = await decryptData(imp.googleKey, pwd);
+          if (isEncrypted(imp.apifyKey))      imp.apifyKey     = await decryptData(imp.apifyKey, pwd);
         } catch {
           alert('Nieprawidłowe hasło lub uszkodzone dane szyfrowania.');
           return;
@@ -3639,6 +3730,7 @@ function importSources() {
       }
       // wyciągnij klucz z obiektu { key: '...' }
       if (imp.googleKey && typeof imp.googleKey === 'object') imp.googleKey = imp.googleKey.key || '';
+      if (imp.apifyKey  && typeof imp.apifyKey  === 'object') imp.apifyKey  = imp.apifyKey.key  || '';
 
       // ── Podsumowanie ──────────────────────────────────────────
       const lines = [`Zaimportować z pliku (${db.exportedAt?.slice(0,10) || '?'})?`];
@@ -3650,6 +3742,7 @@ function importSources() {
       if (imp.defaultLogin?.email) lines.push(`• domyślne dane logowania`);
       if (imp.googleKey)           lines.push(`• klucz Google API`);
       if (imp.googleCx)            lines.push(`• Google CX`);
+      if (imp.apifyKey)            lines.push(`• klucz Apify API`);
 
       if (!confirm(lines.join('\n'))) return;
 
@@ -3700,6 +3793,7 @@ function importSources() {
       if (imp.defaultLogin) saveDefaultLoginToStorage(imp.defaultLogin);
       if (imp.googleKey)    saveGoogleKey(imp.googleKey);
       if (imp.googleCx)     saveGoogleCx(imp.googleCx);
+      if (imp.apifyKey)     saveApifyKey(imp.apifyKey);
 
       // ── Ustawienia ────────────────────────────────────────────
       if (imp.schedule) saveSchedule(imp.schedule);
@@ -3728,6 +3822,9 @@ document.getElementById('login-modal-overlay').addEventListener('click', functio
 });
 document.getElementById('google-cfg-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeGoogleCfg();
+});
+document.getElementById('apify-cfg-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeApifyCfg();
 });
 document.getElementById('src-cred-modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeSrcCredModal();
@@ -4409,28 +4506,48 @@ function renderEngines() {
       'Przypisz im silnik <b>Reddit</b> i wpisz URL subredditu jako podforum, np. <b>r/Poland</b>.',
       'Wyszukiwanie pobiera posty i komentarze pasujące do fraz kluczowych.',
     ],
+    apify: [
+      'Zarejestruj się na <a href="https://apify.com" target="_blank" rel="noopener">apify.com</a> i wejdź w <b>Settings → Integrations → API tokens</b>.',
+      'Skopiuj swój <b>Personal API Token</b> i kliknij <b>🔑 Konfiguruj</b> poniżej, lub wejdź bezpośrednio na <a href="https://console.apify.com/settings/integrations" target="_blank" rel="noopener">console.apify.com/settings/integrations</a>.',
+      'Apify używa aktora <b>apify/google-search-scraper</b> — nie wymaga dodatkowej konfiguracji aktora.',
+      'W zarządzaniu źródłami przypisz silnik <b>Apify Web Scraper</b>. Opcjonalnie dodaj domenę jako podforum, aby ograniczyć wyniki do konkretnej witryny.',
+    ],
   };
 
   const cards = Object.keys(ENGINE_META).map(key => {
     const meta = ENGINE_META[key];
     const sources = SOURCES.filter(s => s.engine === key);
     const isGoogle = key === 'google' || key === 'google_site';
+    const isApify  = key === 'apify';
     const googleConfigured = isGoogle && !!(loadGoogleKey() && loadGoogleCx());
+    const apifyConfigured  = isApify  && !!loadApifyKey();
 
     const steps = (ENGINE_INSTRUCTIONS[key] || [])
       .map((txt, i) => `<div class="engine-step"><div class="engine-step-num">${i + 1}</div><div>${txt}</div></div>`)
       .join('');
 
-    const configBanner = isGoogle ? `
+    let configBanner;
+    if (isGoogle) {
+      configBanner = `
       <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid var(--border);font-size:0.72rem">
         <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:${googleConfigured ? '#10b981' : 'var(--text-dim)'}${googleConfigured ? ';box-shadow:0 0 4px #10b98199' : ''}"></div>
         <span style="flex:1;color:var(--text-mid)">API Key: ${googleConfigured ? '••••••••' : 'nieskonfigurowany'}</span>
         <button onclick="openGoogleCfg()" style="font-family:'Outfit',sans-serif;font-size:0.7rem;font-weight:600;padding:3px 10px;border:1px solid var(--border2);border-radius:5px;background:transparent;color:var(--text-dim);cursor:pointer">🔑 Konfiguruj</button>
-      </div>` : `
+      </div>`;
+    } else if (isApify) {
+      configBanner = `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid var(--border);font-size:0.72rem">
+        <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:${apifyConfigured ? '#10b981' : 'var(--text-dim)'}${apifyConfigured ? ';box-shadow:0 0 4px #10b98199' : ''}"></div>
+        <span style="flex:1;color:var(--text-mid)">API Token: ${apifyConfigured ? '••••••••' : 'nieskonfigurowany'}</span>
+        <button onclick="openApifyCfg()" style="font-family:'Outfit',sans-serif;font-size:0.7rem;font-weight:600;padding:3px 10px;border:1px solid var(--border2);border-radius:5px;background:transparent;color:var(--text-dim);cursor:pointer">🔑 Konfiguruj</button>
+      </div>`;
+    } else {
+      configBanner = `
       <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid var(--border);font-size:0.72rem">
         <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:#10b981;box-shadow:0 0 4px #10b98199"></div>
         <span style="color:var(--text-mid)">API publiczne — bez konfiguracji</span>
       </div>`;
+    }
 
     const sourceRows = sources.length ? sources.map(s => {
       const domain = s.baseUrl ? s.baseUrl.replace(/https?:\/\/(www\.)?/, '').split('/')[0] : '';
@@ -4472,6 +4589,34 @@ function renderEngines() {
 // DEFAULT LOGIN
 // =====================
 let _ramDefaultLogin = null;
+
+// =====================
+// APIFY API KEY
+// =====================
+let _ramApifyKey = null;
+
+function loadApifyKey() {
+  if (securitySettings.passStorage === 'ram') return _ramApifyKey || '';
+  return localStorage.getItem('lh_apify_key') || '';
+}
+function saveApifyKey(key) {
+  if (securitySettings.passStorage === 'ram') { _ramApifyKey = key; return; }
+  if (key) localStorage.setItem('lh_apify_key', key);
+  else localStorage.removeItem('lh_apify_key');
+}
+function openApifyCfg() {
+  document.getElementById('apify-cfg-key').value = loadApifyKey();
+  document.getElementById('apify-cfg-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('apify-cfg-key').focus(), 100);
+}
+function closeApifyCfg() {
+  document.getElementById('apify-cfg-overlay').classList.remove('open');
+}
+function saveApifyCfg() {
+  saveApifyKey(document.getElementById('apify-cfg-key').value.trim());
+  closeApifyCfg();
+  renderEngines();
+}
 
 // =====================
 // GOOGLE API KEY
