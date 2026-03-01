@@ -3460,32 +3460,44 @@ async function exportSources() {
   const needsEncryption = securitySettings.exportPass;
   let password = null;
   if (needsEncryption) {
-    password = prompt('Podaj hasło szyfrowania danych wrażliwych:\n(bez niego nie odczytasz tych danych po imporcie)');
+    password = prompt('Podaj hasło szyfrowania danych wrażliwych:\n(hasła, klucze API, domyślne dane logowania)');
     if (!password) return;
   }
 
-  const data = {
-    version: 3,
+  const encrypt = async (val) =>
+    needsEncryption && password ? await encryptData(val, password) : val;
+
+  const db = {
+    app: 'KlientHunter',
+    version: 4,
     exportedAt: new Date().toISOString(),
-    sources: SOURCES,
+
+    // ── Dane ──────────────────────────────────────────────
+    sources:     SOURCES,
     keywordSets: KEYWORD_SETS,
-    scripts: SCRIPTS,
+    scripts:     SCRIPTS,
+    savedLeads:  savedLeads,
+
+    // ── Ustawienia ────────────────────────────────────────
+    settings: {
+      schedule: loadSchedule(),
+      security: securitySettings,
+    },
+
+    // ── Dane wrażliwe (opcjonalnie zaszyfrowane) ──────────
+    credentials: {
+      sources:      await encrypt(loadCreds()),
+      defaultLogin: await encrypt(loadDefaultLogin()),
+      googleKey:    await encrypt({ key: loadGoogleKey() }),
+      googleCx:     loadGoogleCx(),   // nie wrażliwe — zawsze plain
+    },
   };
 
-  if (securitySettings.exportPass && password) {
-    data.credentials = await encryptData(loadCreds(), password);
-    data.googleKey   = await encryptData({ key: loadGoogleKey() }, password);
-  } else {
-    data.credentials = loadCreds();
-    data.googleKey   = loadGoogleKey();
-  }
-  data.googleCx = loadGoogleCx();
-
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href     = url;
-  a.download = `klienthunter-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `klienthunter-${new Date().toISOString().slice(0,10)}.db.json`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -3493,87 +3505,131 @@ async function exportSources() {
 function importSources() {
   const input = document.createElement('input');
   input.type   = 'file';
-  input.accept = '.json';
+  input.accept = '.json,.db.json';
   input.onchange = e => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = ev => {
-      let parsed;
+    reader.onload = async ev => {
+      let db;
       try {
-        parsed = JSON.parse(ev.target.result);
-      } catch (err) {
+        db = JSON.parse(ev.target.result);
+      } catch {
         alert('Błąd importu: nieprawidłowy plik JSON.');
         return;
       }
 
-      const importedSources  = Array.isArray(parsed) ? parsed : (parsed.sources || []);
-      const importedKwSets   = parsed.keywordSets || null;
-      const importedCreds    = parsed.credentials || null;
-      const importedScripts  = parsed.scripts || null;
-      const importedGoogleKey = parsed.googleKey || null;
-      const importedGoogleCx  = parsed.googleCx  || null;
-
-      try {
-        if (!Array.isArray(importedSources) || importedSources.length === 0) throw new Error('Brak źródeł w pliku');
-        importedSources.forEach(s => {
-          if (typeof s.id === 'undefined' || typeof s.name === 'undefined') throw new Error('Nieprawidłowy format źródeł');
-        });
-      } catch (err) {
-        alert('Błąd importu: ' + err.message + '\nUpewnij się, że plik pochodzi z eksportu KlientHunter.');
+      if (db.app !== 'KlientHunter') {
+        alert('Błąd importu: plik nie pochodzi z KlientHunter.');
         return;
       }
 
-      let summary = `Znaleziono w pliku:\n• ${importedSources.length} źródeł`;
-      if (importedKwSets)   summary += `\n• ${importedKwSets.length} zestawów fraz`;
-      if (importedCreds)    summary += `\n• ${Object.keys(importedCreds).length} loginów`;
-      if (importedScripts)  summary += `\n• ${importedScripts.length} skryptów`;
-      summary += '\n\nOK → Dołącz źródła do istniejących\nAnuluj → Zastąp wszystkie źródła';
+      // ── Odczyt sekcji ─────────────────────────────────────────
+      const imp = {
+        sources:     Array.isArray(db.sources)     ? db.sources     : [],
+        keywordSets: Array.isArray(db.keywordSets) ? db.keywordSets : null,
+        scripts:     Array.isArray(db.scripts)     ? db.scripts     : null,
+        savedLeads:  Array.isArray(db.savedLeads)  ? db.savedLeads  : null,
+        schedule:    db.settings?.schedule  || null,
+        security:    db.settings?.security  || null,
+        creds:       db.credentials?.sources      || null,
+        defaultLogin:db.credentials?.defaultLogin  || null,
+        googleKey:   db.credentials?.googleKey     || null,
+        googleCx:    db.credentials?.googleCx      || null,
+      };
 
-      const appendMode = confirm(summary);
-
-      // --- Źródła ---
-      if (appendMode) {
-        importedSources.forEach(s => {
-          const newId = nextId++;
-          SOURCES.push({ desc: '', ...s, id: newId, dateAdded: s.dateAdded || new Date().toISOString().split('T')[0] });
-        });
-      } else {
-        SOURCES.length = 0;
-        importedSources.forEach(s => SOURCES.push({ desc: '', ...s }));
-        nextId = Math.max(...SOURCES.map(s => s.id), 0) + 1;
+      // ── Odszyfrowanie wrażliwych danych (jeśli zaszyfrowane) ──
+      const isEncrypted = val => val && typeof val === 'object' && val.iv && val.data;
+      if (isEncrypted(imp.creds) || isEncrypted(imp.defaultLogin) || isEncrypted(imp.googleKey)) {
+        const pwd = prompt('Plik zawiera zaszyfrowane dane wrażliwe.\nPodaj hasło użyte przy eksporcie:');
+        if (!pwd) return;
+        try {
+          if (isEncrypted(imp.creds))        imp.creds        = await decryptData(imp.creds, pwd);
+          if (isEncrypted(imp.defaultLogin))  imp.defaultLogin = await decryptData(imp.defaultLogin, pwd);
+          if (isEncrypted(imp.googleKey))     imp.googleKey    = await decryptData(imp.googleKey, pwd);
+        } catch {
+          alert('Nieprawidłowe hasło lub uszkodzone dane szyfrowania.');
+          return;
+        }
       }
-      saveSources();
+      // wyciągnij klucz z obiektu { key: '...' }
+      if (imp.googleKey && typeof imp.googleKey === 'object') imp.googleKey = imp.googleKey.key || '';
 
-      // --- Zestawy fraz (zastąp) ---
-      if (importedKwSets) {
-        KEYWORD_SETS.splice(0, KEYWORD_SETS.length, ...importedKwSets);
+      // ── Podsumowanie ──────────────────────────────────────────
+      const lines = [`Znaleziono w pliku (${db.exportedAt?.slice(0,10) || '?'}):`];
+      if (imp.sources.length)   lines.push(`• ${imp.sources.length} źródeł`);
+      if (imp.keywordSets)      lines.push(`• ${imp.keywordSets.length} zestawów fraz`);
+      if (imp.scripts)          lines.push(`• ${imp.scripts.length} skryptów`);
+      if (imp.savedLeads)       lines.push(`• ${imp.savedLeads.length} zapisanych leadów`);
+      if (imp.creds)            lines.push(`• loginy do źródeł`);
+      if (imp.defaultLogin?.email) lines.push(`• domyślne dane logowania`);
+      if (imp.googleKey)        lines.push(`• klucz Google API`);
+      if (imp.googleCx)         lines.push(`• Google CX`);
+      if (imp.schedule)         lines.push(`• ustawienia harmonogramu`);
+      lines.push('\nOK → Dołącz do istniejących danych\nAnuluj → Zastąp wszystkie dane');
+
+      const appendMode = confirm(lines.join('\n'));
+
+      // ── Źródła ────────────────────────────────────────────────
+      if (imp.sources.length) {
+        if (appendMode) {
+          imp.sources.forEach(s => {
+            const newId = nextId++;
+            SOURCES.push({ desc: '', ...s, id: newId, dateAdded: s.dateAdded || new Date().toISOString().split('T')[0] });
+          });
+        } else {
+          SOURCES.length = 0;
+          imp.sources.forEach(s => SOURCES.push({ desc: '', ...s }));
+          nextId = Math.max(...SOURCES.map(s => s.id), 0) + 1;
+        }
+        saveSources();
+      }
+
+      // ── Zestawy fraz ──────────────────────────────────────────
+      if (imp.keywordSets) {
+        if (!appendMode) KEYWORD_SETS.length = 0;
+        imp.keywordSets.forEach(ks => {
+          if (!KEYWORD_SETS.find(k => k.id === ks.id)) KEYWORD_SETS.push(ks);
+        });
         saveKeywordSets();
         syncKeywordSetsToSources();
       }
 
-      // --- Loginy (scala z istniejącymi) ---
-      if (importedCreds) {
-        const existing = loadCreds();
-        saveCreds({ ...existing, ...importedCreds });
-      }
-
-      // --- Google API ---
-      if (importedGoogleKey && typeof importedGoogleKey === 'string') saveGoogleKey(importedGoogleKey);
-      if (importedGoogleCx)  saveGoogleCx(importedGoogleCx);
-
-      // --- Skrypty (zastąp) ---
-      if (importedScripts) {
-        SCRIPTS.splice(0, SCRIPTS.length, ...importedScripts);
+      // ── Skrypty ───────────────────────────────────────────────
+      if (imp.scripts) {
+        if (!appendMode) SCRIPTS.length = 0;
+        imp.scripts.forEach(s => {
+          if (!SCRIPTS.find(x => x.id === s.id)) SCRIPTS.push(s);
+        });
         scriptNextId = SCRIPTS.length ? Math.max(...SCRIPTS.map(s => s.id)) + 1 : 1;
         saveScripts();
       }
 
+      // ── Zapisane leady ────────────────────────────────────────
+      if (imp.savedLeads) {
+        if (!appendMode) savedLeads.length = 0;
+        imp.savedLeads.forEach(l => {
+          if (!savedLeads.find(x => x.id === l.id)) savedLeads.push(l);
+        });
+        localStorage.setItem('lh_saved', JSON.stringify(savedLeads));
+      }
+
+      // ── Dane wrażliwe ─────────────────────────────────────────
+      if (imp.creds)         saveCreds(appendMode ? { ...loadCreds(), ...imp.creds } : imp.creds);
+      if (imp.defaultLogin)  saveDefaultLoginToStorage(imp.defaultLogin);
+      if (imp.googleKey)     saveGoogleKey(imp.googleKey);
+      if (imp.googleCx)      saveGoogleCx(imp.googleCx);
+
+      // ── Ustawienia ────────────────────────────────────────────
+      if (imp.schedule && !appendMode) saveSchedule(imp.schedule);
+
+      // ── Re-render ─────────────────────────────────────────────
       renderSources();
       renderSourcesManage();
-      if (importedKwSets)  renderKeywords();
-      if (importedCreds)   renderCredentials();
-      if (importedScripts) renderScripts();
+      if (imp.keywordSets) renderKeywords();
+      if (imp.scripts)     renderScripts();
+      if (imp.savedLeads)  renderSaved();
+      if (imp.creds)       renderCredentials();
     };
     reader.readAsText(file);
   };
