@@ -2628,7 +2628,10 @@ function sourceListTableHTML(sources = null) {
       urlsHTML = `<span class="slt-url-chip" title="${filled[0]}">${filled[0]}</span>`;
       if (filled.length > 1) urlsHTML += `<span class="slt-url-more">+${filled.length - 1} więcej</span>`;
     }
-    const kwShort = s.keywords ? s.keywords : '—';
+    const linkedKwSets = KEYWORD_SETS.filter(ks => ks.links.some(l => l.sourceId === s.id));
+    const kwGroupsHTML = linkedKwSets.length
+      ? linkedKwSets.map(ks => `<span class="engine-badge" style="background:var(--surface2);color:var(--text-mid);border:1px solid var(--border2)">${ks.name}</span>`).join('')
+      : '<span style="color:var(--text-dim);font-size:0.7rem">—</span>';
     const engineLabel = (ENGINES.find(e => e.value === (s.engine||'internal')) || ENGINES[0]).label;
     const enabledHTML = `<label class="source-toggle" style="display:inline-block">
       <input type="checkbox" ${s.enabled?'checked':''} onchange="toggleSource(${s.id},this.checked)">
@@ -2656,16 +2659,18 @@ function sourceListTableHTML(sources = null) {
           ${nameHTML}
         </td>
         <td><div style="display:flex;flex-direction:column;gap:3px">${urlsHTML}</div></td>
-        <td><div class="slt-keywords" title="${s.keywords}">${kwShort}</div></td>
+        <td><div style="display:flex;flex-wrap:wrap;gap:3px">${kwGroupsHTML}</div></td>
         <td><span class="engine-badge">${engineLabel}</span></td>
         <td>
           <div style="font-size:0.7rem">${srcLoginBtnHTML(s.id)}</div>
         </td>
         <td style="text-align:center">${enabledHTML}</td>
-        <td style="white-space:nowrap">
-          <button class="slt-edit-btn" onclick="toggleListSettings(${s.id})" style="font-size:0.65rem;padding:3px 8px">⚙</button>
-          <button class="clone-btn" onclick="cloneSource(${s.id})" title="Klonuj źródło" style="margin-left:4px">⧉</button>
-          <button class="delete-src-btn" onclick="deleteSource(${s.id})" title="Usuń źródło" style="margin-left:4px">🗑</button>
+        <td>
+          <div style="display:flex;align-items:center;gap:4px">
+            <button class="source-edit-btn" onclick="toggleListSettings(${s.id})" title="Ustawienia">⚙</button>
+            <button class="clone-btn" onclick="cloneSource(${s.id})" title="Klonuj źródło">⧉</button>
+            <button class="delete-src-btn" onclick="deleteSource(${s.id})" title="Usuń źródło">🗑</button>
+          </div>
         </td>
       </tr>
       <tr class="slt-settings-row" id="slts-${s.id}" style="display:none">
@@ -2698,7 +2703,7 @@ function sourceListTableHTML(sources = null) {
         <th style="width:44px"></th>
         <th>Źródło</th>
         <th>Podfora</th>
-        <th>Słowa kluczowe</th>
+        <th>Grupy fraz</th>
         <th>Silnik</th>
         <th>Logowanie</th>
         <th style="text-align:center">Aktywne</th>
