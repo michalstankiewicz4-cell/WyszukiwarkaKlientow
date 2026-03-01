@@ -891,8 +891,10 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
 
 /* THEME TOGGLE & LANG SWITCHER */
 .topbar-controls {
-  display: flex; align-items: center; gap: 8px; margin-left: auto;
+  display: flex; align-items: center; gap: 12px; margin-left: auto;
 }
+.topbar-section { display: flex; align-items: center; gap: 8px; }
+.topbar-divider { width: 1px; height: 22px; background: var(--border2); flex-shrink: 0; }
 .clear-db-btn {
   font-size: 0.75rem; height: 36px; padding: 0 12px; border-radius: 8px;
   border: 1px solid #f87171; background: transparent; color: #f87171;
@@ -1640,9 +1642,24 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
       <div class="page-subtitle" id="page-subtitle">Przeszukuj fora i serwisy społecznościowe</div>
     </div>
     <div class="topbar-controls">
-      <div class="schedule-btn-wrap">
-        <button class="schedule-btn" id="schedule-btn" onclick="toggleSchedulePanel(event)" title="Automatyczne wyszukiwanie">⏱</button>
-        <div class="topbar-panel schedule-panel" id="schedule-panel">
+      <!-- Sekcja 1: I/O -->
+      <div class="topbar-section">
+        <button class="io-btn" onclick="exportSources()" title="Eksportuj źródła do pliku JSON">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M3 6.5l3.5 3.5 3.5-3.5M1 11h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Eksport
+        </button>
+        <button class="io-btn" onclick="importSources()" title="Importuj źródła z pliku JSON">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12V4M3 6.5L6.5 3 10 6.5M1 1h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Import
+        </button>
+        <button class="clear-db-btn" onclick="clearAllData()" title="Wyczyść całą bazę danych">🗑 Wyczyść bazę</button>
+      </div>
+      <div class="topbar-divider"></div>
+      <!-- Sekcja 2: Ustawienia -->
+      <div class="topbar-section">
+        <div class="schedule-btn-wrap">
+          <button class="schedule-btn" id="schedule-btn" onclick="toggleSchedulePanel(event)" title="Automatyczne wyszukiwanie">⏱</button>
+          <div class="topbar-panel schedule-panel" id="schedule-panel">
           <div class="topbar-panel-header">
             <div class="topbar-panel-title">⏱ Automatyczne wyszukiwanie</div>
             <button class="topbar-panel-close" onclick="closeSchedulePanel()">✕</button>
@@ -1683,103 +1700,83 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
             </div>
           </div>
         </div>
-      </div>
-      <button class="io-btn" onclick="exportSources()" title="Eksportuj źródła do pliku JSON">
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M3 6.5l3.5 3.5 3.5-3.5M1 11h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Eksport
-      </button>
-      <button class="io-btn" onclick="importSources()" title="Importuj źródła z pliku JSON">
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12V4M3 6.5L6.5 3 10 6.5M1 1h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Import
-      </button>
-      <button class="clear-db-btn" onclick="clearAllData()" title="Wyczyść całą bazę danych">🗑 Wyczyść bazę</button>
-      <div class="info-btn-wrap">
-        <button class="security-btn" id="security-btn" onclick="toggleSecurityPanel(event)" title="Ustawienia bezpieczeństwa">🔒</button>
-        <div class="topbar-panel security-panel" id="security-panel">
-          <div class="topbar-panel-header">
-            <div class="topbar-panel-title">🔒 Bezpieczeństwo</div>
-            <button class="topbar-panel-close" onclick="closeSecurityPanel()">✕</button>
-          </div>
-          <div class="topbar-panel-body">
-            <div class="sec-section">
-              <div class="sec-section-title">🔑 Hasła i klucze API</div>
-              <label class="sec-radio-row"><input type="radio" name="sec-pass" value="localStorage" onchange="onSecurityChange()"><div><span class="sec-radio-label">localStorage</span><span class="sec-radio-desc">Trwałe — przeżywają odświeżenie strony</span></div></label>
-              <label class="sec-radio-row"><input type="radio" name="sec-pass" value="ram" onchange="onSecurityChange()"><div><span class="sec-radio-label">RAM <span class="sec-ram-badge">bezpieczniejsze</span></span><span class="sec-radio-desc">Czyszczone po zamknięciu lub odświeżeniu</span></div></label>
+        </div>
+        <div class="info-btn-wrap">
+          <button class="security-btn" id="security-btn" onclick="toggleSecurityPanel(event)" title="Ustawienia bezpieczeństwa">🔒</button>
+          <div class="topbar-panel security-panel" id="security-panel">
+            <div class="topbar-panel-header">
+              <div class="topbar-panel-title">🔒 Bezpieczeństwo</div>
+              <button class="topbar-panel-close" onclick="closeSecurityPanel()">✕</button>
             </div>
-            <div class="sec-section">
-              <div class="sec-section-title">📤 Eksport — zaszyfrowane dane</div>
-              <label class="sec-check-row"><input type="checkbox" id="sec-export-pass" onchange="onSecurityChange()"><span>Dołącz hasła i klucze API (zaszyfrowane)</span></label>
-              <div class="sec-note">⚠ Przy eksporcie zostaniesz poproszony o hasło szyfrowania.</div>
+            <div class="topbar-panel-body">
+              <div class="sec-section">
+                <div class="sec-section-title">🔑 Hasła i klucze API</div>
+                <label class="sec-radio-row"><input type="radio" name="sec-pass" value="localStorage" onchange="onSecurityChange()"><div><span class="sec-radio-label">localStorage</span><span class="sec-radio-desc">Trwałe — przeżywają odświeżenie strony</span></div></label>
+                <label class="sec-radio-row"><input type="radio" name="sec-pass" value="ram" onchange="onSecurityChange()"><div><span class="sec-radio-label">RAM <span class="sec-ram-badge">bezpieczniejsze</span></span><span class="sec-radio-desc">Czyszczone po zamknięciu lub odświeżeniu</span></div></label>
+              </div>
+              <div class="sec-section">
+                <div class="sec-section-title">📤 Eksport — zaszyfrowane dane</div>
+                <label class="sec-check-row"><input type="checkbox" id="sec-export-pass" onchange="onSecurityChange()"><span>Dołącz hasła i klucze API (zaszyfrowane)</span></label>
+                <div class="sec-note">⚠ Przy eksporcie zostaniesz poproszony o hasło szyfrowania.</div>
+              </div>
             </div>
           </div>
         </div>
+        <button class="login-btn" id="login-btn" onclick="openLoginModal()" title="Domyślne dane logowania do portali">
+          🔐 <span id="login-btn-label">Domyślne dane</span>
+        </button>
+        <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle-btn" title="Przełącz motyw (jasny / ciemny)">
+          <span id="theme-icon">🌙</span>
+        </button>
       </div>
-      <div class="info-btn-wrap">
-        <button class="info-btn" onclick="toggleInfoPanel(event)" id="info-btn" title="Informacje o autorze">ℹ</button>
-        <div class="topbar-panel info-panel" id="info-panel">
-          <div class="topbar-panel-header">
-            <div class="topbar-panel-title">👤 Autor &amp; Kontakt <span style="font-size:0.6rem;font-family:'JetBrains Mono',monospace;color:var(--accent);background:var(--accent-light);border:1px solid rgba(232,93,38,0.25);border-radius:4px;padding:1px 6px;font-weight:700;margin-left:4px">v1.0.0-alfa</span></div>
-            <button class="topbar-panel-close" onclick="closeInfoPanel()">✕</button>
-          </div>
-          <div class="info-panel-body">
-            <div class="info-row">
-              <span class="info-label">Autor</span>
-              <span class="info-val">Michał Stankiewicz</span>
+      <div class="topbar-divider"></div>
+      <!-- Sekcja 3: Język i info -->
+      <div class="topbar-section">
+        <div class="lang-switcher" title="Zmiana języka – wkrótce dostępna">
+          <span>🌐</span>
+          <span>PL</span>
+          <span class="lang-arrow">▾</span>
+        </div>
+        <div class="info-btn-wrap">
+          <button class="info-btn" onclick="toggleInfoPanel(event)" id="info-btn" title="Informacje o autorze">ℹ</button>
+          <div class="topbar-panel info-panel" id="info-panel">
+            <div class="topbar-panel-header">
+              <div class="topbar-panel-title">👤 Autor &amp; Kontakt <span style="font-size:0.6rem;font-family:'JetBrains Mono',monospace;color:var(--accent);background:var(--accent-light);border:1px solid rgba(232,93,38,0.25);border-radius:4px;padding:1px 6px;font-weight:700;margin-left:4px">v1.0.0-alfa</span></div>
+              <button class="topbar-panel-close" onclick="closeInfoPanel()">✕</button>
             </div>
-            <div class="info-row">
-              <span class="info-label">Tel</span>
-              <span class="info-val"><a href="tel:+48797486355">+48 797 486 355</a></span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Mail</span>
-              <span class="info-val"><a href="mailto:michalstankiewicz@onet.eu">michalstankiewicz@onet.eu</a></span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Info</span>
-              <span class="info-val">Aplikację można dostosować na życzenie. Program jest darmowy — free to use.</span>
-            </div>
-            <div class="info-divider"></div>
-            <div class="info-donation">
-              <div class="info-donation-title">☕ Wesprzyj jeśli chcesz</div>
-              <div class="info-donation-row">Nie czuj się zobowiązany ❤️ 🙂</div>
-              <div class="info-donation-row" style="margin-top:8px">Michał Stankiewicz<br>02-585 Warszawa · PKO BP</div>
-              <div class="info-donation-row" style="margin-top:6px; font-size:0.72rem; color:var(--text-dim)">Tytuł przelewu: <strong style="color:var(--text)">"Wyszukiwarka klientów"</strong></div>
-              <div class="info-donation-iban" onclick="copyIban(this)" title="Kliknij aby skopiować">
-                <span>PL55 1020 1097 0000 7902 0226 5353</span>
-                <span class="copy-hint">📋 kopiuj</span>
-              </div>
-              <div class="info-donation-alts">
-                <div class="info-donation-alt-label">lub</div>
-                <div class="info-donation-alt-btns">
-                  <div class="info-donation-blik" onclick="copyBlik(this)" title="Kliknij aby skopiować numer BLIK">
-                    <span class="blik-logo">BLIK</span>
-                    <span class="blik-number">797 486 355</span>
-                    <span class="copy-hint">📋 kopiuj</span>
+            <div class="info-panel-body">
+              <div class="info-row"><span class="info-label">Autor</span><span class="info-val">Michał Stankiewicz</span></div>
+              <div class="info-row"><span class="info-label">Tel</span><span class="info-val"><a href="tel:+48797486355">+48 797 486 355</a></span></div>
+              <div class="info-row"><span class="info-label">Mail</span><span class="info-val"><a href="mailto:michalstankiewicz@onet.eu">michalstankiewicz@onet.eu</a></span></div>
+              <div class="info-row"><span class="info-label">Info</span><span class="info-val">Aplikację można dostosować na życzenie. Program jest darmowy — free to use.</span></div>
+              <div class="info-divider"></div>
+              <div class="info-donation">
+                <div class="info-donation-title">☕ Wesprzyj jeśli chcesz</div>
+                <div class="info-donation-row">Nie czuj się zobowiązany ❤️ 🙂</div>
+                <div class="info-donation-row" style="margin-top:8px">Michał Stankiewicz<br>02-585 Warszawa · PKO BP</div>
+                <div class="info-donation-row" style="margin-top:6px;font-size:0.72rem;color:var(--text-dim)">Tytuł przelewu: <strong style="color:var(--text)">"Wyszukiwarka klientów"</strong></div>
+                <div class="info-donation-iban" onclick="copyIban(this)" title="Kliknij aby skopiować">
+                  <span>PL55 1020 1097 0000 7902 0226 5353</span>
+                  <span class="copy-hint">📋 kopiuj</span>
+                </div>
+                <div class="info-donation-alts">
+                  <div class="info-donation-alt-label">lub</div>
+                  <div class="info-donation-alt-btns">
+                    <div class="info-donation-blik" onclick="copyBlik(this)" title="Kliknij aby skopiować numer BLIK">
+                      <span class="blik-logo">BLIK</span><span class="blik-number">797 486 355</span><span class="copy-hint">📋 kopiuj</span>
+                    </div>
+                    <a class="info-donation-patronite" href="https://patronite.pl/michalstankiewicz" target="_blank" rel="noopener">
+                      <span>❤️</span><span>Patronite</span><span style="font-size:0.6rem;opacity:0.7">↗</span>
+                    </a>
                   </div>
-                  <a class="info-donation-patronite" href="https://patronite.pl/michalstankiewicz" target="_blank" rel="noopener">
-                    <span>❤️</span>
-                    <span>Patronite</span>
-                    <span style="font-size:0.6rem;opacity:0.7">↗</span>
-                  </a>
                 </div>
               </div>
+              <div class="info-note">Jeżeli wspierasz moją pracę — dziękuję! 🙏</div>
             </div>
-            <div class="info-note">Jeżeli wspierasz moją pracę — dziękuję! 🙏</div>
           </div>
         </div>
       </div>
-      <div class="lang-switcher" title="Zmiana języka – wkrótce dostępna">
-        <span>🌐</span>
-        <span>PL</span>
-        <span class="lang-arrow">▾</span>
-      </div>
-      <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle-btn" title="Przełącz motyw (jasny / ciemny)">
-        <span id="theme-icon">🌙</span>
-      </button>
     </div>
-    <button class="login-btn" id="login-btn" onclick="openLoginModal()" title="Domyślne dane logowania do portali">
-      🔐 <span id="login-btn-label">Domyślne dane</span>
-    </button>
   </div>
 
   <div class="content">
