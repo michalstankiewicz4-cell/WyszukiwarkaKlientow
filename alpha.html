@@ -316,10 +316,20 @@ body {
 
 .source-card-header {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 8px;
   padding: 14px 16px 10px;
-  position: relative;
+}
+.source-card-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.source-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .favorite-btn {
   background: none;
@@ -2455,17 +2465,19 @@ function sourceCardHTML(s, fullSettings = false) {
   return `
   <div class="source-card" id="scard-${s.id}"${cardTitle ? ` title="${cardTitle.replace(/"/g,'&quot;')}"` : ''}>
     <div class="source-card-header">
-      <div class="source-icon" style="background:${iconBg}">${s.icon}</div>
-      <div class="source-info">
+      <div class="source-card-top">
         <div class="source-name">${s.name}</div>
         ${typeBadge(s.type)}
         ${s.baseUrl ? `<a class="source-base-url" href="${safeUrl(s.baseUrl)}" target="_blank" onclick="event.stopPropagation()">🔗 ${s.baseUrl.replace(/^https?:\/\//,'').replace(/^www\./,'')}</a>` : ''}
       </div>
-      ${toggleHTML}
-      ${fullSettings ? `<button class="clone-btn" onclick="cloneSource(${s.id})" title="Klonuj źródło">⧉</button><button class="delete-src-btn" onclick="deleteSource(${s.id})" title="Usuń źródło">🗑</button>` : ''}
-      <div style="display:flex;align-items:center;gap:4px">
-        <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}" style="position:static"></div>
-        <button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">${s.favorite ? '⭐' : '☆'}</button>
+      <div class="source-card-bottom">
+        <div style="display:flex;align-items:center;gap:6px">
+          ${toggleHTML}
+          ${fullSettings ? `<button class="clone-btn" onclick="cloneSource(${s.id})" title="Klonuj źródło">⧉</button><button class="delete-src-btn" onclick="deleteSource(${s.id})" title="Usuń źródło">🗑</button>` : ''}
+          <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}" style="position:static"></div>
+          <button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">${s.favorite ? '⭐' : '☆'}</button>
+        </div>
+        <div class="source-icon" style="background:${iconBg}">${s.icon}</div>
       </div>
     </div>
     ${subforumsDisplay}
