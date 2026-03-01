@@ -2871,6 +2871,7 @@ function removeSubforum(sourceId, idx) {
     return;
   }
   s.subforums.splice(idx, 1);
+  saveSources();
   // re-render the list
   const list = document.getElementById(`sflist-${sourceId}`);
   if (list) list.innerHTML = s.subforums.map((url, i) => subforumRowHTML(sourceId, i, url)).join('');
