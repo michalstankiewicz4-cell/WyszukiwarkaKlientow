@@ -2041,11 +2041,7 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
     </div>
     <div class="form-row">
       <label class="form-label">Silnik wyszukiwania</label>
-      <select class="form-select" id="new-engine">
-        <option value="google">Google Custom Search (cała sieć)</option>
-        <option value="google_site">Google Custom Search (site:)</option>
-        <option value="reddit">Reddit (publiczne API)</option>
-      </select>
+      <select class="form-select" id="new-engine"></select>
     </div>
     <div class="form-row">
       <label class="form-label">Główny URL serwisu</label>
@@ -2213,6 +2209,11 @@ const ENGINE_META = {
   reddit:      { label: 'Reddit',                       color: '#ff4500' },
 };
 const ENGINES = Object.entries(ENGINE_META).map(([value, { label }]) => ({ value, label }));
+
+function engineSelectOptions(current) {
+  const none = `<option value="" ${!current ? 'selected' : ''}>Brak</option>`;
+  return none + ENGINES.map(e => `<option value="${e.value}" ${current === e.value ? 'selected' : ''}>${e.label}</option>`).join('');
+}
 
 // =====================
 // SOURCE TYPES — jedyne źródło prawdy
@@ -2459,7 +2460,7 @@ function sourceCardHTML(s, fullSettings = false) {
       </div>
       <div class="field-label" style="margin-top:6px">Silnik wyszukiwania</div>
       <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value)">
-        <option value="" ${!s.engine?'selected':''}>Brak</option>${ENGINES.map(e => `<option value="${e.value}" ${s.engine===e.value?'selected':''}>${e.label}</option>`).join('')}
+        ${engineSelectOptions(s.engine)}
       </select>
       <div class="field-label" style="margin-top:10px">Podfora / sekcje ${countLabel}</div>
       <div class="subforum-list" id="sflist-${s.id}">
@@ -2683,7 +2684,7 @@ function sourceListTableHTML(sources = null) {
           <div class="slt-settings-inner">
             <div class="field-label">Silnik wyszukiwania</div>
             <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value)">
-              <option value="" ${!s.engine?'selected':''}>Brak</option>${ENGINES.map(e => `<option value="${e.value}" ${s.engine===e.value?'selected':''}>${e.label}</option>`).join('')}
+              ${engineSelectOptions(s.engine)}
             </select>
             <div class="field-label" style="margin-top:10px">Podfora / sekcje</div>
             <div class="subforum-list" id="sflist-${s.id}">
@@ -3327,6 +3328,7 @@ document.getElementById('src-search-modal-overlay').addEventListener('click', fu
 function openAddModal() {
   document.getElementById('new-type').innerHTML =
     Object.entries(SOURCE_TYPES).map(([v, m]) => `<option value="${v}">${m.label}</option>`).join('');
+  document.getElementById('new-engine').innerHTML = engineSelectOptions('');
   renderNewSourceKwPicker();
   renderNewSourceScriptPicker();
   document.getElementById('modal-overlay').classList.add('open');
