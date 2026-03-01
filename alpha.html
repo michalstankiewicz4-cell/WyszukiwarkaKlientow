@@ -3738,12 +3738,14 @@ syncKeywordSetsToSources();
 function renderQuickQueries() {
   const container = document.getElementById('quick-queries-list');
   if (!container) return;
-  if (!KEYWORD_SETS.length) {
-    container.innerHTML = `<div style="padding:3px 12px 6px;font-size:0.7rem;color:var(--text-dim);font-style:italic;line-height:1.4">Dodaj zestawy fraz w zakładce Frazy i słowa kluczowe</div>`;
+  const favIds = new Set(SOURCES.filter(s => s.favorite && s.enabled).map(s => s.id));
+  const sets = KEYWORD_SETS.filter(ks => ks.links.some(l => favIds.has(l.sourceId)));
+  if (!sets.length) {
+    container.innerHTML = `<div style="padding:3px 12px 6px;font-size:0.7rem;color:var(--text-dim);font-style:italic;line-height:1.4">Oznacz źródło jako ulubione i przypisz do niego zestaw fraz</div>`;
     return;
   }
   const icons = ['🔍','📌','💡','🎯','⚡','🔎','📢','🏷️'];
-  container.innerHTML = KEYWORD_SETS.map((ks, i) => {
+  container.innerHTML = sets.map((ks, i) => {
     const phrase = ks.phrases[0] || ks.name;
     const icon = icons[i % icons.length];
     const safePhrase = phrase.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
