@@ -3441,13 +3441,21 @@ function cloneSource(id) {
   if (!s) return;
   const newId = nextId++;
   const clone = {
-    ...s,
     id: newId,
     name: s.name + ' (kopia)',
+    icon: s.icon,
+    desc: s.desc,
+    type: s.type,
+    color: s.color,
+    baseUrl: s.baseUrl,
+    enabled: true,
     favorite: false,
-    dateAdded: new Date().toISOString().split('T')[0],
-    subforums: s.subforums ? [...s.subforums] : [''],
+    loginRequired: false,
     engine: '',
+    subforums: [''],
+    keywords: '',
+    scriptIds: [],
+    dateAdded: new Date().toISOString().split('T')[0],
   };
   SOURCES.push(clone);
   saveSources();
