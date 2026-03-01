@@ -2435,6 +2435,8 @@ function sourceCardHTML(s, fullSettings = false) {
       <select class="engine-select" onchange="updateSource(${s.id},'engine',this.value)">
         ${ENGINES.map(e => `<option value="${e.value}" ${(s.engine||'google')===e.value?'selected':''}>${e.label}</option>`).join('')}
       </select>
+      <div class="field-label" style="margin-top:10px">Główny URL serwisu</div>
+      <input class="field-input" type="url" value="${s.baseUrl||''}" placeholder="https://example.com" oninput="updateBaseUrl(${s.id},this.value)" style="width:100%;box-sizing:border-box" />
       <div class="field-label" style="margin-top:10px">Podfora / sekcje ${countLabel}</div>
       <div class="subforum-list" id="sflist-${s.id}">
         ${s.subforums.map((url, idx) => subforumRowHTML(s.id, idx, url)).join('')}
@@ -2712,6 +2714,34 @@ function toggleSettings(id) {
 function updateSource(id, field, val) {
   const s = SOURCES.find(x => x.id === id);
   if (s) { s[field] = val; saveSources(); }
+}
+
+function updateBaseUrl(id, val) {
+  const s = SOURCES.find(x => x.id === id);
+  if (!s) return;
+  s.baseUrl = val;
+  saveSources();
+  // live-update the link in the card header (both grids)
+  document.querySelectorAll(`#scard-${id} .source-card-top`).forEach(top => {
+    let link = top.querySelector('.source-base-url');
+    if (val) {
+      const display = val.replace(/^https?:\/\//, '').replace(/^www\./, '');
+      if (link) {
+        link.href = val;
+        link.textContent = '🔗 ' + display;
+      } else {
+        const a = document.createElement('a');
+        a.className = 'source-base-url';
+        a.href = val;
+        a.target = '_blank';
+        a.onclick = (e) => e.stopPropagation();
+        a.textContent = '🔗 ' + display;
+        top.appendChild(a);
+      }
+    } else if (link) {
+      link.remove();
+    }
+  });
 }
 
 function updateSubforum(sourceId, idx, val) {
