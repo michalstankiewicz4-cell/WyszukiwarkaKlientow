@@ -1,4 +1,4 @@
-# 🎯 Lead Hunter — Wyszukiwarka Klientów `v1.0.0-alfa`
+# 🎯 Lead Hunter — Wyszukiwarka Klientów `v0.0.1-alfa`
 
 **Lead Hunter** to narzędzie do wyszukiwania potencjalnych klientów na forach, serwisach społecznościowych i platformach ogłoszeniowych. Aplikacja działa jako pojedynczy plik HTML — bez serwera, bez instalacji.
 
@@ -16,65 +16,71 @@
 - Statystyki: liczba wyników, źródeł, gorących leadów
 
 ### 📂 Zarządzanie źródłami
-- **15+ predefiniowanych źródeł** — Elektroda.pl, 4programmers.net, LinkedIn, OLX, Reddit i inne
 - **Dwa widoki**: kafelki i lista — oba z grupowaniem Aktywne / Nieaktywne
 - **Sortowanie**: A-Z, Z-A, data dodania
 - **System ulubionych** ⭐ — oznaczone źródła wyświetlane na górze
-- **Klonowanie** źródła jednym kliknięciem (przycisk ⧉)
-- **Opis źródła** (max 255 znaków) — edytowalny w ustawieniach, widoczny jako tooltip na kafelku
-- **Szukaj źródeł** — konstruktor zapytania Google AI do odkrywania nowych serwisów z parserem wyników
-
-### 💾 Import / Export (backup)
-Pełny backup w jednym pliku JSON (`klienthunter-backup-YYYY-MM-DD.json`):
-- ✅ Źródła
-- ✅ Zestawy fraz i słów kluczowych
-- ✅ Loginy do źródeł
-- ✅ Skrypty
-- Import z podglądem zawartości; możliwość **dołączenia** lub **zastąpienia** źródeł
+- **Klonowanie** źródła jednym kliknięciem (domyślny silnik: Brak)
+- **Edycja inline** — nazwa, typ, ikona i URL edytowalne bezpośrednio na kafelku
+- **Ustawienia źródła** — podfora, opis, logowanie, przypisane skrypty (wiele, z kolejnością)
 
 ### 🔎 Silniki wyszukiwań
-Zakładka grupująca źródła według metody wyszukiwania:
-- **Wewnętrzna wyszukiwarka** — natywne wyszukiwanie serwisu
-- **Google** — wyszukiwanie przez Google
-- **Google (site:)** — Google ograniczone do domeny
-- **Bing** — silnik Bing
-- **DuckDuckGo** — silnik DuckDuckGo
-- **API** — niestandardowe endpointy API z polem URL i kluczem API (szyfrowane pole)
+Każde źródło można podpiąć pod jeden z dostępnych silników:
+
+| Silnik | Opis |
+|--------|------|
+| **Google CSE** | Wyszukiwanie przez Google Custom Search API |
+| **Google CSE (site:)** | Google CSE ograniczone do domeny źródła |
+| **Reddit** | Publiczne API Reddit (bez klucza) |
+| **Brak** | Źródło bez przypisanego silnika |
+
+Konfiguracja Google CSE: zakładka **Silniki → 🔑 Konfiguruj** (klucz API + CX).
 
 ### 📜 Skrypty
-Dedykowana zakładka dla skryptów wspomagających niestandardowe wyszukiwania:
-- Każdy skrypt powiązany z wybranym silnikiem wyszukiwania
+- Skrypty przypisywane **do źródeł** (wiele skryptów na źródło, z kolejnością)
 - Obsługiwane języki: **JavaScript, Python, Bash, cURL, PHP, Inny**
-- Opis i kod skryptu z collapsible podglądem (monospace, zawijanie linii)
+- Opis i kod z collapsible podglądem (monospace)
 - Pełne CRUD: dodaj, edytuj, usuń
+- **Przełącznik widoku**: według skryptów lub według źródeł, do których są podpięte
 
 ### 🏷️ Frazy i słowa kluczowe
 - Zestawy fraz grupowane w karty (np. „Szkolenia", „IT/Dev", „Marketing")
 - Każdy zestaw podłączony do wybranych podlinków źródeł
-- Synchronizacja fraz do `source.keywords` przy starcie i po każdej zmianie
-- Przypisanie zestawów podczas dodawania nowego źródła
+
+### 💾 Import / Export (backup)
+Pełny backup w pliku `.db.json` (`klienthunter-YYYY-MM-DD.db.json`):
+- ✅ Źródła (z przypisanymi skryptami)
+- ✅ Zestawy fraz i słów kluczowych
+- ✅ Skrypty (z kodem)
+- ✅ Zapisane leady
+- ✅ Ustawienia (harmonogram, bezpieczeństwo)
+- ✅ Dane wrażliwe: loginy, klucz Google API (opcjonalnie zaszyfrowane — patrz Security)
+- ✅ Google CX (zawsze plain — niesensytywne)
+
+Import z podglądem zawartości; możliwość **dołączenia** lub **zastąpienia** danych.
+
+**Pliki demo:**
+- [`NoPassklienthunter-2026-03-01.db.json`](NoPassklienthunter-2026-03-01.db.json) — eksport bez hasła
+- [`Pass123klienthunter-2026-03-01.db.json`](Pass123klienthunter-2026-03-01.db.json) — eksport z hasłem `123`
+
+### 🔐 Bezpieczeństwo
+Panel **Security** (topbar) umożliwia konfigurację:
+
+| Opcja | Opis |
+|-------|------|
+| **Przechowywanie haseł** | `localStorage` (domyślnie) lub `RAM` (dane znikają po zamknięciu karty) |
+| **Szyfrowanie eksportu** | Gdy włączone — hasła i klucz Google API szyfrowane AES-GCM + PBKDF2 przy eksporcie |
+
+### 🔐 Loginy do źródeł
+- Przechowywanie w localStorage lub RAM (wg ustawień Security)
+- Lampki statusu przy każdym źródle: 🟢 zalogowany / 🔴 wylogowany / 🟡 niewymagane
 
 ### ⏱️ Automatyczne wyszukiwanie (harmonogram)
 - Przycisk ⏱ w topbarze — zielony z pulsującą kropką gdy aktywny
-- Konfiguracja: co godzinę / co 2h / co 4h / co 8h / **codziennie o wybranej godzinie**
-- Wyszukiwanie na ulubionych źródłach
+- Konfiguracja: co godzinę / co 2h / co 4h / co 8h / codziennie o wybranej godzinie
 - **Powiadomienie systemowe** (Browser Notification API) z podsumowaniem wyników
-- **Toast in-app** (prawy dół) z liczbą wyników, gorących leadów i przyciskiem „Zobacz wyniki"
 - Harmonogram zapisywany w localStorage; wznawia się po odświeżeniu strony
 
-### 🔐 Loginy do źródeł
-- Lampki statusu przy każdym źródle: 🟢 zalogowany / 🔴 wylogowany / 🟡 niewymagane
-- Grupowanie wg statusu lub wg nazwy
-- Per-user storage — dane logowania powiązane z kontem użytkownika
-- Bezpieczne przechowywanie w localStorage
-
-### 🌙 Tryb ciemny / jasny
-- Przełącznik 🌙 / ☀️ w topbarze
-- Pełne ciemne CSS Custom Properties dla wszystkich komponentów
-- Preferencja zapisywana w localStorage
-
 ### ℹ️ Panel informacyjny
-- Pulsujący przycisk ℹ w topbarze
 - Dane kontaktowe autora (telefon klikalny, mail klikalny)
 - Sekcja donacji: IBAN z kopią do schowka, BLIK, link do Patronite
 - Wersja aplikacji widoczna w sidebarze i w panelu
@@ -84,13 +90,14 @@ Dedykowana zakładka dla skryptów wspomagających niestandardowe wyszukiwania:
 ## 🛠️ Technologie
 
 | Warstwa | Technologia |
-|---|---|
+|---------|-------------|
 | Frontend | Vanilla HTML5, CSS3, JavaScript ES6+ |
 | Styling | CSS Custom Properties, Flexbox, Grid |
 | Fonty | Outfit (UI), JetBrains Mono (kod/dane) |
-| Storage | localStorage (bez backendu) |
+| Storage | localStorage / RAM (bez backendu) |
+| Szyfrowanie | AES-GCM + PBKDF2 (Web Crypto API) |
 | Powiadomienia | Browser Notification API |
-| Architektura | Single-file (`wyszukiwarka.html`) |
+| Architektura | Single-file (`index.html`) |
 
 ---
 
@@ -101,7 +108,7 @@ git clone https://github.com/michalstankiewicz4-cell/WyszukiwarkaKlientow.git
 cd WyszukiwarkaKlientow
 ```
 
-Otwórz `wyszukiwarka.html` w dowolnej nowoczesnej przeglądarce. Nie wymagana instalacja ani serwer.
+Otwórz `index.html` w dowolnej nowoczesnej przeglądarce. Nie wymagana instalacja ani serwer.
 
 ---
 
@@ -109,31 +116,34 @@ Otwórz `wyszukiwarka.html` w dowolnej nowoczesnej przeglądarce. Nie wymagana i
 
 ### 1. Konfiguracja źródeł
 1. Przejdź do **Zarządzaj źródłami**
-2. Włącz interesujące Cię źródła (toggle)
-3. Oznacz najważniejsze jako ulubione ⭐
-4. Ustaw silnik wyszukiwania i podfora w ustawieniach źródła
-5. Dodaj opis źródła — pojawi się jako tooltip na kafelku
+2. Dodaj źródła przyciskiem **+ Dodaj źródło** (podstawowe dane: nazwa, typ, link, ikona)
+3. Włącz interesujące Cię źródła (toggle) i oznacz najważniejsze jako ulubione ⭐
+4. Kliknij przycisk edycji ✏️ na kafelku, by zmienić nazwę, typ, ikonę lub URL
+5. W ustawieniach źródła (⚙) skonfiguruj podfora, silnik i przypisz skrypty
 
-### 2. Frazy i słowa kluczowe
+### 2. Konfiguracja silnika Google CSE
+1. Przejdź do **Silniki wyszukiwań**
+2. Kliknij **🔑 Konfiguruj** przy karcie Google CSE
+3. Wpisz klucz API i identyfikator CX
+
+### 3. Frazy i słowa kluczowe
 1. Przejdź do **Frazy i słowa kluczowe**
 2. Utwórz zestaw i wpisz frazy oddzielone przecinkami
 3. Podłącz zestaw do wybranych podlinków źródeł
-4. Frazy automatycznie synchronizują się ze źródłami
 
-### 3. Skrypty
+### 4. Skrypty
 1. Przejdź do **Skrypty**
-2. Kliknij **+ Dodaj skrypt**
-3. Wybierz powiązany silnik i język
-4. Wklej kod skryptu — przydatny gdy silnik wymaga niestandardowego zapytania
+2. Kliknij **+ Dodaj skrypt**, wybierz język i wklej kod
+3. W ustawieniach źródła przypisz skrypty i ustal ich kolejność
 
-### 4. Automatyzacja
+### 5. Automatyzacja
 1. Kliknij ⏱ w topbarze
 2. Włącz harmonogram i ustaw częstotliwość
-3. Opcjonalnie wpisz frazę (puste = bierze z pola głównego)
-4. Przy pierwszym włączeniu przeglądarka poprosi o zgodę na powiadomienia
+3. Przy pierwszym włączeniu przeglądarka poprosi o zgodę na powiadomienia
 
-### 5. Backup
-- **Eksport**: przycisk „Eksport" w Zarządzaj źródłami → plik JSON z pełnym backupem
+### 6. Backup i bezpieczeństwo
+- **Eksport**: przycisk „Eksport" w Zarządzaj źródłami → plik `.db.json`
+  - Gdy **Szyfrowanie eksportu** włączone w Security → hasła i klucz API zaszyfrowane
 - **Import**: przycisk „Import" → wybierz plik, potwierdź co zaimportować
 
 ---
@@ -141,7 +151,7 @@ Otwórz `wyszukiwarka.html` w dowolnej nowoczesnej przeglądarce. Nie wymagana i
 ## 🎯 Przykłady zapytań
 
 | Branża | Przykładowe zapytanie |
-|---|---|
+|--------|----------------------|
 | IT | szukam programisty PHP freelancer |
 | Marketing | polecacie agencję marketingową / SEO |
 | Szkolenia | szukam szkoleń z Excela dla firmy |
@@ -176,4 +186,4 @@ Aplikacja jest darmowa. Jeśli chcesz wesprzeć autora:
 
 ---
 
-*Lead Hunter v1.0.0-alfa — single-file, no backend, no dependencies* 🎯
+*Lead Hunter v0.0.1-alfa — single-file, no backend, no dependencies* 🎯
