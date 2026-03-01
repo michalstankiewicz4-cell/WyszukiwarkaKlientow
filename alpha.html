@@ -2464,8 +2464,8 @@ function sourceCardHTML(s, fullSettings = false) {
       ${toggleHTML}
       ${fullSettings ? `<button class="clone-btn" onclick="cloneSource(${s.id})" title="Klonuj źródło">⧉</button><button class="delete-src-btn" onclick="deleteSource(${s.id})" title="Usuń źródło">🗑</button>` : ''}
       <div style="display:flex;align-items:center;gap:4px">
-        <button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">${s.favorite ? '⭐' : '☆'}</button>
         <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}"></div>
+        <button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">${s.favorite ? '⭐' : '☆'}</button>
       </div>
     </div>
     ${subforumsDisplay}
@@ -2623,6 +2623,7 @@ function sourceListTableHTML(sources = null) {
     
     const nameHTML = `
       <div style="display:flex;align-items:center;gap:4px;min-width:120px">
+        <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}" style="position:static;flex-shrink:0"></div>
         ${favoriteHTML}
         <div>
           <div class="slt-name">${s.name}</div>
@@ -2642,10 +2643,7 @@ function sourceListTableHTML(sources = null) {
         <td><div class="slt-keywords" title="${s.keywords}">${kwShort}</div></td>
         <td><span class="engine-badge">${engineLabel}</span></td>
         <td>
-          <div style="display:flex;align-items:center;gap:6px;min-width:80px">
-            <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}" style="position:static"></div>
-            <div style="font-size:0.7rem">${srcLoginBtnHTML(s.id)}</div>
-          </div>
+          <div style="font-size:0.7rem">${srcLoginBtnHTML(s.id)}</div>
         </td>
         <td style="text-align:center">${enabledHTML}</td>
         <td style="white-space:nowrap">
