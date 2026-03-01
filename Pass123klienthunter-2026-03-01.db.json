@@ -1,0 +1,276 @@
+{
+  "app": "KlientHunter",
+  "version": 4,
+  "exportedAt": "2026-03-01T08:55:42.747Z",
+  "sources": [
+    {
+      "id": 1,
+      "name": "Google",
+      "type": "wyszukiwarka",
+      "icon": "🌐",
+      "color": "#e8f0fc",
+      "enabled": true,
+      "baseUrl": "www.google.pl",
+      "engine": "",
+      "subforums": [
+        "www.google.pl",
+        "www.google.pl/praca",
+        ""
+      ],
+      "keywords": "",
+      "desc": "Wyszukiwarka google",
+      "favorite": true,
+      "dateAdded": "2026-03-01",
+      "loginRequired": true,
+      "scriptIds": [
+        2
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Google (kopia)",
+      "type": "wyszukiwarka",
+      "icon": "🌐",
+      "color": "#e8f0fc",
+      "enabled": false,
+      "baseUrl": "www.google.pl",
+      "engine": "",
+      "subforums": [
+        "www.google.pl"
+      ],
+      "keywords": "",
+      "desc": "To jest wyszukiwarka",
+      "favorite": true,
+      "dateAdded": "2026-03-01",
+      "loginRequired": true,
+      "scriptIds": []
+    },
+    {
+      "id": 3,
+      "name": "Bing testowy",
+      "type": "wyszukiwarka",
+      "icon": "🌐",
+      "color": "#e8f0fc",
+      "enabled": true,
+      "baseUrl": "www.bing.pl",
+      "engine": "google",
+      "subforums": [
+        "www.bing.pl",
+        "www.bing.pl/praca",
+        "www.bing/moto"
+      ],
+      "keywords": "Szukam dziewczyny która szuka chłopaka, szukam kawy",
+      "desc": "To jest wyszukiwarka",
+      "favorite": true,
+      "dateAdded": "2026-03-01",
+      "loginRequired": true,
+      "scriptIds": []
+    },
+    {
+      "id": 4,
+      "name": "Google (kopia)",
+      "type": "wyszukiwarka",
+      "icon": "🌐",
+      "color": "#e8f0fc",
+      "enabled": false,
+      "baseUrl": "www.google.pl",
+      "engine": "",
+      "subforums": [
+        "www.google.pl",
+        "www.google.pl/praca",
+        ""
+      ],
+      "keywords": "",
+      "desc": "Wyszukiwarka google",
+      "favorite": false,
+      "dateAdded": "2026-03-01",
+      "loginRequired": true,
+      "scriptIds": []
+    },
+    {
+      "id": 5,
+      "name": "Bing (kopia)",
+      "type": "wyszukiwarka",
+      "icon": "🌐",
+      "color": "#e8f0fc",
+      "enabled": true,
+      "baseUrl": "www.bing.pl",
+      "engine": "",
+      "subforums": [
+        "www.google.pl"
+      ],
+      "keywords": "Szukam dziewczyny która szuka chłopaka, szukam kawy, auto, pojazd, dom",
+      "desc": "To jest wyszukiwarka",
+      "favorite": false,
+      "dateAdded": "2026-03-01",
+      "loginRequired": true,
+      "scriptIds": [
+        2,
+        1
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Bing (kopia)",
+      "type": "wyszukiwarka",
+      "icon": "🌐",
+      "color": "#e8f0fc",
+      "enabled": false,
+      "baseUrl": "www.bing.pl",
+      "engine": "google",
+      "subforums": [
+        "www.google.pl"
+      ],
+      "keywords": "Szukam dziewczyny która szuka chłopaka, szukam kawy",
+      "desc": "To jest wyszukiwarka",
+      "favorite": false,
+      "dateAdded": "2026-03-01",
+      "loginRequired": true,
+      "scriptIds": []
+    },
+    {
+      "id": 7,
+      "name": "Bing (kopia)",
+      "type": "wyszukiwarka",
+      "icon": "🌐",
+      "color": "#e8f0fc",
+      "enabled": false,
+      "baseUrl": "www.bing.pl",
+      "engine": "",
+      "subforums": [
+        "www.bing.pl"
+      ],
+      "keywords": "Szukam dziewczyny która szuka chłopaka, szukam kawy",
+      "desc": "To jest wyszukiwarka",
+      "favorite": false,
+      "dateAdded": "2026-03-01",
+      "loginRequired": true,
+      "scriptIds": []
+    },
+    {
+      "id": 8,
+      "name": "Bing (kopia)",
+      "type": "wyszukiwarka",
+      "icon": "🌐",
+      "color": "#e8f0fc",
+      "enabled": false,
+      "baseUrl": "www.bing.pl",
+      "engine": "",
+      "subforums": [
+        "www.bing.pl",
+        "www.bing.pl/praca",
+        "www.bing/moto"
+      ],
+      "keywords": "",
+      "desc": "To jest wyszukiwarka",
+      "favorite": false,
+      "dateAdded": "2026-03-01",
+      "loginRequired": true,
+      "scriptIds": []
+    }
+  ],
+  "keywordSets": [
+    {
+      "id": 1772354312132,
+      "name": "Frazy testowe",
+      "phrases": [
+        "Szukam dziewczyny która szuka chłopaka",
+        "szukam kawy"
+      ],
+      "links": [
+        {
+          "sourceId": 3,
+          "sourceName": "Bing testowy",
+          "subforum": "www.bing.pl/praca"
+        },
+        {
+          "sourceId": 5,
+          "sourceName": "Bing (kopia)",
+          "subforum": ""
+        },
+        {
+          "sourceId": 6,
+          "sourceName": "Bing (kopia)",
+          "subforum": ""
+        },
+        {
+          "sourceId": 7,
+          "sourceName": "Bing (kopia)",
+          "subforum": ""
+        }
+      ]
+    },
+    {
+      "id": 1772354519507,
+      "name": "inne frazy",
+      "phrases": [
+        "auto",
+        "pojazd",
+        "dom"
+      ],
+      "links": [
+        {
+          "sourceId": 5,
+          "sourceName": "Bing (kopia)",
+          "subforum": ""
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": 1,
+      "name": "szukacz aut",
+      "language": "javascript",
+      "description": "szuka aut",
+      "code": "1\n2\n3\n4\n5\n6\n",
+      "dateAdded": "2026-03-01"
+    },
+    {
+      "id": 2,
+      "name": "poszukiwacz",
+      "language": "python",
+      "description": "szuka nadal",
+      "code": "q\nw\ne\nr\nt\ny\n",
+      "dateAdded": "2026-03-01"
+    }
+  ],
+  "savedLeads": [],
+  "settings": {
+    "schedule": {
+      "enabled": false,
+      "frequency": "daily",
+      "time": "09:00",
+      "query": "",
+      "lastRun": null
+    },
+    "security": {
+      "passStorage": "localStorage",
+      "exportPass": true
+    }
+  },
+  "credentials": {
+    "sources": {
+      "_encrypted": true,
+      "alg": "AES-GCM-PBKDF2",
+      "salt": "HvjCA0WXzVkkvaJeLuX7hA==",
+      "iv": "ly7wCUriLv78XUY/",
+      "data": "iRvpNp0JP/ORLTr5bw2lRAJfFs3SORa0KPs0m2D7mF50mSPLN2FCY4uloRQdpUCuhAJhLQ+nxsKaQQH13nA5biSO0zGkbR0yFJNkTk9g5xDt1jGX8mEqyzVdtZEMuKvDf9XHVj22QUz1oq9GZYFswGXb5VN3c8ehl3DJy8u7FWyF35UnR9MzasfhSotb"
+    },
+    "defaultLogin": {
+      "_encrypted": true,
+      "alg": "AES-GCM-PBKDF2",
+      "salt": "niwzoEAe+hLvveTXzn/gyA==",
+      "iv": "RBaqp4oHUaGkPZeb",
+      "data": "Uo+Gxoukw7TqZvXx1+utL9aoQJW2BMXY5KiTPYeAmfjffpt8tecL48Y02KMavnGARcABfaWQ9OYKNia7DD5HM5YHcI2+7yExyg=="
+    },
+    "googleKey": {
+      "_encrypted": true,
+      "alg": "AES-GCM-PBKDF2",
+      "salt": "LNgmKSo+FQ5JRBlXqolqaw==",
+      "iv": "zp3u0Zt21F5d3XYd",
+      "data": "WjPKdWNcnG3BoHycDppLiNE67jXy25ETS/c="
+    },
+    "googleCx": ""
+  }
+}
