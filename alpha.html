@@ -278,7 +278,7 @@ body {
   transition: all 0.12s;
 }
 .add-source-btn:hover { border-color: var(--accent); color: var(--accent); }
-.io-btn { font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 600; padding: 6px 12px; background: var(--surface); border: 1px solid var(--border2); color: var(--text-dim); border-radius: 6px; cursor: pointer; transition: all 0.12s; display:flex; align-items:center; gap:5px; }
+.io-btn { font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 600; height: 36px; padding: 0 12px; box-sizing: border-box; background: var(--surface); border: 1px solid var(--border2); color: var(--text-dim); border-radius: 6px; cursor: pointer; transition: all 0.12s; display:flex; align-items:center; gap:5px; }
 .io-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 
 .sources-grid {
@@ -1684,6 +1684,14 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
           </div>
         </div>
       </div>
+      <button class="io-btn" onclick="exportSources()" title="Eksportuj źródła do pliku JSON">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M3 6.5l3.5 3.5 3.5-3.5M1 11h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Eksport
+      </button>
+      <button class="io-btn" onclick="importSources()" title="Importuj źródła z pliku JSON">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12V4M3 6.5L6.5 3 10 6.5M1 1h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Import
+      </button>
       <button class="clear-db-btn" onclick="clearAllData()" title="Wyczyść całą bazę danych">🗑 Wyczyść bazę</button>
       <div class="info-btn-wrap">
         <button class="security-btn" id="security-btn" onclick="toggleSecurityPanel(event)" title="Ustawienia bezpieczeństwa">🔒</button>
@@ -1874,14 +1882,6 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
               Lista
             </button>
           </div>
-          <button class="io-btn" onclick="exportSources()">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M3 6.5l3.5 3.5 3.5-3.5M1 11h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Eksport
-          </button>
-          <button class="io-btn" onclick="importSources()">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12V4M3 6.5L6.5 3 10 6.5M1 1h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Import
-          </button>
           <button class="search-source-btn" onclick="openSrcSearchModal()">🔍 Szukaj źródeł</button>
           <button class="add-source-btn" onclick="openAddModal()">+ Dodaj źródło</button>
         </div>
@@ -2536,14 +2536,6 @@ function renderSourcesManage() {
             Lista
           </button>
         </div>
-        <button class="io-btn" onclick="exportSources()" title="Eksportuj źródła do pliku JSON">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M3 6.5l3.5 3.5 3.5-3.5M1 11h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Eksport
-        </button>
-        <button class="io-btn" onclick="importSources()" title="Importuj źródła z pliku JSON">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12V4M3 6.5L6.5 3 10 6.5M1 1h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Import
-        </button>
         <button class="search-source-btn" onclick="openSrcSearchModal()">🔍 Szukaj źródeł</button>
         <button class="add-source-btn" onclick="openAddModal()">+ Dodaj źródło</button>
       </div>`;
