@@ -2617,15 +2617,13 @@ function sourceListTableHTML(sources = null) {
       <span class="toggle-slider"></span>
     </label>`;
     
-    const favoriteHTML = `<button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" style="position:static;opacity:1;margin-right:4px;font-size:0.8rem" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">
-      ${s.favorite ? '⭐' : '☆'}
-    </button>`;
-    
     const nameHTML = `
-      <div style="display:flex;align-items:center;gap:4px;min-width:120px">
-        <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}" style="position:static;flex-shrink:0"></div>
-        ${favoriteHTML}
-        <div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div style="display:flex;align-items:center;gap:3px;flex-shrink:0">
+          <div class="login-status-lamp ${loginStatus}" title="${statusTitles[loginStatus]}" style="position:static"></div>
+          <button class="favorite-btn${s.favorite ? ' active' : ''}" onclick="toggleFavorite(${s.id})" style="position:static;font-size:0.8rem" title="${s.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">${s.favorite ? '⭐' : '☆'}</button>
+        </div>
+        <div style="min-width:0">
           <div class="slt-name">${s.name}</div>
           ${typeBadge(s.type)}
           ${s.baseUrl ? `<br><a class="source-base-url" href="${safeUrl(s.baseUrl)}" target="_blank">🔗 ${s.baseUrl.replace(/^https?:\/\//,'').replace(/^www\./,'').substring(0,25)}</a>` : ''}
