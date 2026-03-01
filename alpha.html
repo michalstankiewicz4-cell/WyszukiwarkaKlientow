@@ -4176,9 +4176,7 @@ document.getElementById('script-modal-overlay').addEventListener('click', functi
 function deleteEngineSource(id) {
   const s = SOURCES.find(x => x.id === id);
   if (!s) return;
-  if (!confirm(`Usunąć źródło „${s.name}"?`)) return;
-  const idx = SOURCES.indexOf(s);
-  if (idx !== -1) SOURCES.splice(idx, 1);
+  s.engine = '';
   saveSources();
   renderEngines();
   renderSources();
@@ -4204,7 +4202,7 @@ function renderEngines() {
             ${apiInfo ? `<div class="engine-source-url" title="${s.apiUrl}">⚡ ${apiInfo}</div>` : domain ? `<div class="engine-source-url" title="${s.baseUrl}">${domain}</div>` : ''}
           </div>
           <div class="engine-source-status ${s.enabled ? 'on' : 'off'}" title="${s.enabled ? 'Aktywne' : 'Nieaktywne'}"></div>
-          <button class="engine-source-del" onclick="deleteEngineSource(${s.id})" title="Usuń źródło">🗑</button>
+          <button class="engine-source-del" onclick="deleteEngineSource(${s.id})" title="Odepnij od silnika">✕</button>
         </div>`;
     }).join('');
 
