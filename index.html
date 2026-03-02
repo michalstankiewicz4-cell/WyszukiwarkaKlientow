@@ -1061,6 +1061,12 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
 .sched-toggle input:checked + .sched-slider::before { transform: translateX(18px); }
 .mode-toggle-wrap { display: flex; align-items: center; gap: 5px; }
 .mode-label { font-size: 0.9rem; line-height: 1; }
+
+/* ONLINE TOGGLE */
+.online-toggle-wrap { display: flex; align-items: center; gap: 5px; }
+.online-label { font-size: 0.9rem; line-height: 1; color: var(--text-dim); transition: color 0.2s; }
+#online-toggle:checked ~ .online-label.online-mode { color: var(--green); }
+#online-toggle:not(:checked) ~ .online-label.offline-mode { color: var(--accent); }
 .sched-select, .sched-input {
   width: 100%; font-family: 'Outfit', sans-serif; font-size: 0.82rem;
   padding: 8px 10px; border: 1px solid var(--border); border-radius: 7px;
@@ -1806,6 +1812,18 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
         </button>
       </div>
       <div class="topbar-divider"></div>
+      <!-- Online/Offline toggle -->
+      <div class="topbar-section">
+        <div class="online-toggle-wrap" title="Online — funkcje serwerowe włączone&#10;Offline — tylko funkcje lokalne">
+          <span class="online-label offline-mode" id="online-label-off">📴</span>
+          <label class="sched-toggle">
+            <input type="checkbox" id="online-toggle" onchange="onOnlineToggle(this.checked)">
+            <span class="sched-slider"></span>
+          </label>
+          <span class="online-label online-mode" id="online-label-on">🌐</span>
+        </div>
+      </div>
+      <div class="topbar-divider"></div>
       <!-- Tryb użytkownik / admin -->
       <div class="topbar-section">
         <div class="mode-toggle-wrap" title="Użytkownik — widok uproszczony&#10;Admin — pełny dostęp">
@@ -2257,10 +2275,11 @@ let savedLeads = JSON.parse(localStorage.getItem('lh_saved') || '[]');
 // ENGINES — jedyne źródło prawdy
 // =====================
 const ENGINE_META = {
-  google:      { label: 'Google Custom Search',         color: '#4285F4' },
-  google_site: { label: 'Google Custom Search (site:)', color: '#34A853' },
-  reddit:      { label: 'Reddit',                       color: '#ff4500' },
-  apify:       { label: 'Apify Web Scraper',            color: '#FF9900' },
+  google:        { label: 'Google Custom Search',         color: '#4285F4' },
+  google_site:   { label: 'Google Custom Search (site:)', color: '#34A853' },
+  reddit:        { label: 'Reddit',                       color: '#ff4500' },
+  apify:         { label: 'Apify Web Scraper',            color: '#FF9900' },
+  google_alerts: { label: 'Google Alerts',               color: '#EA4335' },
 };
 const ENGINES = Object.entries(ENGINE_META).map(([value, { label }]) => ({ value, label }));
 
@@ -4554,6 +4573,13 @@ function renderEngines() {
       'Przypisz im silnik <b>Reddit</b> i wpisz URL subredditu jako podforum, np. <b>r/Poland</b>.',
       'Wyszukiwanie pobiera posty i komentarze pasujące do fraz kluczowych.',
     ],
+    google_alerts: [
+      'Wejdź na <a href="https://www.google.com/alerts" target="_blank" rel="noopener">google.com/alerts</a> i utwórz alerty dla interesujących Cię fraz.',
+      'Ustaw częstotliwość na <b>"W miarę publikowania"</b> dla najświeższych wyników.',
+      'Wybierz <b>RSS</b> jako format dostarczania alertu zamiast email.',
+      'Skopiuj link RSS i dodaj go jako <b>podforum</b> w ustawieniach źródła.',
+      'Lead Hunter będzie automatycznie sprawdzać feed RSS i pobierać nowe wyniki.',
+    ],
     apify: [
       'Zarejestruj się na <a href="https://apify.com" target="_blank" rel="noopener">apify.com</a> i wejdź w <b>Settings → Integrations → API tokens</b>.',
       'Skopiuj swój <b>Personal API Token</b> i kliknij <b>🔑 Konfiguruj</b> poniżej, lub wejdź bezpośrednio na <a href="https://console.apify.com/settings/integrations" target="_blank" rel="noopener">console.apify.com/settings/integrations</a>.',
@@ -4986,6 +5012,27 @@ function toggleTheme() {
 }
 
 // =====================
+// ONLINE/OFFLINE TOGGLE
+// =====================
+let isOnlineMode = false;
+
+function onOnlineToggle(enabled) {
+  isOnlineMode = enabled;
+  localStorage.setItem('lh_online_mode', JSON.stringify(isOnlineMode));
+  
+  // Na razie tylko aktualizujemy status - w przyszłości można dodać:
+  // - włączenie/wyłączenie funkcji serwerowych
+  // - zmianę dostępnych silników wyszukiwania  
+  // - synchronizację z chmurą
+  console.log(`Tryb: ${enabled ? 'Online' : 'Offline'}`);
+}
+
+function loadOnlineMode() {
+  const saved = localStorage.getItem('lh_online_mode');
+  return saved ? JSON.parse(saved) : false;
+}
+
+// =====================
 // SECURITY SETTINGS
 // =====================
 let securitySettings = JSON.parse(localStorage.getItem('lh_security') || JSON.stringify({
@@ -5060,6 +5107,8 @@ document.addEventListener('DOMContentLoaded', function() {
   applyTheme(currentTheme);
   renderNav();
   document.getElementById('mode-toggle').checked = appMode === 'admin';
+  isOnlineMode = loadOnlineMode();
+  document.getElementById('online-toggle').checked = isOnlineMode;
   document.getElementById('saved-count').textContent = savedLeads.length;
   updateLoginBtn();
   updateCredsBadge();
