@@ -3446,10 +3446,16 @@ async function checkAlerts() {
 }
 
 async function fetchRSSFeed(rssUrl, source) {
-  // Na lokalnym dev Go Live (8081) API jest na porcie 8080; na produkcji ten sam origin
-  const apiBase = (window.location.hostname === 'localhost' && window.location.port !== '8080')
-    ? 'http://localhost:8080'
-    : '';
+  // Wybór bazy API:
+  // - localhost:8081 (Go Live) → backend na localhost:8080
+  // - localhost:8080 (Express) → ten sam origin
+  // - produkcja (GitHub Pages) → Render backend
+  let apiBase = '';
+  if (window.location.hostname === 'localhost' && window.location.port !== '8080') {
+    apiBase = 'http://localhost:8080';
+  } else if (window.location.hostname !== 'localhost') {
+    apiBase = 'https://wyszukiwarkaklientow.onrender.com';
+  }
 
   // Próba 1: własny backend /api/rss
   try {
