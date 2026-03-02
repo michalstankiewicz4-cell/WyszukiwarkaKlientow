@@ -3,10 +3,14 @@
   "version": "0.0.1-alpha",
   "description": "KlientHunter — Lead Hunter app",
   "scripts": {
-    "start": "npx http-server . -p 8080 -o --cors -c-1",
-    "serve": "npx http-server . -p 8080 --cors -c-1"
+    "start": "npx http-server . -p ${PORT:-8080} --cors -c-1",
+    "serve": "npx http-server . -p 8080 --cors -c-1",
+    "build": "echo 'No build required for static files'"
   },
   "keywords": [],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
 }
