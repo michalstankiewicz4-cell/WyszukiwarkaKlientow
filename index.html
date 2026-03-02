@@ -3207,8 +3207,19 @@ function quickSearch(q) {
 
 async function doSearch() {
   if (searching) return;
-  const query = document.getElementById('main-query').value.trim();
-  if (!query) {
+  let query = document.getElementById('main-query').value.trim();
+
+  // Gdy puste pole — zbierz frazy z aktywnych źródeł (KEYWORD_SETS powiązane z aktywnymi source'ami)
+  let autoQueries = [];
+  if (!query && isOnlineMode) {
+    const activeNonAlert = SOURCES.filter(s => s.enabled && s.engine && s.engine !== 'google_alerts');
+    const activeIds = new Set(activeNonAlert.map(s => s.id));
+    const linkedSets = KEYWORD_SETS.filter(ks => ks.links && ks.links.some(l => activeIds.has(l.sourceId)));
+    autoQueries = [...new Set(linkedSets.flatMap(ks => ks.phrases))].filter(p => p && p.trim());
+    console.log('[Szukaj] Puste pole — znalezione frazy z aktywnych źródeł:', autoQueries);
+  }
+
+  if (!query && !autoQueries.length) {
     document.getElementById('main-query').focus();
     if (isOnlineMode) checkAlerts();
     return;
@@ -3235,50 +3246,56 @@ async function doSearch() {
     checkAlerts();
   }
 
+  // Lista zapytań: albo wpisane przez użytkownika, albo frazy z keyword setów
+  const queries = query ? [query] : autoQueries;
+  const displayQuery = query || autoQueries.join(', ');
+
   const finish = (results) => {
     currentResults = results;
     searching = false;
     btn.disabled = false;
     icon.textContent = '🔍';
     document.getElementById('progress-bar').classList.remove('active');
-    renderResults(query, activeCount);
+    renderResults(displayQuery, activeCount);
   };
 
   const promises = [];
 
-  // google — one shared call, no site: filter
-  const googleSources = activeSources.filter(s => s.engine === 'google');
-  if (googleSources.length && googleKey && googleCx)
-    promises.push(searchGoogleCSE(query, googleKey, googleCx, null, googleSources[0]));
+  for (const q of queries) {
+    // google — one shared call, no site: filter
+    const googleSources = activeSources.filter(s => s.engine === 'google');
+    if (googleSources.length && googleKey && googleCx)
+      promises.push(searchGoogleCSE(q, googleKey, googleCx, null, googleSources[0]));
 
-  // google_site — one call per source with site: filter
-  if (googleKey && googleCx) {
-    for (const src of activeSources.filter(s => s.engine === 'google_site')) {
-      const subs = (src.subforums || []).filter(sf => sf && sf.trim());
-      if (subs.length) {
-        for (const sf of subs)
-          promises.push(searchGoogleCSE(query, googleKey, googleCx, sf, src));
-      } else {
-        promises.push(searchGoogleCSE(query, googleKey, googleCx, src.baseUrl, src));
+    // google_site — one call per source with site: filter
+    if (googleKey && googleCx) {
+      for (const src of activeSources.filter(s => s.engine === 'google_site')) {
+        const subs = (src.subforums || []).filter(sf => sf && sf.trim());
+        if (subs.length) {
+          for (const sf of subs)
+            promises.push(searchGoogleCSE(q, googleKey, googleCx, sf, src));
+        } else {
+          promises.push(searchGoogleCSE(q, googleKey, googleCx, src.baseUrl, src));
+        }
       }
     }
-  }
 
-  // reddit — one shared call
-  const redditSources = activeSources.filter(s => s.engine === 'reddit');
-  if (redditSources.length)
-    promises.push(searchRedditPublic(query, redditSources[0]));
+    // reddit — one shared call
+    const redditSources = activeSources.filter(s => s.engine === 'reddit');
+    if (redditSources.length)
+      promises.push(searchRedditPublic(q, redditSources[0]));
 
-  // apify — one call per source with optional site: filter
-  const apifyKey = loadApifyKey();
-  if (apifyKey) {
-    for (const src of activeSources.filter(s => s.engine === 'apify')) {
-      const subs = (src.subforums || []).filter(sf => sf && sf.trim());
-      if (subs.length) {
-        for (const sf of subs)
-          promises.push(searchApify(query, apifyKey, sf, src));
-      } else {
-        promises.push(searchApify(query, apifyKey, null, src));
+    // apify — one call per source with optional site: filter
+    const apifyKey = loadApifyKey();
+    if (apifyKey) {
+      for (const src of activeSources.filter(s => s.engine === 'apify')) {
+        const subs = (src.subforums || []).filter(sf => sf && sf.trim());
+        if (subs.length) {
+          for (const sf of subs)
+            promises.push(searchApify(q, apifyKey, sf, src));
+        } else {
+          promises.push(searchApify(q, apifyKey, null, src));
+        }
       }
     }
   }
@@ -3287,9 +3304,16 @@ async function doSearch() {
     const settled = await Promise.allSettled(promises);
     const results = settled
       .filter(r => r.status === 'fulfilled')
-      .flatMap(r => r.value)
-      .sort((a, b) => b.relevance - a.relevance);
-    finish(results);
+      .flatMap(r => r.value);
+    // Deduplikacja po URL
+    const seen = new Set();
+    const unique = results.filter(r => {
+      if (!r.url || seen.has(r.url)) return false;
+      seen.add(r.url);
+      return true;
+    });
+    unique.sort((a, b) => b.relevance - a.relevance);
+    finish(unique);
   } else {
     finish([]);
   }
