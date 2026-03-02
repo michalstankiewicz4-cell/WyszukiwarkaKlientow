@@ -3,14 +3,16 @@
   "version": "0.0.1-alpha",
   "description": "KlientHunter — Lead Hunter app",
   "scripts": {
-    "start": "npx http-server . -p ${PORT:-8080} --cors -c-1",
-    "serve": "npx http-server . -p 8080 --cors -c-1",
+    "start": "node server.js",
+    "dev":   "node server.js",
     "build": "echo 'No build required for static files'"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "http-server": "^14.1.1"
+    "cors":       "^2.8.5",
+    "express":    "^4.18.2",
+    "rss-parser": "^3.13.0"
   }
 }

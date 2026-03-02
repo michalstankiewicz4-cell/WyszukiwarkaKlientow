@@ -400,6 +400,7 @@ body {
 .badge-it { background: #f0e8fc; color: #6a25a8; }
 .badge-biznes { background: #e8f5f5; color: #1a7a7a; }
 .badge-wyszukiwarka { background: #e0f2fe; color: #0369a1; }
+.badge-alert { background: #fef3e2; color: #b07800; }
 .import-pending-badge {
   font-size: 0.65rem; font-weight: 700; padding: 2px 7px;
   border-radius: 5px; background: #fef3e2; color: #b07800;
@@ -931,6 +932,7 @@ html[data-theme="dark"] .badge-ogloszenia { background: rgba(176,120,0,0.22); co
 html[data-theme="dark"] .badge-it { background: rgba(106,37,168,0.22); color: #a44fd4; }
 html[data-theme="dark"] .badge-biznes { background: rgba(26,122,122,0.22); color: #2da8a8; }
 html[data-theme="dark"] .badge-wyszukiwarka { background: rgba(3,105,161,0.22); color: #38bdf8; }
+html[data-theme="dark"] .badge-alert { background: rgba(176,120,0,0.22); color: #d4a017; }
 html[data-theme="dark"] .result-item.selected {
   background: linear-gradient(135deg, var(--surface) 0%, rgba(232,93,38,0.09) 100%);
 }
@@ -1091,6 +1093,44 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
   border: none; border-radius: 7px; cursor: pointer; transition: background 0.15s;
 }
 .sched-run-btn:hover { background: var(--accent2); }
+
+/* ALERTS SECTION */
+.alerts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  margin-top: 32px;
+}
+.alerts-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.alerts-meta {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+#alerts-progress {
+  margin-bottom: 16px;
+}
+.alerts-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-dim);
+}
+.alerts-empty .icon {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+.alerts-empty p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
 
 /* AUTO-SEARCH TOAST */
 .autosearch-toast {
@@ -1946,6 +1986,24 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
           <button class="bulk-btn" onclick="bulkCopy()">📋 Kopiuj linki</button>
           <button class="bulk-btn danger" onclick="bulkDeselect()">✕ Odznacz</button>
           <button class="bulk-deselect" onclick="bulkDeselect()" title="Zamknij">✕</button>
+        </div>
+      </div>
+
+      <!-- Alerts Section -->
+      <div id="alerts-section" style="display:none">
+        <div class="alerts-header">
+          <div class="alerts-title">🔔 Alerty z aktywnych źródeł</div>
+          <div class="alerts-meta" id="alerts-meta"></div>
+        </div>
+        <div id="alerts-progress" class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="select-all-row" id="select-all-alerts-row">
+          <input type="checkbox" class="select-all-cb" id="select-all-alerts-cb" onchange="toggleSelectAllAlerts(this.checked)">
+          <label class="select-all-label" for="select-all-alerts-cb">Zaznacz wszystkie</label>
+        </div>
+        <div id="alerts-list"></div>
+        <div id="alerts-empty" class="alerts-empty" style="display:none">
+          <div class="icon">🔕</div>
+          <p>Brak nowych alertów z aktywnych źródeł alertowych.</p>
         </div>
       </div>
 
@@ -3036,8 +3094,27 @@ function refreshSubforumCount(sourceId) {
 // =====================
 
 let currentResults = [];
+let currentAlerts = [];
 let searching = false;
 let selectedIndices = new Set();
+let selectedAlertIndices = new Set();
+
+function toggleAlertSelect(idx, checked) {
+  if (checked) selectedAlertIndices.add(idx);
+  else selectedAlertIndices.delete(idx);
+  document.getElementById(`ar-${idx}`).classList.toggle('selected', checked);
+}
+
+function toggleSelectAllAlerts(checked) {
+  currentAlerts.forEach((_, i) => {
+    if (checked) selectedAlertIndices.add(i);
+    else selectedAlertIndices.delete(i);
+    const el = document.getElementById(`ar-${i}`);
+    if (el) el.classList.toggle('selected', checked);
+    const cb = el?.querySelector('.result-checkbox');
+    if (cb) cb.checked = checked;
+  });
+}
 
 function toggleSelect(idx, checked) {
   if (checked) selectedIndices.add(idx);
@@ -3131,7 +3208,11 @@ function quickSearch(q) {
 async function doSearch() {
   if (searching) return;
   const query = document.getElementById('main-query').value.trim();
-  if (!query) { document.getElementById('main-query').focus(); return; }
+  if (!query) {
+    document.getElementById('main-query').focus();
+    if (isOnlineMode) checkAlerts();
+    return;
+  }
 
   searching = true;
   const btn  = document.getElementById('search-btn');
@@ -3148,6 +3229,11 @@ async function doSearch() {
   const activeCount   = SOURCES.filter(s => s.enabled).length;
   const googleKey     = loadGoogleKey();
   const googleCx      = loadGoogleCx();
+
+  // Check alerts if online mode is enabled
+  if (isOnlineMode) {
+    checkAlerts();
+  }
 
   const finish = (results) => {
     currentResults = results;
@@ -3295,6 +3381,164 @@ async function searchRedditPublic(query) {
   });
 }
 
+// =====================
+// ALERTS HANDLING
+// =====================
+async function checkAlerts() {
+  const alertSources = SOURCES.filter(s => s.enabled && s.engine === 'google_alerts');
+
+  console.log('[Alerty] Źródła google_alerts (włączone):', alertSources.length, alertSources.map(s => s.name));
+
+  if (!alertSources.length) {
+    document.getElementById('alerts-section').style.display = 'none';
+    console.warn('[Alerty] Brak aktywnych źródeł z silnikiem google_alerts. Sprawdź ustawienia źródeł.');
+    return;
+  }
+
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('alerts-section').style.display = 'block';
+  document.getElementById('alerts-progress').classList.add('active');
+  document.getElementById('alerts-empty').style.display = 'none';
+  document.getElementById('alerts-list').innerHTML = '';
+  document.querySelector('#alerts-meta').textContent = 'Pobieranie alertów…';
+
+  const alertJobs = []; // { promise, sourceName, url }
+
+  alertSources.forEach(source => {
+    const subforums = (source.subforums || []).filter(sf => sf && sf.trim());
+    if (subforums.length) {
+      subforums.forEach(rssUrl => {
+        console.log(`[Alerty] Pobieranie feedu: ${rssUrl} (${source.name})`);
+        alertJobs.push({ promise: fetchRSSFeed(rssUrl, source), sourceName: source.name, url: rssUrl });
+      });
+    } else if (source.baseUrl) {
+      console.log(`[Alerty] Pobieranie baseUrl: ${source.baseUrl} (${source.name})`);
+      alertJobs.push({ promise: fetchRSSFeed(source.baseUrl, source), sourceName: source.name, url: source.baseUrl });
+    } else {
+      console.warn(`[Alerty] Źródło "${source.name}" nie ma podanych URL feedów RSS ani baseUrl.`);
+    }
+  });
+
+  if (!alertJobs.length) {
+    document.getElementById('alerts-progress').classList.remove('active');
+    document.getElementById('alerts-empty').style.display = 'block';
+    document.querySelector('#alerts-meta').textContent = 'Brak skonfigurowanych feedów RSS';
+    return;
+  }
+
+  const settled = await Promise.allSettled(alertJobs.map(j => j.promise));
+
+  const alertResults = [];
+  settled.forEach((r, i) => {
+    if (r.status === 'fulfilled') {
+      console.log(`[Alerty] ✅ ${alertJobs[i].sourceName} (${alertJobs[i].url}): ${r.value.length} wyników`);
+      alertResults.push(...r.value);
+    } else {
+      console.error(`[Alerty] ❌ ${alertJobs[i].sourceName} (${alertJobs[i].url}):`, r.reason?.message || r.reason);
+    }
+  });
+
+  alertResults.sort((a, b) => new Date(b.rawDate) - new Date(a.rawDate));
+  console.log('[Alerty] Łącznie wyników:', alertResults.length);
+
+  renderAlerts(alertResults);
+  document.getElementById('alerts-progress').classList.remove('active');
+}
+
+async function fetchRSSFeed(rssUrl, source) {
+  // Na lokalnym dev Go Live (8081) API jest na porcie 8080; na produkcji ten sam origin
+  const apiBase = (window.location.hostname === 'localhost' && window.location.port !== '8080')
+    ? 'http://localhost:8080'
+    : '';
+  const resp = await fetch(`${apiBase}/api/rss?url=${encodeURIComponent(rssUrl)}`, { cache: 'no-store' });
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err.error || `HTTP ${resp.status}`);
+  }
+  const data = await resp.json();
+  if (!data.ok) throw new Error(data.error || 'Błąd RSS');
+
+  return (data.items || []).map(item => {
+    const rawDate = item.pubDate ? new Date(item.pubDate) : new Date(0);
+    return {
+      source: source.name,
+      icon:   source.icon  || '🔔',
+      color:  source.color || '#fef3e2',
+      title:   item.title       || '',
+      snippet: item.description || '',
+      url:     item.link        || '',
+      date:    item.pubDate ? rawDate.toLocaleDateString('pl-PL') : '',
+      rawDate,
+      relevance: 85,
+      keyword: 'alert'
+    };
+  }).filter(r => r.title || r.url);
+}
+
+function renderAlerts(alerts) {
+  currentAlerts = alerts;
+  selectedAlertIndices.clear();
+  const container = document.getElementById('alerts-list');
+  const selectAllRow = document.getElementById('select-all-alerts-row');
+  const selectAllCb  = document.getElementById('select-all-alerts-cb');
+
+  if (!alerts.length) {
+    selectAllRow.classList.remove('visible');
+    document.getElementById('alerts-empty').style.display = 'block';
+    document.querySelector('#alerts-meta').textContent = 'Brak nowych alertów';
+    return;
+  }
+
+  const savedUrls = new Set(savedLeads.map(l => l.url).filter(Boolean));
+  document.querySelector('#alerts-meta').textContent = `${alerts.length} alert${alerts.length === 1 ? '' : 'ów'}`;
+
+  container.innerHTML = alerts.map((alert, i) => {
+    const alreadySaved = savedUrls.has(alert.url);
+    return `
+    <div class="result-item alert-item${alreadySaved ? ' already-saved' : ''}" style="animation-delay:${i*60}ms" id="ar-${i}">
+      <div class="result-checkbox-wrap">
+        <input type="checkbox" class="result-checkbox" data-idx="${i}" onchange="toggleAlertSelect(${i}, this.checked)">
+      </div>
+      <div class="result-source-icon" style="background:${alert.color}">${alert.icon}</div>
+      <div class="result-body">
+        <div class="result-source-label">${alert.source} <span class="source-type-badge badge-alert">Alert</span>${alreadySaved ? '<span class="already-saved-badge">✓ Już zapisany</span>' : ''}</div>
+        <div class="result-title"><a href="${safeUrl(alert.url)}" target="_blank" rel="noopener">${alert.title}</a></div>
+        <div class="result-snippet">${alert.snippet}</div>
+        <div class="result-footer">
+          <span class="result-date">📅 ${alert.date}</span>
+          <div class="result-actions">
+            <button class="result-btn" onclick="copyLink('${safeUrl(alert.url)}', this)">📋 Kopiuj</button>
+            <button class="result-btn primary" onclick="saveAlertLead(${i}, this)" id="alert-save-btn-${i}"${alreadySaved ? ' style="background:#e8f5ee;color:#1a7a4a;border-color:rgba(26,122,74,0.3)"' : ''}>🔖 ${alreadySaved ? 'Zapisz ponownie' : 'Zapisz alert'}</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // "Zaznacz wszystkie" tylko gdy więcej niż 1 alert
+  if (alerts.length > 1) {
+    selectAllRow.classList.add('visible');
+    selectAllCb.checked = false;
+  } else {
+    selectAllRow.classList.remove('visible');
+  }
+}
+
+function saveAlertLead(idx, btn) {
+  if (btn.dataset.saved) return;
+  const alert = currentAlerts[idx];
+  if (!alert) return;
+  const lead = { ...alert, type: 'alert', savedAt: new Date().toLocaleDateString('pl-PL'), id: Date.now() };
+  savedLeads.unshift(lead);
+  localStorage.setItem('lh_saved', JSON.stringify(savedLeads));
+  btn.dataset.saved = '1';
+  btn.innerHTML = '✅ Zapisano';
+  btn.style.background = '#e8f5ee';
+  btn.style.color = '#1a7a4a';
+  btn.style.borderColor = 'rgba(26,122,74,0.3)';
+  document.getElementById('saved-count').textContent = savedLeads.length;
+}
+
 function safeUrl(u) {
   if (!u) return '#';
   return /^https?:\/\//i.test(u) ? u : 'https://' + u;
@@ -3306,16 +3550,29 @@ function renderResults(query, sourceCount) {
   updateBulkBar();
 
   if (!currentResults.length) {
-    list.innerHTML = `<div class="empty-state" style="padding:40px 20px">
-      <div class="icon">🔍</div>
-      <h3>Brak wyników</h3>
-      <p>Zapytanie „${query}" nie zwróciło wyników. Spróbuj innych słów kluczowych lub włącz więcej źródeł.</p>
-    </div>`;
-    document.getElementById('results-section').style.display = 'block';
-    document.getElementById('results-title').textContent = `Wyniki dla: „${query}"`;
-    document.getElementById('results-meta').textContent = '0 wyników';
-    document.getElementById('stats-strip').style.display = 'none';
-    document.getElementById('select-all-row').classList.remove('visible');
+    const hasAlerts = SOURCES.some(s => s.enabled && s.engine === 'google_alerts') && isOnlineMode;
+    if (hasAlerts) {
+      // Gdy będą pokazane alerty — tylko mały nagłówek, bez dużego bloku
+      list.innerHTML = `<div style="padding:12px 0 4px;font-size:0.8rem;color:var(--text-dim)">
+        🔍 Brak wyników wyszukiwania dla „${query}" — poniżej alerty z aktywnych źródeł.
+      </div>`;
+      document.getElementById('results-section').style.display = 'block';
+      document.getElementById('results-title').textContent = `Wyniki dla: „${query}"`;
+      document.getElementById('results-meta').textContent = '0 wyników';
+      document.getElementById('stats-strip').style.display = 'none';
+      document.getElementById('select-all-row').classList.remove('visible');
+    } else {
+      list.innerHTML = `<div class="empty-state" style="padding:40px 20px">
+        <div class="icon">🔍</div>
+        <h3>Brak wyników</h3>
+        <p>Zapytanie „${query}" nie zwróciło wyników. Spróbuj innych słów kluczowych lub włącz więcej źródeł.</p>
+      </div>`;
+      document.getElementById('results-section').style.display = 'block';
+      document.getElementById('results-title').textContent = `Wyniki dla: „${query}"`;
+      document.getElementById('results-meta').textContent = '0 wyników';
+      document.getElementById('stats-strip').style.display = 'none';
+      document.getElementById('select-all-row').classList.remove('visible');
+    }
     return;
   }
 
