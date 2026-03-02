@@ -3450,27 +3450,72 @@ async function fetchRSSFeed(rssUrl, source) {
   const apiBase = (window.location.hostname === 'localhost' && window.location.port !== '8080')
     ? 'http://localhost:8080'
     : '';
-  const resp = await fetch(`${apiBase}/api/rss?url=${encodeURIComponent(rssUrl)}`, { cache: 'no-store' });
-  if (!resp.ok) {
-    const err = await resp.json().catch(() => ({}));
-    throw new Error(err.error || `HTTP ${resp.status}`);
-  }
-  const data = await resp.json();
-  if (!data.ok) throw new Error(data.error || 'Błąd RSS');
 
-  return (data.items || []).map(item => {
-    const rawDate = item.pubDate ? new Date(item.pubDate) : new Date(0);
+  // Próba 1: własny backend /api/rss
+  try {
+    const resp = await fetch(`${apiBase}/api/rss?url=${encodeURIComponent(rssUrl)}`, { cache: 'no-store' });
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.ok) {
+        return (data.items || []).map(item => {
+          const rawDate = item.pubDate ? new Date(item.pubDate) : new Date(0);
+          return {
+            source: source.name,
+            icon:   source.icon  || '🔔',
+            color:  source.color || '#fef3e2',
+            title:   item.title       || '',
+            snippet: item.description || '',
+            url:     item.link        || '',
+            date:    item.pubDate ? rawDate.toLocaleDateString('pl-PL') : '',
+            rawDate,
+            relevance: 85,
+            keyword: 'alert'
+          };
+        }).filter(r => r.title || r.url);
+      }
+    }
+    console.warn(`[Alerty] Backend /api/rss niedostępny (${resp.status}), próbuję proxy zewnętrzne…`);
+  } catch (e) {
+    console.warn('[Alerty] Backend niedostępny, próbuję proxy zewnętrzne…', e.message);
+  }
+
+  // Próba 2: zewnętrzne CORS proxy jako fallback
+  const proxies = [
+    { url: () => `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`,
+      getText: async r => r.text() },
+    { url: () => `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`,
+      getText: async r => { const j = await r.json(); return j.contents || ''; } },
+  ];
+
+  let xmlText = null;
+  for (const proxy of proxies) {
+    try {
+      const r = await fetch(proxy.url(), { cache: 'no-store' });
+      if (!r.ok) continue;
+      const t = await proxy.getText(r);
+      if (t && t.trim().length > 50) { xmlText = t; break; }
+    } catch (_) {}
+  }
+
+  if (!xmlText) throw new Error(`Nie udało się pobrać feedu: ${rssUrl}`);
+
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+  if (xmlDoc.querySelector('parsererror')) throw new Error('Błąd parsowania XML');
+
+  return Array.from(xmlDoc.querySelectorAll('item, entry')).slice(0, 20).map(item => {
+    const title = item.querySelector('title')?.textContent?.trim() || '';
+    let link = item.querySelector('link')?.getAttribute('href') || item.querySelector('link')?.textContent?.trim() || '';
+    const origLink = item.getElementsByTagNameNS('*', 'origLink')[0];
+    if (origLink) link = origLink.textContent?.trim() || link;
+    const description = (item.querySelector('description, summary, content')?.textContent || '').trim();
+    const pubDate = (item.querySelector('pubDate, published, updated')?.textContent || '').trim();
+    const rawDate = pubDate ? new Date(pubDate) : new Date(0);
     return {
-      source: source.name,
-      icon:   source.icon  || '🔔',
-      color:  source.color || '#fef3e2',
-      title:   item.title       || '',
-      snippet: item.description || '',
-      url:     item.link        || '',
-      date:    item.pubDate ? rawDate.toLocaleDateString('pl-PL') : '',
-      rawDate,
-      relevance: 85,
-      keyword: 'alert'
+      source: source.name, icon: source.icon || '🔔', color: source.color || '#fef3e2',
+      title, snippet: description.replace(/<[^>]*>/g, '').slice(0, 220),
+      url: link, date: pubDate ? rawDate.toLocaleDateString('pl-PL') : '', rawDate,
+      relevance: 85, keyword: 'alert'
     };
   }).filter(r => r.title || r.url);
 }

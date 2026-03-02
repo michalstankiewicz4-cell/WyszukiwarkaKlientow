@@ -7,13 +7,13 @@ const app    = express();
 const parser = new Parser();
 
 app.use(cors({
-  origin: (origin, cb) => cb(null, true) // zezwól na każdy origin (localhost:8081, produkcja)
+  origin: (origin, cb) => cb(null, true)
 }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname)));
 
 // ──────────────────────────────────────────────
 // RSS proxy — pobiera feed po stronie serwera
+// MUSI być przed express.static żeby nie było przechwycone
 // GET /api/rss?url=<encoded_rss_url>
 // ──────────────────────────────────────────────
 app.get('/api/rss', async (req, res) => {
@@ -34,6 +34,8 @@ app.get('/api/rss', async (req, res) => {
     res.status(500).json({ error: err.message || 'Błąd pobierania RSS' });
   }
 });
+
+app.use(express.static(path.join(__dirname)));
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
