@@ -5198,7 +5198,6 @@ function checkSchedule() {
 async function runAutoSearch(manual = false) {
   const cfg = loadSchedule();
   const query = cfg.query || document.getElementById('main-query')?.value?.trim() || '';
-  if (!query) return;
 
   // Zapisz czas uruchomienia
   cfg.lastRun = new Date().toISOString();
@@ -5207,7 +5206,7 @@ async function runAutoSearch(manual = false) {
   closeSchedulePanel();
 
   // Przejdź do strony wyszukiwania i uruchom prawdziwe wyszukiwanie
-  setQuery(query);
+  if (query) setQuery(query);
   showPage('search');
   await doSearch();
 
@@ -5215,17 +5214,18 @@ async function runAutoSearch(manual = false) {
   const total = currentResults.length;
   const hot = currentResults.filter(r => r.relevance >= 88).length;
   const srcCount = SOURCES.filter(s => s.enabled && s.favorite).length;
+  const displayQ = query || 'frazy z aktywnych źródeł';
 
   if (Notification.permission === 'granted') {
     try {
       new Notification(`🔍 Lead Hunter — ${total} wyników`, {
-        body: `Zapytanie: "${query}" · ${hot} gorących leadów`,
+        body: `Zapytanie: "${displayQ}" · ${hot} gorących leadów`,
         icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><text y="28" font-size="28">🎯</text></svg>'
       });
     } catch(e) {}
   }
 
-  showAutoSearchToast(total, hot, query, srcCount, manual);
+  showAutoSearchToast(total, hot, displayQ, srcCount, manual);
 }
 
 function showAutoSearchToast(total, hot, query, srcCount, manual) {
