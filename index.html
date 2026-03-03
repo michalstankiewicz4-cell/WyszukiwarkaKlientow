@@ -1695,6 +1695,50 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
 .creds-table tbody tr:last-child { border-bottom: none; }
 .creds-table tbody tr:hover { background: var(--bg); }
 .creds-table td { padding: 10px 14px; vertical-align: middle; font-size: 0.82rem; }
+
+/* LINK DATABASE */
+.linkdb-domain-group { margin-bottom: 18px; }
+.linkdb-domain-header {
+  display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 8px 8px 0 0;
+  font-size: 0.82rem; font-weight: 700; color: var(--text); cursor: default;
+}
+.linkdb-domain-header .linkdb-domain-icon { font-size: 1rem; }
+.linkdb-domain-header .linkdb-domain-count {
+  font-size: 0.68rem; font-weight: 500; color: var(--text-dim);
+  background: var(--bg); border-radius: 10px; padding: 1px 8px;
+}
+.linkdb-domain-header .linkdb-del-domain {
+  margin-left: auto; background: none; border: none; cursor: pointer;
+  color: var(--text-dim); font-size: 0.72rem; padding: 2px 8px; border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+.linkdb-domain-header .linkdb-del-domain:hover { color: var(--red); background: rgba(192,57,43,0.08); }
+.linkdb-paths-table {
+  width: 100%; border-collapse: collapse; background: var(--surface);
+  border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; overflow: hidden;
+}
+.linkdb-paths-table tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+.linkdb-paths-table tr:last-child { border-bottom: none; }
+.linkdb-paths-table tr:hover { background: var(--bg); }
+.linkdb-paths-table td { padding: 7px 14px; font-size: 0.78rem; color: var(--text); font-family: 'JetBrains Mono', monospace; }
+.linkdb-paths-table td:last-child { width: 40px; text-align: center; }
+.linkdb-path-del {
+  background: none; border: none; cursor: pointer; color: var(--text-dim);
+  font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; transition: color 0.15s, background 0.15s;
+}
+.linkdb-path-del:hover { color: var(--red); background: rgba(192,57,43,0.08); }
+.linkdb-path-text { opacity: 0.7; }
+.linkdb-toolbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  margin-bottom: 14px; flex-wrap: wrap;
+}
+.linkdb-clear-btn {
+  background: none; border: 1px solid rgba(192,57,43,0.25); color: var(--red);
+  font-size: 0.72rem; padding: 5px 14px; border-radius: 6px; cursor: pointer;
+  font-family: 'Outfit', sans-serif; transition: background 0.15s;
+}
+.linkdb-clear-btn:hover { background: rgba(192,57,43,0.08); }
 .creds-source-name { font-weight: 700; color: var(--text); }
 .creds-login-val { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-mid); }
 .creds-pass-val { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.1em; }
@@ -2222,6 +2266,16 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
       </div>
     </div>
 
+    <!-- PAGE: LINK DATABASE -->
+    <div id="page-linkdb" style="display:none">
+      <div id="linkdb-list"></div>
+      <div id="linkdb-empty" class="empty-state" style="display:none">
+        <div class="icon">🔗</div>
+        <h3>Baza linków jest pusta</h3>
+        <p>Linki będą automatycznie dodawane gdy zapiszesz lub ukryjesz<br>wyniki wyszukiwania lub alerty.</p>
+      </div>
+    </div>
+
     <!-- PAGE: SOURCES MANAGEMENT -->
     <div id="page-sources" style="display:none">
       <div class="manage-topbar">
@@ -2514,6 +2568,7 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
 // DATA
 // =====================
 let savedLeads = JSON.parse(localStorage.getItem('lh_saved') || '[]');
+let linkDB = JSON.parse(localStorage.getItem('lh_linkdb') || '[]');
 
 // =====================
 // ENGINES — jedyne źródło prawdy
@@ -2695,6 +2750,7 @@ function saveSources() {
 const PAGES = [
   { id: 'search',      userVisible: true,  icon: '🔍', label: 'Szukaj klientów',       subtitle: 'Przeszukuj fora i serwisy społecznościowe',        badge: null,          render: null },
   { id: 'saved',       userVisible: true,  icon: '🔖', label: 'Zapisane leady',         subtitle: 'Twoja lista potencjalnych klientów',               badge: 'saved-count', render: () => renderSaved() },
+  { id: 'linkdb',      userVisible: true,  icon: '🔗', label: 'Baza linków',            subtitle: 'Linki zebrane z zapisanych i ukrytych wyników',    badge: 'linkdb-count', render: () => renderLinkDB() },
   { id: 'sources',     userVisible: false, icon: '⚙️', label: 'Zarządzaj źródłami',     subtitle: 'Konfiguruj i edytuj źródła danych',                badge: null,          render: () => renderSourcesManage() },
   { id: 'keywords',    userVisible: false, icon: '🏷️', label: 'Frazy i słowa kluczowe', subtitle: 'Zestawy fraz powiązane z wybranymi źródłami',       badge: null,          render: () => renderKeywords() },
   { id: 'engines',     userVisible: false, icon: '🔎', label: 'Silniki wyszukiwań',     subtitle: 'Źródła pogrupowane według metody wyszukiwania',     badge: null,          render: () => renderEngines() },
@@ -3913,6 +3969,7 @@ function saveAlertLead(idx, btn) {
   btn.style.color = '#1a7a4a';
   btn.style.borderColor = 'rgba(26,122,74,0.3)';
   document.getElementById('saved-count').textContent = savedLeads.length;
+  addToLinkDB(alert.url);
 }
 
 function hideAlertResult(idx, btn) {
@@ -3922,6 +3979,7 @@ function hideAlertResult(idx, btn) {
   savedLeads.unshift(lead);
   localStorage.setItem('lh_saved', JSON.stringify(savedLeads));
   document.getElementById('saved-count').textContent = savedLeads.length;
+  addToLinkDB(alert.url);
   const card = btn.closest('.result-item');
   if (card) {
     card.style.transition = 'opacity 0.3s, max-height 0.3s';
@@ -4051,6 +4109,7 @@ function saveLead(idx, btn) {
   btn.style.borderColor = 'rgba(26,122,74,0.3)';
   document.getElementById('saved-count').textContent = savedLeads.length;
   document.getElementById('stat-saved').textContent = savedLeads.length;
+  addToLinkDB(r.url);
 }
 
 function hideResult(idx, btn) {
@@ -4062,6 +4121,7 @@ function hideResult(idx, btn) {
   localStorage.setItem('lh_saved', JSON.stringify(savedLeads));
   document.getElementById('saved-count').textContent = savedLeads.length;
   document.getElementById('stat-saved').textContent = savedLeads.length;
+  addToLinkDB(r.url);
 
   // Ukryj wiersz wyniku z animacją
   const card = btn.closest('.result-item');
@@ -4189,6 +4249,126 @@ function clearSaved() {
   localStorage.setItem('lh_saved', JSON.stringify(savedLeads));
   document.getElementById('saved-count').textContent = '0';
   renderSaved();
+}
+
+// =====================
+// LINK DATABASE
+// =====================
+function extractLinkDBPath(url) {
+  try {
+    const u = new URL(url.startsWith('http') ? url : 'https://' + url);
+    const domain = u.origin; // e.g. https://www.example.com
+    // Remove filename: keep path up to last /
+    let path = u.pathname;
+    const lastSlash = path.lastIndexOf('/');
+    if (lastSlash > 0) {
+      path = path.substring(0, lastSlash + 1);
+    } else {
+      path = '/';
+    }
+    return { domain, path };
+  } catch(e) {
+    return null;
+  }
+}
+
+function addToLinkDB(url) {
+  if (!url) return;
+  const parsed = extractLinkDBPath(url);
+  if (!parsed) return;
+  const { domain, path } = parsed;
+  // Check if this exact domain+path combo already exists
+  let entry = linkDB.find(e => e.domain === domain);
+  if (!entry) {
+    entry = { domain, paths: [] };
+    linkDB.push(entry);
+  }
+  if (!entry.paths.includes(path)) {
+    entry.paths.push(path);
+  }
+  saveLinkDB();
+  updateLinkDBBadge();
+}
+
+function saveLinkDB() {
+  localStorage.setItem('lh_linkdb', JSON.stringify(linkDB));
+}
+
+function updateLinkDBBadge() {
+  const badge = document.getElementById('linkdb-count');
+  if (!badge) return;
+  const total = linkDB.reduce((sum, e) => sum + e.paths.length, 0);
+  badge.textContent = total;
+  badge.style.display = total > 0 ? '' : 'none';
+}
+
+function deleteLinkDBPath(domainIdx, pathIdx) {
+  if (!linkDB[domainIdx]) return;
+  linkDB[domainIdx].paths.splice(pathIdx, 1);
+  if (linkDB[domainIdx].paths.length === 0) {
+    linkDB.splice(domainIdx, 1);
+  }
+  saveLinkDB();
+  renderLinkDB();
+  updateLinkDBBadge();
+}
+
+function deleteLinkDBDomain(domainIdx) {
+  if (!linkDB[domainIdx]) return;
+  const domain = linkDB[domainIdx].domain;
+  if (!confirm(`Usunąć domenę ${domain} i wszystkie jej ścieżki?`)) return;
+  linkDB.splice(domainIdx, 1);
+  saveLinkDB();
+  renderLinkDB();
+  updateLinkDBBadge();
+}
+
+function clearLinkDB() {
+  if (!confirm('Usunąć całą bazę linków?')) return;
+  linkDB = [];
+  saveLinkDB();
+  renderLinkDB();
+  updateLinkDBBadge();
+}
+
+function renderLinkDB() {
+  const container = document.getElementById('linkdb-list');
+  const empty = document.getElementById('linkdb-empty');
+  if (!linkDB.length) {
+    container.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  const totalPaths = linkDB.reduce((sum, e) => sum + e.paths.length, 0);
+  container.innerHTML = `
+    <div class="results-header">
+      <div class="results-title">🔗 Baza linków</div>
+      <div class="results-meta">${linkDB.length} domen · ${totalPaths} ścieżek</div>
+    </div>
+    <div class="linkdb-toolbar">
+      <div style="font-size:0.75rem;color:var(--text-dim)">Linki zbierane automatycznie z zapisanych i ukrytych wyników</div>
+      <button class="linkdb-clear-btn" onclick="clearLinkDB()">🗑 Wyczyść bazę</button>
+    </div>
+    ${linkDB.map((entry, di) => `
+      <div class="linkdb-domain-group">
+        <div class="linkdb-domain-header">
+          <span class="linkdb-domain-icon">🌐</span>
+          <span>${entry.domain}</span>
+          <span class="linkdb-domain-count">${entry.paths.length} ścieżek</span>
+          <button class="linkdb-del-domain" onclick="deleteLinkDBDomain(${di})" title="Usuń domenę">🗑 Usuń</button>
+        </div>
+        <table class="linkdb-paths-table">
+          ${entry.paths.map((p, pi) => `
+            <tr>
+              <td><span class="linkdb-path-text">${entry.domain}</span>${p === '/' ? '' : p}</td>
+              <td><button class="linkdb-path-del" onclick="deleteLinkDBPath(${di}, ${pi})" title="Usuń ścieżkę">✕</button></td>
+            </tr>
+          `).join('')}
+        </table>
+      </div>
+    `).join('')}
+  `;
 }
 
 // =====================
@@ -4469,6 +4649,7 @@ async function exportSources() {
     keywordSets: KEYWORD_SETS,
     scripts:     SCRIPTS,
     savedLeads:  savedLeads,
+    linkDB:      linkDB,
 
     // ── Ustawienia ────────────────────────────────────────
     settings: {
@@ -4523,6 +4704,7 @@ function importSources() {
         keywordSets: Array.isArray(db.keywordSets) ? db.keywordSets : null,
         scripts:     Array.isArray(db.scripts)     ? db.scripts     : null,
         savedLeads:  Array.isArray(db.savedLeads)  ? db.savedLeads  : null,
+        linkDB:      Array.isArray(db.linkDB)       ? db.linkDB      : null,
         schedule:    db.settings?.schedule  || null,
         security:    db.settings?.security  || null,
         creds:       db.credentials?.sources      || null,
@@ -4557,6 +4739,7 @@ function importSources() {
       if (imp.keywordSets?.length) lines.push(`• ${imp.keywordSets.length} zestawów fraz`);
       if (imp.scripts?.length)     lines.push(`• ${imp.scripts.length} skryptów`);
       if (imp.savedLeads?.length)  lines.push(`• ${imp.savedLeads.length} zapisanych leadów`);
+      if (imp.linkDB?.length)       lines.push(`• ${imp.linkDB.length} domen w bazie linków`);
       if (imp.creds)               lines.push(`• loginy do źródeł`);
       if (imp.defaultLogin?.email) lines.push(`• domyślne dane logowania`);
       if (imp.googleKey)           lines.push(`• klucz Google API`);
@@ -4607,6 +4790,17 @@ function importSources() {
         localStorage.setItem('lh_saved', JSON.stringify(savedLeads));
       }
 
+      // ── Baza linków — merge ───────────────────────────────────
+      if (imp.linkDB) {
+        imp.linkDB.forEach(entry => {
+          let existing = linkDB.find(e => e.domain === entry.domain);
+          if (!existing) { existing = { domain: entry.domain, paths: [] }; linkDB.push(existing); }
+          entry.paths.forEach(p => { if (!existing.paths.includes(p)) existing.paths.push(p); });
+        });
+        saveLinkDB();
+        updateLinkDBBadge();
+      }
+
       // ── Dane wrażliwe ─────────────────────────────────────────
       if (imp.creds)        saveCreds({ ...loadCreds(), ...imp.creds });
       if (imp.defaultLogin) saveDefaultLoginToStorage(imp.defaultLogin);
@@ -4623,6 +4817,7 @@ function importSources() {
       if (imp.keywordSets) renderKeywords();
       if (imp.scripts)     renderScripts();
       if (imp.savedLeads)  renderSaved();
+      if (imp.linkDB)      renderLinkDB();
       if (imp.creds)       renderCredentials();
     };
     reader.readAsText(file);
@@ -5687,6 +5882,7 @@ async function runAutoSearch(manual = false) {
         const lead = { ...r, savedAt: new Date().toLocaleDateString('pl-PL'), id: Date.now() + autoAdded, autoAdded: true };
         savedLeads.unshift(lead);
         savedUrls.add(r.url);
+        addToLinkDB(r.url);
         autoAdded++;
       }
     }
@@ -5696,6 +5892,7 @@ async function runAutoSearch(manual = false) {
         const lead = { ...a, type: 'alert', savedAt: new Date().toLocaleDateString('pl-PL'), id: Date.now() + autoAdded, autoAdded: true };
         savedLeads.unshift(lead);
         savedUrls.add(a.url);
+        addToLinkDB(a.url);
         autoAdded++;
       }
     }
@@ -5983,6 +6180,7 @@ document.addEventListener('DOMContentLoaded', function() {
   isOnlineMode = loadOnlineMode();
   document.getElementById('online-toggle').checked = isOnlineMode;
   document.getElementById('saved-count').textContent = savedLeads.length;
+  updateLinkDBBadge();
   updateLoginBtn();
   updateCredsBadge();
   renderSources();
