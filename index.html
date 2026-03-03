@@ -721,6 +721,24 @@ input:checked + .toggle-slider::before { transform: translateX(16px); }
   font-weight: 600;
   border: 1px solid rgba(232,93,38,0.2);
 }
+.result-source-link {
+  font-size: 0.62rem;
+  padding: 2px 8px;
+  background: #e8f0fc;
+  color: var(--accent);
+  border-radius: 10px;
+  font-weight: 600;
+  border: 1px solid rgba(37,99,235,0.2);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1.4;
+}
+.result-source-link:hover { background: rgba(37,99,235,0.15); }
 .result-actions { margin-left: auto; display: flex; gap: 6px; }
 .result-btn {
   font-family: 'Outfit', sans-serif;
@@ -3312,6 +3330,7 @@ async function searchGoogleCSE(query, apiKey, cx, siteFilter, source) {
   const srcIcon  = source?.icon  || '🔍';
   const srcColor = source?.color || '#e8f0fc';
   const srcType  = source?.type  || 'wyszukiwarka';
+  const srcUrl = siteFilter || source?.baseUrl || '';
   return (data.items || []).map((item, i) => ({
     source: srcName,
     icon: srcIcon,
@@ -3323,6 +3342,7 @@ async function searchGoogleCSE(query, apiKey, cx, siteFilter, source) {
     date: '',
     relevance: Math.max(60, 95 - i * 3),
     keyword: query,
+    sourceUrl: srcUrl,
   }));
 }
 
@@ -3349,6 +3369,7 @@ async function searchApify(query, apiKey, siteFilter, source) {
   const srcIcon  = source?.icon  || '🕷️';
   const srcColor = source?.color || '#fff3e0';
   const srcType  = source?.type  || 'wyszukiwarka';
+  const srcUrl = siteFilter || source?.baseUrl || '';
   return items.filter(item => item.url || item.link).map((item, i) => ({
     source: srcName,
     icon: srcIcon,
@@ -3360,6 +3381,7 @@ async function searchApify(query, apiKey, siteFilter, source) {
     date: item.date || item.publishedAt || '',
     relevance: Math.max(60, 95 - i * 3),
     keyword: query,
+    sourceUrl: srcUrl,
   }));
 }
 
@@ -3627,6 +3649,7 @@ function renderResults(query, sourceCount) {
         <div class="result-footer">
           <span class="result-date">📅 ${r.date}</span>
           <span class="result-keyword-tag">🏷 ${r.keyword}</span>
+          ${r.sourceUrl ? `<a href="${safeUrl(r.sourceUrl)}" target="_blank" class="result-source-link" title="Źródło: ${r.sourceUrl}" onclick="event.stopPropagation()">🔗 ${r.sourceUrl.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '').substring(0, 30)}${r.sourceUrl.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '').length > 30 ? '…' : ''}</a>` : ''}
           <div class="relevance-bar">
             <span class="relevance-label">${r.relevance}%</span>
             <div class="relevance-track"><div class="relevance-fill" style="width:${r.relevance}%"></div></div>
@@ -3703,6 +3726,7 @@ function renderSaved() {
         <div class="result-footer">
           <span class="result-date">📅 ${r.date}</span>
           <span class="result-keyword-tag">🏷 ${r.keyword}</span>
+          ${r.sourceUrl ? `<a href="${safeUrl(r.sourceUrl)}" target="_blank" class="result-source-link" title="Źródło: ${r.sourceUrl}" onclick="event.stopPropagation()">🔗 ${r.sourceUrl.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '').substring(0, 30)}${r.sourceUrl.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '').length > 30 ? '…' : ''}</a>` : ''}
           <div class="result-actions">
             <button class="result-btn" onclick="copyLink('${r.url}', this)">📋 Kopiuj</button>
             <button class="result-btn" style="color:var(--red);border-color:rgba(192,57,43,0.3)" onclick="removeLead(${r.id}, this)">🗑 Usuń</button>
