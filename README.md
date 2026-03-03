@@ -115,10 +115,6 @@ Pełny backup w pliku `.db.json` (`klienthunter-YYYY-MM-DD.db.json`):
 
 Import z walidacją pochodzenia pliku (`KlientHunter`), podglądem zawartości, odszyfrowywaniem i remapowaniem ID.
 
-**Pliki demo:**
-- [`NoPassklienthunter-2026-03-01.db.json`](NoPassklienthunter-2026-03-01.db.json) — eksport bez hasła
-- [`Pass123klienthunter-2026-03-01.db.json`](Pass123klienthunter-2026-03-01.db.json) — eksport z hasłem `123`
-
 ### 🔐 Bezpieczeństwo
 Panel **Security** w ustawieniach (topbar ⚙) umożliwia konfigurację:
 
