@@ -3540,7 +3540,7 @@ async function doSearch() {
 
   if (!query && !autoQueries.length) {
     document.getElementById('main-query').focus();
-    if (isOnlineMode) checkAlerts();
+    if (isOnlineMode) await checkAlerts();
     return;
   }
 
@@ -3562,7 +3562,7 @@ async function doSearch() {
 
   // Check alerts if online mode is enabled
   if (isOnlineMode) {
-    checkAlerts();
+    await checkAlerts();
   }
 
   // Lista zapytań: albo wpisane przez użytkownika, albo frazy z keyword setów
@@ -5662,6 +5662,7 @@ document.addEventListener('visibilitychange', () => {
 async function runAutoSearch(manual = false) {
   const cfg = loadSchedule();
   const query = cfg.query || document.getElementById('main-query')?.value?.trim() || '';
+  console.log('[RunAuto] Start, autoAddLeads:', cfg.autoAddLeads, '| query:', query, '| manual:', manual);
 
   // Zapisz czas uruchomienia
   cfg.lastRun = new Date().toISOString();
@@ -5673,16 +5674,28 @@ async function runAutoSearch(manual = false) {
   if (query) setQuery(query);
   showPage('search');
   await doSearch();
+  console.log('[RunAuto] Po doSearch — currentResults:', currentResults.length, '| currentAlerts:', currentAlerts.length);
 
   // Auto-dodaj nowe wyniki do leadów
   let autoAdded = 0;
-  if (cfg.autoAddLeads && currentResults.length) {
+  if (cfg.autoAddLeads) {
     const savedUrls = new Set(savedLeads.map(l => l.url).filter(Boolean));
+    console.log('[AutoAdd] Wyniki:', currentResults.length, '| Alerty:', currentAlerts.length, '| Zapisane URLs:', savedUrls.size);
+    // Wyniki wyszukiwania
     for (const r of currentResults) {
       if (r.url && !savedUrls.has(r.url)) {
         const lead = { ...r, savedAt: new Date().toLocaleDateString('pl-PL'), id: Date.now() + autoAdded, autoAdded: true };
         savedLeads.unshift(lead);
         savedUrls.add(r.url);
+        autoAdded++;
+      }
+    }
+    // Alerty
+    for (const a of currentAlerts) {
+      if (a.url && !savedUrls.has(a.url)) {
+        const lead = { ...a, type: 'alert', savedAt: new Date().toLocaleDateString('pl-PL'), id: Date.now() + autoAdded, autoAdded: true };
+        savedLeads.unshift(lead);
+        savedUrls.add(a.url);
         autoAdded++;
       }
     }
