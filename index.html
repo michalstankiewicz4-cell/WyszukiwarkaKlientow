@@ -3856,7 +3856,7 @@ function renderAlerts(alerts) {
   }
 
   const savedUrls = new Set(savedLeads.map(l => l.url).filter(Boolean));
-  const hideSaved = JSON.parse(localStorage.getItem('lh_hide_saved') || 'false');
+  const hideSaved = JSON.parse(localStorage.getItem('lh_hide_saved') ?? 'true');
   const displayAlerts = hideSaved ? alerts.filter(a => !savedUrls.has(a.url)) : alerts;
   document.querySelector('#alerts-meta').textContent = `${displayAlerts.length} alert${displayAlerts.length === 1 ? '' : 'ów'}${hideSaved && displayAlerts.length < alerts.length ? ` (ukryto ${alerts.length - displayAlerts.length} zapisanych)` : ''}`;
 
@@ -3882,6 +3882,7 @@ function renderAlerts(alerts) {
         <div class="result-footer">
           <span class="result-date">📅 ${alert.date}</span>
           <div class="result-actions">
+            <button class="result-btn" onclick="hideAlertResult(${origIdx}, this)" title="Ukryj — zapisz jako zakończony">🙈 Ukryj</button>
             <button class="result-btn" onclick="copyLink('${safeUrl(alert.url)}', this)">📋 Kopiuj</button>
             <button class="result-btn primary" onclick="saveAlertLead(${origIdx}, this)" id="alert-save-btn-${origIdx}"${alreadySaved ? ' style="background:#e8f5ee;color:#1a7a4a;border-color:rgba(26,122,74,0.3)"' : ''}>🔖 ${alreadySaved ? 'Zapisz ponownie' : 'Zapisz alert'}</button>
           </div>
@@ -3912,6 +3913,25 @@ function saveAlertLead(idx, btn) {
   btn.style.color = '#1a7a4a';
   btn.style.borderColor = 'rgba(26,122,74,0.3)';
   document.getElementById('saved-count').textContent = savedLeads.length;
+}
+
+function hideAlertResult(idx, btn) {
+  const alert = currentAlerts[idx];
+  if (!alert) return;
+  const lead = { ...alert, type: 'alert', savedAt: new Date().toLocaleDateString('pl-PL'), id: Date.now(), completed: true };
+  savedLeads.unshift(lead);
+  localStorage.setItem('lh_saved', JSON.stringify(savedLeads));
+  document.getElementById('saved-count').textContent = savedLeads.length;
+  const card = btn.closest('.result-item');
+  if (card) {
+    card.style.transition = 'opacity 0.3s, max-height 0.3s';
+    card.style.opacity = '0';
+    card.style.maxHeight = '0';
+    card.style.overflow = 'hidden';
+    card.style.marginBottom = '0';
+    card.style.padding = '0';
+    setTimeout(() => card.remove(), 350);
+  }
 }
 
 function safeUrl(u) {
@@ -4060,7 +4080,7 @@ function hideResult(idx, btn) {
 // SAVED LEADS
 // =====================
 let savedSort = localStorage.getItem('lh_saved_sort') || 'date-desc';
-let savedFilter = 'all'; // all | active | completed
+let savedFilter = 'active'; // all | active | completed
 
 function changeSavedSort(val) {
   savedSort = val;
@@ -5854,7 +5874,7 @@ function toggleSettingsPanel(e) {
     const def = loadDefaultLogin();
     document.getElementById('login-email').value = def.email || '';
     document.getElementById('login-password').value = def.pass || '';
-    document.getElementById('settings-hide-saved').checked = JSON.parse(localStorage.getItem('lh_hide_saved') || 'false');
+    document.getElementById('settings-hide-saved').checked = JSON.parse(localStorage.getItem('lh_hide_saved') ?? 'true');
     renderSourceTypesSettings();
     panel.classList.add('open');
     overlay.classList.add('open');
