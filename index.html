@@ -1352,6 +1352,19 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
   font-weight: 600;
   border: 1px solid rgba(26,122,74,0.2);
 }
+.completed-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.62rem;
+  padding: 2px 7px;
+  background: #e8f0fc;
+  color: var(--accent);
+  border-radius: 10px;
+  font-weight: 700;
+  border: 1px solid rgba(37,99,235,0.25);
+  margin-left: 4px;
+}
 
 /* SOURCES MANAGE VIEW TOGGLE */
 .manage-topbar {
@@ -3788,7 +3801,7 @@ function renderSaved() {
     <div class="result-item" style="animation-delay:${i*40}ms">
       <div class="result-source-icon" style="background:${r.color||'#e8f0fc'}">${r.icon}</div>
       <div class="result-body">
-        <div class="result-source-label">${r.source} ${typeBadge(r.type)} <span class="saved-badge">✅ Zapisano ${r.savedAt}</span></div>
+        <div class="result-source-label">${r.source} ${typeBadge(r.type)} <span class="saved-badge">✅ Zapisano ${r.savedAt}</span>${r.completed ? '<span class="completed-badge">✅ Zakończone</span>' : ''}</div>
         <div class="result-title"><a href="${r.url}" target="_blank">${r.title}</a></div>
         <div class="result-snippet">${r.snippet}</div>
         <div class="result-footer">
@@ -3796,6 +3809,7 @@ function renderSaved() {
           <span class="result-keyword-tag">🏷 ${r.keyword}</span>
           ${r.sourceUrl ? `<a href="${safeUrl(r.sourceUrl)}" target="_blank" class="result-source-link" title="Źródło: ${r.sourceUrl}" onclick="event.stopPropagation()">🔗 ${r.sourceUrl.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '').substring(0, 30)}${r.sourceUrl.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '').length > 30 ? '…' : ''}</a>` : ''}
           <div class="result-actions">
+            <button class="result-btn${r.completed ? ' completed-active' : ''}" style="${r.completed ? 'background:#e8f5ee;color:#1a7a4a;border-color:rgba(26,122,74,0.3)' : 'color:#10b981;border-color:rgba(16,185,129,0.3)'}" onclick="toggleCompleted(${r.id}, this)">✅ ${r.completed ? 'Zakończono' : 'Zakończ'}</button>
             <button class="result-btn" onclick="copyLink('${r.url}', this)">📋 Kopiuj</button>
             <button class="result-btn" style="color:var(--red);border-color:rgba(192,57,43,0.3)" onclick="removeLead(${r.id}, this)">🗑 Usuń</button>
           </div>
@@ -3809,6 +3823,14 @@ function removeLead(id, btn) {
   savedLeads = savedLeads.filter(l => l.id !== id);
   localStorage.setItem('lh_saved', JSON.stringify(savedLeads));
   document.getElementById('saved-count').textContent = savedLeads.length;
+  renderSaved();
+}
+
+function toggleCompleted(id, btn) {
+  const lead = savedLeads.find(l => l.id === id);
+  if (!lead) return;
+  lead.completed = !lead.completed;
+  localStorage.setItem('lh_saved', JSON.stringify(savedLeads));
   renderSaved();
 }
 
