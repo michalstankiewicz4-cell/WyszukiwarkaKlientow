@@ -2334,7 +2334,6 @@ let savedLeads = JSON.parse(localStorage.getItem('lh_saved') || '[]');
 // =====================
 const ENGINE_META = {
   google:        { label: 'Google Custom Search',         color: '#4285F4' },
-  google_site:   { label: 'Google Custom Search (site:)', color: '#34A853' },
   reddit:        { label: 'Reddit',                       color: '#ff4500' },
   apify:         { label: 'Apify Web Scraper',            color: '#FF9900' },
   google_alerts: { label: 'Google Alerts',               color: '#EA4335' },
@@ -3266,19 +3265,6 @@ async function doSearch() {
     const googleSources = activeSources.filter(s => s.engine === 'google');
     if (googleSources.length && googleKey && googleCx)
       promises.push(searchGoogleCSE(q, googleKey, googleCx, null, googleSources[0]));
-
-    // google_site — one call per source with site: filter
-    if (googleKey && googleCx) {
-      for (const src of activeSources.filter(s => s.engine === 'google_site')) {
-        const subs = (src.subforums || []).filter(sf => sf && sf.trim());
-        if (subs.length) {
-          for (const sf of subs)
-            promises.push(searchGoogleCSE(q, googleKey, googleCx, sf, src));
-        } else {
-          promises.push(searchGoogleCSE(q, googleKey, googleCx, src.baseUrl, src));
-        }
-      }
-    }
 
     // reddit — one shared call
     const redditSources = activeSources.filter(s => s.engine === 'reddit');
@@ -4892,13 +4878,7 @@ function renderEngines() {
       'Kliknij <b>🔑 Konfiguruj</b> poniżej i wpisz klucz API oraz CX.',
       'W zarządzaniu źródłami przypisz źródłom silnik <b>Google Custom Search</b>.',
     ],
-    google_site: [
-      'Wejdź na <a href="https://programmablesearchengine.google.com" target="_blank" rel="noopener">programmablesearchengine.google.com</a> i utwórz silnik ograniczony do konkretnych domen.',
-      'Dodaj domeny serwisów do przeszukiwania w konfiguracji silnika, skopiuj <b>CX</b>.',
-      'Użyj tego samego <b>klucza API</b> co dla Google Custom Search (jeden klucz wystarcza).',
-      'Kliknij <b>🔑 Konfiguruj</b> poniżej i wpisz klucz API oraz CX.',
-      'Przypisz źródłom silnik <b>Google Custom Search (site:)</b> w zarządzaniu źródłami.',
-    ],
+
     reddit: [
       'Reddit nie wymaga żadnej konfiguracji — używa <b>publicznego API</b>.',
       'W zarządzaniu źródłami dodaj źródła z domeną <a href="https://www.reddit.com" target="_blank" rel="noopener">reddit.com</a>.',
@@ -4923,7 +4903,7 @@ function renderEngines() {
   const cards = Object.keys(ENGINE_META).map(key => {
     const meta = ENGINE_META[key];
     const sources = SOURCES.filter(s => s.engine === key);
-    const isGoogle = key === 'google' || key === 'google_site';
+    const isGoogle = key === 'google';
     const isApify  = key === 'apify';
     const googleConfigured = isGoogle && !!(loadGoogleKey() && loadGoogleCx());
     const apifyConfigured  = isApify  && !!loadApifyKey();
