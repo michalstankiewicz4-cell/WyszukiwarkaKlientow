@@ -6,7 +6,7 @@
 
 ---
 <img width="1919" height="1199" alt="image" src="https://github.com/user-attachments/assets/41241f34-09e5-45e9-9d66-540a4808f36a" />
-
+<img width="1918" height="950" alt="image" src="https://github.com/user-attachments/assets/fd52eaab-376c-45df-9074-38acb28b29cd" />
 <img width="1919" height="947" alt="image" src="https://github.com/user-attachments/assets/19a30027-cdc9-4b3c-850c-7ad9b5ef3f11" />
 
 ## ✨ Funkcjonalności
