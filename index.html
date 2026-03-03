@@ -4513,12 +4513,16 @@ function renderQuickQueries() {
     return;
   }
   const icons = ['🔍','📌','💡','🎯','⚡','🔎','📢','🏷️'];
-  container.innerHTML = sets.map((ks, i) => {
-    const phrase = ks.phrases[0] || ks.name;
+  const allPhrases = [...new Set(sets.flatMap(ks => ks.phrases))].filter(p => p && p.trim());
+  if (!allPhrases.length) {
+    container.innerHTML = `<div style="padding:3px 12px 6px;font-size:0.7rem;color:var(--text-dim);font-style:italic;line-height:1.4">Brak fraz w przypisanych zestawach</div>`;
+    return;
+  }
+  container.innerHTML = allPhrases.map((phrase, i) => {
     const icon = icons[i % icons.length];
     const safePhrase = phrase.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    return `<button class="nav-item" onclick="quickSearch('${safePhrase}')" title="${ks.phrases.join(', ')}">
-      <span class="nav-icon">${icon}</span> ${ks.name}
+    return `<button class="nav-item" onclick="quickSearch('${safePhrase}')" title="${phrase}">
+      <span class="nav-icon">${icon}</span> ${phrase}
     </button>`;
   }).join('');
 }
