@@ -3856,14 +3856,23 @@ function renderAlerts(alerts) {
   }
 
   const savedUrls = new Set(savedLeads.map(l => l.url).filter(Boolean));
-  document.querySelector('#alerts-meta').textContent = `${alerts.length} alert${alerts.length === 1 ? '' : 'ów'}`;
+  const hideSaved = JSON.parse(localStorage.getItem('lh_hide_saved') || 'false');
+  const displayAlerts = hideSaved ? alerts.filter(a => !savedUrls.has(a.url)) : alerts;
+  document.querySelector('#alerts-meta').textContent = `${displayAlerts.length} alert${displayAlerts.length === 1 ? '' : 'ów'}${hideSaved && displayAlerts.length < alerts.length ? ` (ukryto ${alerts.length - displayAlerts.length} zapisanych)` : ''}`;
 
-  container.innerHTML = alerts.map((alert, i) => {
+  if (!displayAlerts.length && alerts.length) {
+    container.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-mid);font-size:0.85rem">Wszystkie alerty są już zapisane w leadach.<br><span style="font-size:0.75rem">Wyłącz „Ukryj zapisane" w ⚙️ Ustawienia aby je zobaczyć.</span></div>';
+    selectAllRow.classList.remove('visible');
+    return;
+  }
+
+  container.innerHTML = displayAlerts.map((alert, i) => {
+    const origIdx = alerts.indexOf(alert);
     const alreadySaved = savedUrls.has(alert.url);
     return `
-    <div class="result-item alert-item${alreadySaved ? ' already-saved' : ''}" style="animation-delay:${i*60}ms" id="ar-${i}">
+    <div class="result-item alert-item${alreadySaved ? ' already-saved' : ''}" style="animation-delay:${i*60}ms" id="ar-${origIdx}">
       <div class="result-checkbox-wrap">
-        <input type="checkbox" class="result-checkbox" data-idx="${i}" onchange="toggleAlertSelect(${i}, this.checked)">
+        <input type="checkbox" class="result-checkbox" data-idx="${origIdx}" onchange="toggleAlertSelect(${origIdx}, this.checked)">
       </div>
       <div class="result-source-icon" style="background:${alert.color}">${alert.icon}</div>
       <div class="result-body">
@@ -3874,7 +3883,7 @@ function renderAlerts(alerts) {
           <span class="result-date">📅 ${alert.date}</span>
           <div class="result-actions">
             <button class="result-btn" onclick="copyLink('${safeUrl(alert.url)}', this)">📋 Kopiuj</button>
-            <button class="result-btn primary" onclick="saveAlertLead(${i}, this)" id="alert-save-btn-${i}"${alreadySaved ? ' style="background:#e8f5ee;color:#1a7a4a;border-color:rgba(26,122,74,0.3)"' : ''}>🔖 ${alreadySaved ? 'Zapisz ponownie' : 'Zapisz alert'}</button>
+            <button class="result-btn primary" onclick="saveAlertLead(${origIdx}, this)" id="alert-save-btn-${origIdx}"${alreadySaved ? ' style="background:#e8f5ee;color:#1a7a4a;border-color:rgba(26,122,74,0.3)"' : ''}>🔖 ${alreadySaved ? 'Zapisz ponownie' : 'Zapisz alert'}</button>
           </div>
         </div>
       </div>
@@ -3882,7 +3891,7 @@ function renderAlerts(alerts) {
   }).join('');
 
   // "Zaznacz wszystkie" tylko gdy więcej niż 1 alert
-  if (alerts.length > 1) {
+  if (displayAlerts.length > 1) {
     selectAllRow.classList.add('visible');
     selectAllCb.checked = false;
   } else {
