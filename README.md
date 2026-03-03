@@ -143,6 +143,16 @@ Panel **Security** w ustawieniach (topbar ⚙) umożliwia konfigurację:
 - Wyświetlanie alertów z akcjami: zapisz / ukryj / kopiuj link
 - Zaznaczanie i masowe operacje na alertach
 
+### 🔗 Baza linków ✨
+Automatycznie budowana baza odwiedzonych domen i ścieżek — **zero ręcznej pracy!**
+- Linki zbierane automatycznie przy każdym **zapisaniu** lub **ukryciu** wyniku wyszukiwania / alertu
+- Wyświetlanie w formie przejrzystej tabeli: **domena** → lista **ścieżek katalogowych** (bez nazw plików, bez pełnych URL-i)
+- Grupowanie wg domeny z licznikiem ścieżek
+- Usuwanie pojedynczych ścieżek, całych domen lub czyszczenie całej bazy
+- Działa z bulk save, auto-dodawaniem z harmonogramu i importem
+- Badge z licznikiem w sidebarze
+- Pełna obsługa import/export (merge bez duplikatów)
+
 ### 👤 Tryb użytkownika / administratora
 - Przełącznik w topbarze: 👤 Użytkownik / ⚙️ Administrator
 - **Użytkownik** — widzi tylko Szukaj klientów i Zapisane leady
