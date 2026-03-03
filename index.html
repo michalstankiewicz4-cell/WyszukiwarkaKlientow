@@ -2738,8 +2738,9 @@ function showPage(page) {
   const p = PAGES.find(x => x.id === page);
   if (!p) return;
   PAGES.forEach(x => document.getElementById(`page-${x.id}`).style.display = x.id === page ? 'block' : 'none');
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('onclick')?.includes(`'${page}'`));
+  });
   document.getElementById('page-title').textContent = p.label;
   document.getElementById('page-subtitle').textContent = p.subtitle;
   p.render?.();
@@ -5484,6 +5485,8 @@ function onSchedToggle(enabled) {
   if (enabled) {
     requestNotificationPermission();
     startScheduleTimer();
+  } else {
+    stopScheduleTimer();
   }
   updateScheduleStatus();
 }
@@ -5546,6 +5549,13 @@ let scheduleTimer = null;
 function startScheduleTimer() {
   if (scheduleTimer) clearInterval(scheduleTimer);
   scheduleTimer = setInterval(checkSchedule, 30000); // sprawdzaj co 30s
+  checkSchedule(); // natychmiast sprawdź przy starcie
+  console.log('[Harmonogram] Timer uruchomiony, sprawdzanie co 30s');
+}
+
+function stopScheduleTimer() {
+  if (scheduleTimer) { clearInterval(scheduleTimer); scheduleTimer = null; }
+  console.log('[Harmonogram] Timer zatrzymany');
 }
 
 function checkSchedule() {
@@ -5564,8 +5574,20 @@ function checkSchedule() {
     const ms = intervals[cfg.frequency] || 3600000;
     shouldRun = !lastRun || (now - lastRun) >= ms;
   }
+  console.log('[Harmonogram] Sprawdzam:', { freq: cfg.frequency, shouldRun, now: now.toLocaleTimeString(), lastRun: lastRun?.toLocaleTimeString() || 'brak' });
   if (shouldRun) runAutoSearch(false);
 }
+
+// Gdy zakładka wraca do widoku — sprawdź natychmiast (przeglądarka throttluje setInterval w tle)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    const cfg = loadSchedule();
+    if (cfg.enabled) {
+      console.log('[Harmonogram] Zakładka aktywna — sprawdzam harmonogram');
+      checkSchedule();
+    }
+  }
+});
 
 async function runAutoSearch(manual = false) {
   const cfg = loadSchedule();
