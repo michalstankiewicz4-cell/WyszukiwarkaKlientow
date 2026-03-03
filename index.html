@@ -1544,6 +1544,7 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
 
 /* SETTINGS MODAL */
 .settings-modal { width: 520px; max-height: 85vh; overflow-y: auto; }
+.settings-panel { width: 420px; max-height: 70vh; overflow-y: auto; }
 .settings-section {
   padding: 16px 0;
   border-bottom: 1px solid var(--border);
@@ -1883,9 +1884,70 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
           </div>
         </div>
         </div>
-        <button class="settings-btn" onclick="openSettingsModal()" title="Ustawienia">
+        <div class="schedule-btn-wrap">
+        <button class="settings-btn" onclick="toggleSettingsPanel(event)" title="Ustawienia">
           ⚙️ Ustawienia
         </button>
+        <div class="topbar-panel settings-panel" id="settings-panel">
+          <div class="topbar-panel-header">
+            <div class="topbar-panel-title">⚙️ Ustawienia</div>
+            <button class="topbar-panel-close" onclick="closeSettingsPanel()">✕</button>
+          </div>
+          <div class="topbar-panel-body">
+            <!-- SEKCJA: Online / Offline -->
+            <div class="settings-section">
+              <div class="settings-section-title">🌐 Tryb pracy</div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-label">Tryb online</div>
+                  <div class="settings-label-sub">Online — serwer, alerty, Apify<br>Offline — tylko lokalne</div>
+                </div>
+                <div class="online-toggle-wrap" title="Online / Offline">
+                  <span class="online-label offline-mode" id="online-label-off">📴</span>
+                  <label class="sched-toggle">
+                    <input type="checkbox" id="online-toggle" onchange="onOnlineToggle(this.checked)">
+                    <span class="sched-slider"></span>
+                  </label>
+                  <span class="online-label online-mode" id="online-label-on">🌐</span>
+                </div>
+              </div>
+            </div>
+            <!-- SEKCJA: Bezpieczeństwo -->
+            <div class="settings-section">
+              <div class="settings-section-title">🔒 Bezpieczeństwo</div>
+              <div class="sec-section" style="margin-bottom:12px">
+                <div style="font-size:0.72rem;font-weight:600;color:var(--text-mid);margin-bottom:8px">🔑 Hasła i klucze API</div>
+                <label class="sec-radio-row"><input type="radio" name="sec-pass" value="localStorage" onchange="onSecurityChange()"><div><span class="sec-radio-label">localStorage</span><span class="sec-radio-desc">Trwałe — przeżywają odświeżenie</span></div></label>
+                <label class="sec-radio-row"><input type="radio" name="sec-pass" value="ram" onchange="onSecurityChange()"><div><span class="sec-radio-label">RAM <span class="sec-ram-badge">bezpieczniejsze</span></span><span class="sec-radio-desc">Czyszczone po zamknięciu</span></div></label>
+              </div>
+              <div class="sec-section">
+                <div style="font-size:0.72rem;font-weight:600;color:var(--text-mid);margin-bottom:8px">📤 Eksport</div>
+                <label class="sec-check-row"><input type="checkbox" id="sec-export-pass" onchange="onSecurityChange()"><span>Dołącz hasła (zaszyfrowane)</span></label>
+                <div class="settings-note">⚠ Przy eksporcie — hasło szyfrowania.</div>
+              </div>
+            </div>
+            <!-- SEKCJA: Domyślne dane logowania -->
+            <div class="settings-section">
+              <div class="settings-section-title">🔐 Domyślne dane logowania</div>
+              <div class="settings-label-sub" style="margin-bottom:10px">Wstępnie wypełniają pola login/hasło w portalach</div>
+              <div class="form-row">
+                <label class="form-label">Login (email)</label>
+                <input class="settings-input" id="login-email" type="email" placeholder="jan@firma.pl" autocomplete="off" />
+              </div>
+              <div class="form-row" style="margin-top:10px">
+                <label class="form-label">Hasło</label>
+                <div class="settings-pass-wrap">
+                  <input class="settings-input" id="login-password" type="password" placeholder="••••••••" autocomplete="off" />
+                  <button class="settings-pass-toggle" onclick="this.previousElementSibling.type=this.previousElementSibling.type==='password'?'text':'password'">👁</button>
+                </div>
+              </div>
+              <div style="margin-top:12px;text-align:right">
+                <button class="btn-save" style="font-size:0.72rem;padding:6px 16px" onclick="saveSettingsPanel()">Zapisz dane</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
       </div>
       <div class="topbar-divider"></div>
       <!-- Tryb użytkownik / admin -->
@@ -2224,68 +2286,9 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
   </div>
 </div>
 
-<!-- SETTINGS MODAL -->
-<div class="modal-overlay" id="settings-modal-overlay">
-  <div class="modal settings-modal">
-    <div class="modal-title">⚙️ Ustawienia</div>
-    <div class="modal-sub">Konfiguracja trybu pracy, bezpieczeństwa i domyślnych danych logowania</div>
-
-    <!-- SEKCJA: Online / Offline -->
-    <div class="settings-section">
-      <div class="settings-section-title">🌐 Tryb pracy</div>
-      <div class="settings-row">
-        <div>
-          <div class="settings-label">Tryb online</div>
-          <div class="settings-label-sub">Online — funkcje serwerowe, alerty RSS, wyszukiwanie Apify<br>Offline — tylko funkcje lokalne</div>
-        </div>
-        <div class="online-toggle-wrap" title="Online / Offline">
-          <span class="online-label offline-mode" id="online-label-off">📴</span>
-          <label class="sched-toggle">
-            <input type="checkbox" id="online-toggle" onchange="onOnlineToggle(this.checked)">
-            <span class="sched-slider"></span>
-          </label>
-          <span class="online-label online-mode" id="online-label-on">🌐</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- SEKCJA: Bezpieczeństwo -->
-    <div class="settings-section">
-      <div class="settings-section-title">🔒 Bezpieczeństwo</div>
-      <div class="sec-section" style="margin-bottom:12px">
-        <div style="font-size:0.72rem;font-weight:600;color:var(--text-mid);margin-bottom:8px">🔑 Hasła i klucze API</div>
-        <label class="sec-radio-row"><input type="radio" name="sec-pass" value="localStorage" onchange="onSecurityChange()"><div><span class="sec-radio-label">localStorage</span><span class="sec-radio-desc">Trwałe — przeżywają odświeżenie strony</span></div></label>
-        <label class="sec-radio-row"><input type="radio" name="sec-pass" value="ram" onchange="onSecurityChange()"><div><span class="sec-radio-label">RAM <span class="sec-ram-badge">bezpieczniejsze</span></span><span class="sec-radio-desc">Czyszczone po zamknięciu lub odświeżeniu</span></div></label>
-      </div>
-      <div class="sec-section">
-        <div style="font-size:0.72rem;font-weight:600;color:var(--text-mid);margin-bottom:8px">📤 Eksport — zaszyfrowane dane</div>
-        <label class="sec-check-row"><input type="checkbox" id="sec-export-pass" onchange="onSecurityChange()"><span>Dołącz hasła i klucze API (zaszyfrowane)</span></label>
-        <div class="settings-note">⚠ Przy eksporcie zostaniesz poproszony o hasło szyfrowania.</div>
-      </div>
-    </div>
-
-    <!-- SEKCJA: Domyślne dane logowania -->
-    <div class="settings-section">
-      <div class="settings-section-title">🔐 Domyślne dane logowania</div>
-      <div class="settings-label-sub" style="margin-bottom:10px">Wartości domyślne wstępnie wypełniające pola login i hasło przy dodawaniu danych do portali</div>
-      <div class="form-row">
-        <label class="form-label">Domyślny login (email)</label>
-        <input class="settings-input" id="login-email" type="email" placeholder="jan@firma.pl" autocomplete="off" />
-      </div>
-      <div class="form-row" style="margin-top:10px">
-        <label class="form-label">Domyślne hasło</label>
-        <div class="settings-pass-wrap">
-          <input class="settings-input" id="login-password" type="password" placeholder="••••••••" autocomplete="off" />
-          <button class="settings-pass-toggle" onclick="this.previousElementSibling.type=this.previousElementSibling.type==='password'?'text':'password'">👁</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeSettingsModal()">Zamknij</button>
-      <button class="btn-save" onclick="saveSettingsModal()">Zapisz</button>
-    </div>
-  </div>
+<!-- SETTINGS MODAL (legacy — now uses topbar panel) -->
+<div class="modal-overlay" id="settings-modal-overlay" style="display:none">
+  <div class="modal settings-modal"></div>
 </div>
 
 <!-- DEFAULT LOGIN MODAL (legacy — kept for programmatic access) -->
@@ -5353,6 +5356,13 @@ document.addEventListener('click', function(e) {
   }
 });
 
+document.addEventListener('click', function(e) {
+  const panel = document.getElementById('settings-panel');
+  if (panel && panel.classList.contains('open') && !panel.parentElement.contains(e.target)) {
+    panel.classList.remove('open');
+  }
+});
+
 // =====================
 // THEME
 // =====================
@@ -5413,35 +5423,44 @@ function closeSecurityPanel() {
 }
 
 // =====================
-// SETTINGS MODAL
+// SETTINGS PANEL (topbar dropdown)
 // =====================
-function openSettingsModal() {
-  // Populate Online/Offline
-  document.getElementById('online-toggle').checked = isOnlineMode;
-  // Populate Security
-  document.querySelector(`input[name="sec-pass"][value="${securitySettings.passStorage}"]`).checked = true;
-  document.getElementById('sec-export-pass').checked = securitySettings.exportPass;
-  // Populate Default Login
-  const def = loadDefaultLogin();
-  document.getElementById('login-email').value = def.email || '';
-  document.getElementById('login-password').value = def.pass || '';
-  // Open
-  document.getElementById('settings-modal-overlay').classList.add('open');
+function toggleSettingsPanel(e) {
+  e.stopPropagation();
+  const panel = document.getElementById('settings-panel');
+  if (!panel.classList.contains('open')) {
+    // Populate
+    document.getElementById('online-toggle').checked = isOnlineMode;
+    document.querySelector(`input[name="sec-pass"][value="${securitySettings.passStorage}"]`).checked = true;
+    document.getElementById('sec-export-pass').checked = securitySettings.exportPass;
+    const def = loadDefaultLogin();
+    document.getElementById('login-email').value = def.email || '';
+    document.getElementById('login-password').value = def.pass || '';
+  }
+  panel.classList.toggle('open');
 }
 
-function closeSettingsModal() {
-  document.getElementById('settings-modal-overlay').classList.remove('open');
+function closeSettingsPanel() {
+  document.getElementById('settings-panel').classList.remove('open');
 }
 
-function saveSettingsModal() {
-  // Save Default Login
+function saveSettingsPanel() {
   const email = document.getElementById('login-email').value.trim();
   const pass  = document.getElementById('login-password').value;
   saveDefaultLoginToStorage({ email, pass });
   updateLoginBtn();
-  // Security already saved on change
-  // Online mode already saved on toggle
-  closeSettingsModal();
+}
+
+// Legacy compat
+function openSettingsModal() { toggleSettingsPanel({ stopPropagation(){} }); }
+
+function closeSettingsModal() {
+  closeSettingsPanel();
+}
+
+function saveSettingsModal() {
+  saveSettingsPanel();
+  closeSettingsPanel();
 }
 
 function onSecurityChange() {
