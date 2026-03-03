@@ -2334,7 +2334,6 @@ let savedLeads = JSON.parse(localStorage.getItem('lh_saved') || '[]');
 // =====================
 const ENGINE_META = {
   google:        { label: 'Google Custom Search',         color: '#4285F4' },
-  reddit:        { label: 'Reddit',                       color: '#ff4500' },
   apify:         { label: 'Apify Web Scraper',            color: '#FF9900' },
   google_alerts: { label: 'Google Alerts',               color: '#EA4335' },
 };
@@ -3266,11 +3265,6 @@ async function doSearch() {
     if (googleSources.length && googleKey && googleCx)
       promises.push(searchGoogleCSE(q, googleKey, googleCx, null, googleSources[0]));
 
-    // reddit — one shared call
-    const redditSources = activeSources.filter(s => s.engine === 'reddit');
-    if (redditSources.length)
-      promises.push(searchRedditPublic(q, redditSources[0]));
-
     // apify — one call per source with optional site: filter
     const apifyKey = loadApifyKey();
     if (apifyKey) {
@@ -3367,28 +3361,6 @@ async function searchApify(query, apiKey, siteFilter, source) {
     relevance: Math.max(60, 95 - i * 3),
     keyword: query,
   }));
-}
-
-async function searchRedditPublic(query) {
-  const url = `https://www.reddit.com/search.json?q=${encodeURIComponent(query)}&limit=10&sort=relevance&type=link`;
-  const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
-  if (!resp.ok) throw new Error(`Reddit HTTP ${resp.status}`);
-  const data = await resp.json();
-  return (data?.data?.children || []).map((item, i) => {
-    const p = item.data;
-    return {
-      source: `Reddit r/${p.subreddit}`,
-      icon: '🔺',
-      type: 'social',
-      color: '#fde8f0',
-      title: p.title,
-      snippet: p.selftext ? p.selftext.slice(0, 220) : `r/${p.subreddit} · ${p.score} pkt`,
-      url: `https://www.reddit.com${p.permalink}`,
-      date: new Date(p.created_utc * 1000).toISOString().split('T')[0],
-      relevance: Math.max(60, 90 - i * 3),
-      keyword: query,
-    };
-  });
 }
 
 // =====================
@@ -4879,12 +4851,6 @@ function renderEngines() {
       'W zarządzaniu źródłami przypisz źródłom silnik <b>Google Custom Search</b>.',
     ],
 
-    reddit: [
-      'Reddit nie wymaga żadnej konfiguracji — używa <b>publicznego API</b>.',
-      'W zarządzaniu źródłami dodaj źródła z domeną <a href="https://www.reddit.com" target="_blank" rel="noopener">reddit.com</a>.',
-      'Przypisz im silnik <b>Reddit</b> i wpisz URL subredditu jako podforum, np. <b>r/Poland</b>.',
-      'Wyszukiwanie pobiera posty i komentarze pasujące do fraz kluczowych.',
-    ],
     google_alerts: [
       'Wejdź na <a href="https://www.google.com/alerts" target="_blank" rel="noopener">google.com/alerts</a> i utwórz alerty dla interesujących Cię fraz.',
       'Ustaw częstotliwość na <b>"W miarę publikowania"</b> dla najświeższych wyników.',
