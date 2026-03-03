@@ -1956,6 +1956,16 @@ html[data-theme="dark"] .lang-js { color: #f0c040; }
                 <div class="sched-status-row"><span>Następne</span><span class="sched-status-val" id="sched-next-run">—</span></div>
                 <div class="sched-status-row"><span>Źródła (ulubione)</span><span class="sched-status-val" id="sched-fav-count">0</span></div>
               </div>
+              <div class="sched-toggle-row" style="margin-top:13px">
+                <span class="sched-toggle-label">Auto-dodaj nowe do leadów</span>
+                <label class="sched-toggle">
+                  <input type="checkbox" id="sched-auto-add-leads" onchange="onSchedAutoAddChange(this.checked)">
+                  <span class="sched-slider"></span>
+                </label>
+              </div>
+              <div style="font-size:0.68rem;color:var(--text-dim);margin-top:-6px;margin-bottom:13px;line-height:1.4">
+                Po wyszukaniu automatycznie zapisze wyniki, które nie są jeszcze w leadach.
+              </div>
               <button class="sched-run-btn" onclick="runAutoSearch(true)">▶ Uruchom teraz</button>
             </div>
           </div>
@@ -5448,9 +5458,9 @@ function saveGoogleCfg() {
 // SCHEDULE / AUTOMATION
 // =====================
 function loadSchedule() {
-  return JSON.parse(localStorage.getItem('lh_schedule') || JSON.stringify({
-    enabled: false, frequency: 'daily', time: '09:00', query: '', lastRun: null
-  }));
+  const defaults = { enabled: false, frequency: 'daily', time: '09:00', query: '', lastRun: null, autoAddLeads: false };
+  const stored = JSON.parse(localStorage.getItem('lh_schedule') || '{}');
+  return { ...defaults, ...stored };
 }
 function saveSchedule(cfg) { localStorage.setItem('lh_schedule', JSON.stringify(cfg)); }
 
@@ -5507,9 +5517,16 @@ function updateScheduleUI() {
   document.getElementById('sched-frequency').value = cfg.frequency;
   document.getElementById('sched-time').value = cfg.time || '09:00';
   document.getElementById('sched-query').value = cfg.query || '';
+  document.getElementById('sched-auto-add-leads').checked = !!cfg.autoAddLeads;
   document.getElementById('sched-time-row').style.display = cfg.frequency === 'daily' ? '' : 'none';
   document.getElementById('schedule-btn').classList.toggle('active', cfg.enabled);
   updateScheduleStatus();
+}
+
+function onSchedAutoAddChange(checked) {
+  const cfg = loadSchedule();
+  cfg.autoAddLeads = checked;
+  saveSchedule(cfg);
 }
 
 function updateScheduleStatus() {
@@ -5604,6 +5621,25 @@ async function runAutoSearch(manual = false) {
   showPage('search');
   await doSearch();
 
+  // Auto-dodaj nowe wyniki do leadów
+  let autoAdded = 0;
+  if (cfg.autoAddLeads && currentResults.length) {
+    const savedUrls = new Set(savedLeads.map(l => l.url).filter(Boolean));
+    for (const r of currentResults) {
+      if (r.url && !savedUrls.has(r.url)) {
+        const lead = { ...r, savedAt: new Date().toLocaleDateString('pl-PL'), id: Date.now() + autoAdded, autoAdded: true };
+        savedLeads.unshift(lead);
+        savedUrls.add(r.url);
+        autoAdded++;
+      }
+    }
+    if (autoAdded) {
+      localStorage.setItem('lh_saved', JSON.stringify(savedLeads));
+      document.getElementById('saved-count').textContent = savedLeads.length;
+      document.getElementById('stat-saved').textContent = savedLeads.length;
+    }
+  }
+
   // Po zakończeniu — toast z prawdziwymi wynikami
   const total = currentResults.length;
   const hot = currentResults.filter(r => r.relevance >= 88).length;
@@ -5619,15 +5655,18 @@ async function runAutoSearch(manual = false) {
     } catch(e) {}
   }
 
-  showAutoSearchToast(total, hot, displayQ, srcCount, manual);
+  showAutoSearchToast(total, hot, displayQ, srcCount, manual, autoAdded);
 }
 
-function showAutoSearchToast(total, hot, query, srcCount, manual) {
+function showAutoSearchToast(total, hot, query, srcCount, manual, autoAdded = 0) {
   const toast = document.getElementById('autosearch-toast');
   document.getElementById('toast-title').textContent = manual ? 'Wyszukiwanie ręczne' : 'Automatyczne wyszukiwanie';
-  document.getElementById('toast-body').innerHTML =
-    `Znaleziono <strong>${total} wyników</strong> dla frazy „${query}"<br>` +
+  let bodyHtml = `Znaleziono <strong>${total} wyników</strong> dla frazy „${query}"<br>` +
     `Źródła: <strong>${srcCount} ulubionych</strong> · Gorące leady: <strong>${hot}</strong>`;
+  if (autoAdded > 0) {
+    bodyHtml += `<br>✅ Automatycznie dodano <strong>${autoAdded} nowych</strong> do leadów`;
+  }
+  document.getElementById('toast-body').innerHTML = bodyHtml;
   toast.classList.add('visible');
   if (toast._hideTimer) clearTimeout(toast._hideTimer);
   toast._hideTimer = setTimeout(closeToast, 8000);
