@@ -177,6 +177,7 @@ Automatycznie budowana baza odwiedzonych domen i ścieżek — **zero ręcznej p
 - Wersja aplikacji widoczna w sidebarze i w panelu
 
 ---
+<img width="698" height="917" alt="image" src="https://github.com/user-attachments/assets/ff6c72dc-a020-4531-83b5-b42725e66601" />
 
 ## 🛠️ Technologie
 
