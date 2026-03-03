@@ -1366,6 +1366,33 @@ html[data-theme="dark"] .engine-badge { background: rgba(255,255,255,0.08); colo
   margin-left: 4px;
 }
 
+/* SAVED LEADS TOOLBAR */
+.saved-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; margin-bottom: 8px; gap: 10px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+}
+.saved-toolbar-left { display: flex; gap: 4px; flex-wrap: wrap; }
+.saved-toolbar-right { display: flex; gap: 8px; align-items: center; }
+.saved-filter-btn {
+  font-family: 'Outfit', sans-serif; font-size: 0.72rem; font-weight: 600;
+  padding: 5px 12px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--border2); background: var(--surface);
+  color: var(--text-dim); transition: all 0.15s; white-space: nowrap;
+}
+.saved-filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+.saved-filter-btn.active {
+  background: var(--accent); color: #fff; border-color: var(--accent);
+}
+.saved-filter-count {
+  font-size: 0.6rem; font-family: 'JetBrains Mono', monospace;
+  background: rgba(255,255,255,0.2); padding: 0 5px; border-radius: 8px;
+  margin-left: 3px;
+}
+.saved-filter-btn:not(.active) .saved-filter-count {
+  background: var(--bg); color: var(--text-dim);
+}
+
 /* SOURCES MANAGE VIEW TOGGLE */
 .manage-topbar {
   display: flex; align-items: center; justify-content: space-between;
@@ -3783,6 +3810,39 @@ function saveLead(idx, btn) {
 // =====================
 // SAVED LEADS
 // =====================
+let savedSort = localStorage.getItem('lh_saved_sort') || 'date-desc';
+let savedFilter = 'all'; // all | active | completed
+
+function changeSavedSort(val) {
+  savedSort = val;
+  localStorage.setItem('lh_saved_sort', val);
+  renderSaved();
+}
+
+function changeSavedFilter(val) {
+  savedFilter = val;
+  renderSaved();
+}
+
+function getSortedSavedLeads() {
+  let list = [...savedLeads];
+
+  // Filtr
+  if (savedFilter === 'active') list = list.filter(l => !l.completed);
+  else if (savedFilter === 'completed') list = list.filter(l => l.completed);
+
+  // Sortowanie
+  switch (savedSort) {
+    case 'date-desc': list.sort((a, b) => (b.id || 0) - (a.id || 0)); break;
+    case 'date-asc':  list.sort((a, b) => (a.id || 0) - (b.id || 0)); break;
+    case 'name-asc':  list.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'pl')); break;
+    case 'name-desc': list.sort((a, b) => (b.title || '').localeCompare(a.title || '', 'pl')); break;
+    case 'keyword':   list.sort((a, b) => (a.keyword || '').localeCompare(b.keyword || '', 'pl')); break;
+    case 'source':    list.sort((a, b) => (a.source || '').localeCompare(b.source || '', 'pl')); break;
+  }
+  return list;
+}
+
 function renderSaved() {
   const list = document.getElementById('saved-list');
   const empty = document.getElementById('saved-empty');
@@ -3792,12 +3852,32 @@ function renderSaved() {
     return;
   }
   empty.style.display = 'none';
+  const sorted = getSortedSavedLeads();
+  const completedCount = savedLeads.filter(l => l.completed).length;
+  const activeCount = savedLeads.length - completedCount;
   list.innerHTML = `
     <div class="results-header">
       <div class="results-title">Zapisane leady</div>
       <div class="results-meta">${savedLeads.length} leadów · <button onclick="clearSaved()" style="background:none;border:none;cursor:pointer;color:var(--red);font-size:0.72rem;font-family:'Outfit',sans-serif">Wyczyść wszystkie</button></div>
     </div>
-    ${savedLeads.map((r, i) => `
+    <div class="saved-toolbar">
+      <div class="saved-toolbar-left">
+        <button class="saved-filter-btn${savedFilter === 'all' ? ' active' : ''}" onclick="changeSavedFilter('all')">Wszystkie <span class="saved-filter-count">${savedLeads.length}</span></button>
+        <button class="saved-filter-btn${savedFilter === 'active' ? ' active' : ''}" onclick="changeSavedFilter('active')">Aktywne <span class="saved-filter-count">${activeCount}</span></button>
+        <button class="saved-filter-btn${savedFilter === 'completed' ? ' active' : ''}" onclick="changeSavedFilter('completed')">Zakończone <span class="saved-filter-count">${completedCount}</span></button>
+      </div>
+      <div class="saved-toolbar-right">
+        <select class="sort-dropdown" onchange="changeSavedSort(this.value)">
+          <option value="date-desc" ${savedSort === 'date-desc' ? 'selected' : ''}>Data ↓ (najnowsze)</option>
+          <option value="date-asc" ${savedSort === 'date-asc' ? 'selected' : ''}>Data ↑ (najstarsze)</option>
+          <option value="name-asc" ${savedSort === 'name-asc' ? 'selected' : ''}>Tytuł A-Z</option>
+          <option value="name-desc" ${savedSort === 'name-desc' ? 'selected' : ''}>Tytuł Z-A</option>
+          <option value="keyword" ${savedSort === 'keyword' ? 'selected' : ''}>Słowo kluczowe</option>
+          <option value="source" ${savedSort === 'source' ? 'selected' : ''}>Źródło</option>
+        </select>
+      </div>
+    </div>
+    ${!sorted.length ? `<div style="padding:24px;text-align:center;color:var(--text-dim);font-size:0.82rem">Brak leadów pasujących do filtra.</div>` : sorted.map((r, i) => `
     <div class="result-item" style="animation-delay:${i*40}ms">
       <div class="result-source-icon" style="background:${r.color||'#e8f0fc'}">${r.icon}</div>
       <div class="result-body">
