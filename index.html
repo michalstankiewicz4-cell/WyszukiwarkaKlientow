@@ -3278,10 +3278,18 @@ async function doSearch() {
   const promises = [];
 
   for (const q of queries) {
-    // google — one shared call, no site: filter
-    const googleSources = activeSources.filter(s => s.engine === 'google');
-    if (googleSources.length && googleKey && googleCx)
-      promises.push(searchGoogleCSE(q, googleKey, googleCx, null, googleSources[0]));
+    // google — one call per source, with optional site: filter (subforums)
+    if (googleKey && googleCx) {
+      for (const src of activeSources.filter(s => s.engine === 'google')) {
+        const subs = (src.subforums || []).filter(sf => sf && sf.trim());
+        if (subs.length) {
+          for (const sf of subs)
+            promises.push(searchGoogleCSE(q, googleKey, googleCx, sf, src));
+        } else {
+          promises.push(searchGoogleCSE(q, googleKey, googleCx, null, src));
+        }
+      }
+    }
 
     // apify — one call per source with optional site: filter
     const apifyKey = loadApifyKey();
