@@ -3979,6 +3979,7 @@ function renderResults(query, sourceCount) {
             <div class="relevance-track"><div class="relevance-fill" style="width:${r.relevance}%"></div></div>
           </div>
           <div class="result-actions">
+            <button class="result-btn" onclick="hideResult(${i}, this)" title="Ukryj — zapisz jako zakończony">🙈 Ukryj</button>
             <button class="result-btn" onclick="copyLink('${safeUrl(r.url)}', this)">📋 Kopiuj</button>
             <button class="result-btn primary" onclick="saveLead(${i}, this)" id="save-btn-${i}"${alreadySaved ? ' style="background:#e8f5ee;color:#1a7a4a;border-color:rgba(26,122,74,0.3)"' : ''}>🔖 ${alreadySaved ? 'Zapisz ponownie' : 'Zapisz lead'}</button>
           </div>
@@ -4021,6 +4022,29 @@ function saveLead(idx, btn) {
   btn.style.borderColor = 'rgba(26,122,74,0.3)';
   document.getElementById('saved-count').textContent = savedLeads.length;
   document.getElementById('stat-saved').textContent = savedLeads.length;
+}
+
+function hideResult(idx, btn) {
+  const r = currentResults[idx];
+  if (!r) return;
+  // Zapisz jako lead z flagą completed
+  const lead = { ...r, savedAt: new Date().toLocaleDateString('pl-PL'), id: Date.now(), completed: true };
+  savedLeads.unshift(lead);
+  localStorage.setItem('lh_saved', JSON.stringify(savedLeads));
+  document.getElementById('saved-count').textContent = savedLeads.length;
+  document.getElementById('stat-saved').textContent = savedLeads.length;
+
+  // Ukryj wiersz wyniku z animacją
+  const card = btn.closest('.result-item');
+  if (card) {
+    card.style.transition = 'opacity 0.3s, max-height 0.3s';
+    card.style.opacity = '0';
+    card.style.maxHeight = '0';
+    card.style.overflow = 'hidden';
+    card.style.marginBottom = '0';
+    card.style.padding = '0';
+    setTimeout(() => card.remove(), 350);
+  }
 }
 
 // =====================
